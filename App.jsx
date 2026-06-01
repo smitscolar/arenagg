@@ -18,13 +18,13 @@ const T = {
 
 // FIX 1: Flag menggunakan unicode langsung bukan emoji system
 const LANG_OPTIONS = [
-  {code:'id',flag:'🇮🇩',label:'ID',name:'Indonesia'},
-  {code:'en',flag:'🇬🇧',label:'GB',name:'English'},
-  {code:'fil',flag:'🇵🇭',label:'PH',name:'Filipino'},
-  {code:'vi',flag:'🇻🇳',label:'VN',name:'Tiếng Việt'},
-  {code:'th',flag:'🇹🇭',label:'TH',name:'ภาษาไทย'},
-  {code:'zh',flag:'🇨🇳',label:'CN',name:'中文'},
-  {code:'ms',flag:'🇲🇾',label:'MY',name:'Melayu'},
+  {code:'id',img:'https://flagcdn.com/w20/id.png',label:'ID',name:'Indonesia'},
+  {code:'en',img:'https://flagcdn.com/w20/gb.png',label:'EN',name:'English'},
+  {code:'fil',img:'https://flagcdn.com/w20/ph.png',label:'PH',name:'Filipino'},
+  {code:'vi',img:'https://flagcdn.com/w20/vn.png',label:'VN',name:'Tiếng Việt'},
+  {code:'th',img:'https://flagcdn.com/w20/th.png',label:'TH',name:'ภาษาไทย'},
+  {code:'zh',img:'https://flagcdn.com/w20/cn.png',label:'CN',name:'中文'},
+  {code:'ms',img:'https://flagcdn.com/w20/my.png',label:'MY',name:'Melayu'},
 ]
 
 const getLang=()=>{try{return localStorage.getItem('arenagg_lang')||'id'}catch(e){return'id'}}
@@ -99,8 +99,8 @@ function LangSelector({lang,setLangFn,compact=false}){
   return <div style={{display:'flex',flexWrap:'wrap',gap:4}}>
     {LANG_OPTIONS.map(l=>(
       <button key={l.code} className={`lang-btn${lang===l.code?' active':''}`} onClick={()=>setLangFn(l.code)} title={l.name}>
-        <span className="flag-emoji">{l.flag}</span>
-        <span style={{fontSize:10,fontFamily:'var(--fm)'}}>{l.label}</span>
+        <img src={l.img} alt={l.label} width={20} height={14} style={{borderRadius:2,display:'block',objectFit:'cover'}} onError={e=>{e.target.style.display='none'}}/>
+        <span style={{fontSize:10,fontFamily:'var(--fm)',lineHeight:1}}>{l.label}</span>
       </button>
     ))}
   </div>
@@ -290,4 +290,5 @@ export default function App(){
   const props={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang};
   return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}><Sidebar page={page} setPage={setPage} user={user} onLogout={logout} lang={lang} setLangFn={setLangFn} hasLive={hasLive}/><div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}><LiveBanner tournaments={tournaments}/><main style={{flex:1,overflowY:'auto',overflowX:'hidden'}}>{page==='dashboard'&&<Dashboard {...props}/>}{page==='revenue'&&<RevenuePage {...props}/>}{page==='tournaments'&&<TournamentList {...props}/>}{page==='create'&&<CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/>}{page==='teams'&&<TeamsView {...props}/>}{page==='bracket'&&<BracketView {...props}/>}{page==='finance'&&<Finance {...props}/>}{page==='settings'&&<Settings user={user} lang={lang}/>}</main></div><BottomNav page={page} setPage={setPage} lang={lang} hasLive={hasLive}/><Toasts list={toasts}/></div>
 }
+
 
