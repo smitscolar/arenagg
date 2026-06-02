@@ -7,13 +7,13 @@ const supabase = createClient(
 )
 
 const T = {
-  id:{nav:['Dashboard','Komisi','Turnamen','Buat','Peserta','Bracket','🔴 Live','Keuangan','Setting'],login:'Masuk',register:'Daftar',email:'Email',password:'Password',community:'Nama Komunitas',btn_login:'🔑 Masuk',btn_register:'🚀 Buat Akun',dash_title:'Dashboard',dash_sub:'Overview realtime platform turnamen esport',active_t:'TURNAMEN AKTIF',revenue_lbl:'PENDAPATAN',quick:'AKSI CEPAT',btn_create:'＋ Buat Turnamen',btn_comm:'📈 Komisi',btn_part:'👥 Peserta',no_active:'Belum ada turnamen aktif',tourn_title:'Turnamen',btn_create_t:'＋ Buat',no_tourn:'TIDAK ADA TURNAMEN',share:'🔗 Bagikan',live_btn:'▶ Live',close_btn:'■ Tutup',activate:'✓ Aktif',create_title:'＋ BUAT TURNAMEN',edit_title:'✏ EDIT',tourn_name:'Nama Turnamen *',game:'Game',format:'Format',city:'Kota *',date:'Tanggal *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slot',desc:'Deskripsi',btn_save:'💾 Simpan',btn_create2:'🚀 Buat',btn_cancel:'Batal',teams_title:'Peserta & Tim',all:'Semua',btn_reg_team:'＋ Daftarkan Tim',team_name:'Nama Tim *',captain:'Kapten *',contact:'No. HP',members:'Member',tournament:'Turnamen *',paid_lbl:'Sudah bayar entry fee',btn_reg2:'Daftarkan',no_teams:'Belum ada tim',finance_title:'Keuangan',total_entry:'Total Entry',comm_lbl:'Komisi 15%',done:'Selesai',settings_title:'Pengaturan',account:'AKUN ORGANIZER',connected:'✓ Terhubung ke Supabase',bank_title:'💳 INFO PEMBAYARAN',bank_desc:'Data ini akan ditampilkan ke peserta saat mendaftar.',bank_name:'Nama Bank',acc_num:'Nomor Rekening / Nomor HP',acc_owner:'Nama Pemilik Rekening',wa_confirm:'No. WhatsApp Konfirmasi',btn_save_bank:'💾 Simpan Info Bank',saved:'✓ Tersimpan!',expansion:'EKSPANSI SEA',prize_pool:'Total Prize Pool',slots_left:'Slot Tersisa',slot_filled:'Slot Terisi',about:'TENTANG',reg_teams:'TIM TERDAFTAR',full:'❌ Slot Penuh',reg_now:'✅ Daftar Tim Sekarang →',closed_msg:'PENDAFTARAN DITUTUP',reg_title:'DAFTARKAN TIM',pay_title:'CARA PEMBAYARAN',amount:'Jumlah Entry Fee',transfer_to:'Transfer ke:',acc_no:'No. Rek:',an:'A/N:',confirm_wa:'Konfirmasi ke WA:',contact_org:'📱 Hubungi organizer',btn_submit:'🚀 Kirim',registering:'Mendaftarkan...',success_title:'BERHASIL!',success_msg:'terdaftar di',back:'← Kembali',back_detail:'← Lihat Detail',rev_title:'📈 LAPORAN KOMISI',rev_sub:'Pendapatan realtime',saldo:'SALDO TERSEDIA',income:'Masuk:',withdrawn:'Dicairkan:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'SALDO',amount_lbl:'Jumlah (Rp)',acc_lbl:'Rekening',btn_wd:'💸 Cairkan',comm_per:'KOMISI PER TURNAMEN',no_tourn_yet:'Buat turnamen pertamamu!',online:'ONLINE',logout:'Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PREVIEW PESERTA',lang_lbl:'Bahasa',edit:'✏ Edit',profile_title:'PROFIL ORGANIZER',change_photo:'Klik untuk ganti foto',name_lbl:'Nama Organizer',save_profile:'💾 Simpan Profil',profile_saved:'✓ Profil Tersimpan!'},
-  en:{nav:['Dashboard','Revenue','Tournaments','Create','Participants','Bracket','🔴 Live','Finance','Settings'],login:'Login',register:'Register',email:'Email',password:'Password',community:'Community Name',btn_login:'🔑 Login',btn_register:'🚀 Create Account',dash_title:'Dashboard',dash_sub:'Realtime esport tournament platform overview',active_t:'ACTIVE TOURNAMENTS',revenue_lbl:'REVENUE',quick:'QUICK ACTIONS',btn_create:'＋ Create Tournament',btn_comm:'📈 Revenue',btn_part:'👥 Participants',no_active:'No active tournaments',tourn_title:'Tournaments',btn_create_t:'＋ Create',no_tourn:'NO TOURNAMENTS',share:'🔗 Share',live_btn:'▶ Live',close_btn:'■ Close',activate:'✓ Activate',create_title:'＋ CREATE TOURNAMENT',edit_title:'✏ EDIT',tourn_name:'Tournament Name *',game:'Game',format:'Format',city:'City *',date:'Start Date *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slots',desc:'Description',btn_save:'💾 Save',btn_create2:'🚀 Create',btn_cancel:'Cancel',teams_title:'Participants & Teams',all:'All',btn_reg_team:'＋ Register Team',team_name:'Team Name *',captain:'Captain *',contact:'Phone No.',members:'Members',tournament:'Tournament *',paid_lbl:'Entry fee paid',btn_reg2:'Register',no_teams:'No teams yet',finance_title:'Finance',total_entry:'Total Entry',comm_lbl:'Commission 15%',done:'Done',settings_title:'Settings',account:'ORGANIZER ACCOUNT',connected:'✓ Connected to Supabase',bank_title:'💳 PAYMENT INFO',bank_desc:'This info will be shown to participants.',bank_name:'Bank Name',acc_num:'Account / Phone Number',acc_owner:'Account Owner Name',wa_confirm:'WhatsApp Confirmation',btn_save_bank:'💾 Save Payment Info',saved:'✓ Saved!',expansion:'SEA EXPANSION',prize_pool:'Total Prize Pool',slots_left:'Slots Left',slot_filled:'Slots Filled',about:'ABOUT',reg_teams:'REGISTERED TEAMS',full:'❌ Full',reg_now:'✅ Register Now →',closed_msg:'REGISTRATION CLOSED',reg_title:'REGISTER TEAM',pay_title:'HOW TO PAY',amount:'Entry Fee Amount',transfer_to:'Transfer to:',acc_no:'Acc No:',an:'Name:',confirm_wa:'Confirm via WA:',contact_org:'📱 Contact organizer',btn_submit:'🚀 Submit',registering:'Registering...',success_title:'SUCCESS!',success_msg:'registered in',back:'← Back',back_detail:'← View Detail',rev_title:'📈 REVENUE REPORT',rev_sub:'Realtime earnings',saldo:'AVAILABLE BALANCE',income:'Income:',withdrawn:'Withdrawn:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'BALANCE',amount_lbl:'Amount',acc_lbl:'Account',btn_wd:'💸 Withdraw',comm_per:'COMMISSION PER TOURNAMENT',no_tourn_yet:'Create your first tournament!',online:'ONLINE',logout:'Logout',select_bank:'-- Select Bank --',preview_lbl:'PARTICIPANT PREVIEW',lang_lbl:'Language',edit:'✏ Edit',profile_title:'ORGANIZER PROFILE',change_photo:'Click to change photo',name_lbl:'Organizer Name',save_profile:'💾 Save Profile',profile_saved:'✓ Profile Saved!'},
-  fil:{nav:['Dashboard','Komisyon','Torneo','Gumawa','Kalahok','Bracket','🔴 Live','Pananalapi','Setting'],login:'Mag-login',register:'Mag-register',email:'Email',password:'Password',community:'Pangalan ng Komunidad',btn_login:'🔑 Mag-login',btn_register:'🚀 Gumawa ng Account',dash_title:'Dashboard',dash_sub:'Real-time na pangkalahatang-ideya',active_t:'MGA AKTIBONG TORNEO',revenue_lbl:'KITA',quick:'MABILIS NA AKSYON',btn_create:'＋ Gumawa ng Torneo',btn_comm:'📈 Komisyon',btn_part:'👥 Kalahok',no_active:'Walang aktibong torneo',tourn_title:'Mga Torneo',btn_create_t:'＋ Gumawa',no_tourn:'WALANG TORNEO',share:'🔗 Ibahagi',live_btn:'▶ Live',close_btn:'■ Isara',activate:'✓ I-activate',create_title:'＋ GUMAWA NG TORNEO',edit_title:'✏ I-EDIT',tourn_name:'Pangalan ng Torneo *',game:'Laro',format:'Format',city:'Lungsod *',date:'Petsa *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Puwesto',desc:'Paglalarawan',btn_save:'💾 I-save',btn_create2:'🚀 Gumawa',btn_cancel:'Kanselahin',teams_title:'Mga Kalahok at Koponan',all:'Lahat',btn_reg_team:'＋ Mag-register',team_name:'Pangalan ng Koponan *',captain:'Kapitan *',contact:'Telepono',members:'Miyembro',tournament:'Torneo *',paid_lbl:'Nabayaran na',btn_reg2:'Mag-register',no_teams:'Walang koponan pa',finance_title:'Pananalapi',total_entry:'Kabuuang Entry',comm_lbl:'Komisyon 15%',done:'Tapos',settings_title:'Mga Setting',account:'ACCOUNT NG ORGANIZER',connected:'✓ Nakakonekta sa Supabase',bank_title:'💳 IMPORMASYON SA BAYAD',bank_desc:'Ipapakita sa mga kalahok.',bank_name:'Pangalan ng Bangko',acc_num:'Numero ng Account',acc_owner:'Pangalan ng May-ari',wa_confirm:'WhatsApp para sa Kumpirmasyon',btn_save_bank:'💾 I-save',saved:'✓ Na-save!',expansion:'PAGPAPALAWAK SA SEA',prize_pool:'Kabuuang Prize Pool',slots_left:'Natitirang Puwesto',slot_filled:'Napuno na Puwesto',about:'TUNGKOL SA',reg_teams:'MGA NAKAREHISTRONG KOPONAN',full:'❌ Puno na',reg_now:'✅ Mag-register Ngayon →',closed_msg:'SARADO NA',reg_title:'IREHISTRO ANG KOPONAN',pay_title:'PAANO MAGBAYAD',amount:'Halaga ng Entry Fee',transfer_to:'I-transfer sa:',acc_no:'Acc No:',an:'Pangalan:',confirm_wa:'Kumpirmahin sa WA:',contact_org:'📱 Makipag-ugnayan',btn_submit:'🚀 Isumite',registering:'Nagrerehistro...',success_title:'MATAGUMPAY!',success_msg:'nairehistro sa',back:'← Bumalik',back_detail:'← Tingnan',rev_title:'📈 ULAT NG KOMISYON',rev_sub:'Real-time na kita',saldo:'AVAILABLE NA BALANSE',income:'Kita:',withdrawn:'Na-withdraw:',withdraw_btn:'💸 I-withdraw',withdraw_title:'💸 I-WITHDRAW',saldo_lbl:'BALANSE',amount_lbl:'Halaga',acc_lbl:'Account',btn_wd:'💸 I-withdraw',comm_per:'KOMISYON BAWAT TORNEO',no_tourn_yet:'Gumawa ng iyong unang torneo!',online:'ONLINE',logout:'Mag-logout',select_bank:'-- Piliin ang Bangko --',preview_lbl:'PREVIEW NG KALAHOK',lang_lbl:'Wika',edit:'✏ I-edit',profile_title:'PROFILE NG ORGANIZER',change_photo:'I-click para palitan',name_lbl:'Pangalan ng Organizer',save_profile:'💾 I-save ang Profile',profile_saved:'✓ Na-save ang Profile!'},
-  vi:{nav:['Bảng điều khiển','Hoa hồng','Giải đấu','Tạo mới','Người tham gia','Bracket','🔴 Live','Tài chính','Cài đặt'],login:'Đăng nhập',register:'Đăng ký',email:'Email',password:'Mật khẩu',community:'Tên cộng đồng',btn_login:'🔑 Đăng nhập',btn_register:'🚀 Tạo tài khoản',dash_title:'Bảng điều khiển',dash_sub:'Tổng quan thời gian thực',active_t:'GIẢI ĐẤU ĐANG HOẠT ĐỘNG',revenue_lbl:'DOANH THU',quick:'THAO TÁC NHANH',btn_create:'＋ Tạo giải đấu',btn_comm:'📈 Hoa hồng',btn_part:'👥 Người tham gia',no_active:'Không có giải đấu',tourn_title:'Giải đấu',btn_create_t:'＋ Tạo',no_tourn:'KHÔNG CÓ GIẢI ĐẤU',share:'🔗 Chia sẻ',live_btn:'▶ Trực tiếp',close_btn:'■ Đóng',activate:'✓ Kích hoạt',create_title:'＋ TẠO GIẢI ĐẤU',edit_title:'✏ CHỈNH SỬA',tourn_name:'Tên giải đấu *',game:'Trò chơi',format:'Thể thức',city:'Thành phố *',date:'Ngày *',prize:'Tổng giải thưởng *',entry:'Phí tham gia *',slots:'Số suất',desc:'Mô tả',btn_save:'💾 Lưu',btn_create2:'🚀 Tạo',btn_cancel:'Hủy',teams_title:'Người tham gia & Đội',all:'Tất cả',btn_reg_team:'＋ Đăng ký đội',team_name:'Tên đội *',captain:'Đội trưởng *',contact:'Số điện thoại',members:'Thành viên',tournament:'Giải đấu *',paid_lbl:'Đã thanh toán',btn_reg2:'Đăng ký',no_teams:'Chưa có đội',finance_title:'Tài chính',total_entry:'Tổng phí',comm_lbl:'Hoa hồng 15%',done:'Hoàn thành',settings_title:'Cài đặt',account:'TÀI KHOẢN',connected:'✓ Đã kết nối',bank_title:'💳 THÔNG TIN THANH TOÁN',bank_desc:'Hiển thị cho người tham gia.',bank_name:'Tên ngân hàng',acc_num:'Số tài khoản',acc_owner:'Tên chủ tài khoản',wa_confirm:'WhatsApp xác nhận',btn_save_bank:'💾 Lưu',saved:'✓ Đã lưu!',expansion:'MỞ RỘNG ĐÔNG NAM Á',prize_pool:'Tổng giải thưởng',slots_left:'Suất còn lại',slot_filled:'Suất đã đăng ký',about:'GIỚI THIỆU',reg_teams:'ĐỘI ĐÃ ĐĂNG KÝ',full:'❌ Hết suất',reg_now:'✅ Đăng ký ngay →',closed_msg:'ĐÃ ĐÓNG',reg_title:'ĐĂNG KÝ ĐỘI',pay_title:'CÁCH THANH TOÁN',amount:'Số tiền phí',transfer_to:'Chuyển khoản:',acc_no:'Số TK:',an:'Tên:',confirm_wa:'Xác nhận qua WA:',contact_org:'📱 Liên hệ',btn_submit:'🚀 Gửi',registering:'Đang đăng ký...',success_title:'THÀNH CÔNG!',success_msg:'đã đăng ký tham gia',back:'← Quay lại',back_detail:'← Xem chi tiết',rev_title:'📈 BÁO CÁO HOA HỒNG',rev_sub:'Thu nhập thực',saldo:'SỐ DƯ',income:'Thu nhập:',withdrawn:'Đã rút:',withdraw_btn:'💸 Rút tiền',withdraw_title:'💸 RÚT TIỀN',saldo_lbl:'SỐ DƯ',amount_lbl:'Số tiền',acc_lbl:'Tài khoản',btn_wd:'💸 Rút',comm_per:'HOA HỒNG THEO GIẢI',no_tourn_yet:'Tạo giải đấu đầu tiên!',online:'TRỰC TUYẾN',logout:'Đăng xuất',select_bank:'-- Chọn ngân hàng --',preview_lbl:'XEM TRƯỚC',lang_lbl:'Ngôn ngữ',edit:'✏ Sửa',profile_title:'HỒ SƠ',change_photo:'Nhấn để đổi ảnh',name_lbl:'Tên ban tổ chức',save_profile:'💾 Lưu',profile_saved:'✓ Đã lưu!'},
+  id:{nav:['Dashboard','Komisi','Turnamen','Buat','Peserta','Bracket','🔴 Live','🏅 Ranking','Keuangan','Setting'],login:'Masuk',register:'Daftar',email:'Email',password:'Password',community:'Nama Komunitas',btn_login:'🔑 Masuk',btn_register:'🚀 Buat Akun',dash_title:'Dashboard',dash_sub:'Overview realtime platform turnamen esport',active_t:'TURNAMEN AKTIF',revenue_lbl:'PENDAPATAN',quick:'AKSI CEPAT',btn_create:'＋ Buat Turnamen',btn_comm:'📈 Komisi',btn_part:'👥 Peserta',no_active:'Belum ada turnamen aktif',tourn_title:'Turnamen',btn_create_t:'＋ Buat',no_tourn:'TIDAK ADA TURNAMEN',share:'🔗 Bagikan',live_btn:'▶ Live',close_btn:'■ Tutup',activate:'✓ Aktif',create_title:'＋ BUAT TURNAMEN',edit_title:'✏ EDIT',tourn_name:'Nama Turnamen *',game:'Game',format:'Format',city:'Kota *',date:'Tanggal *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slot',desc:'Deskripsi',btn_save:'💾 Simpan',btn_create2:'🚀 Buat',btn_cancel:'Batal',teams_title:'Peserta & Tim',all:'Semua',btn_reg_team:'＋ Daftarkan Tim',team_name:'Nama Tim *',captain:'Kapten *',contact:'No. HP',members:'Member',tournament:'Turnamen *',paid_lbl:'Sudah bayar entry fee',btn_reg2:'Daftarkan',no_teams:'Belum ada tim',finance_title:'Keuangan',total_entry:'Total Entry',comm_lbl:'Komisi 15%',done:'Selesai',settings_title:'Pengaturan',account:'AKUN ORGANIZER',connected:'✓ Terhubung ke Supabase',bank_title:'💳 INFO PEMBAYARAN',bank_desc:'Data ini akan ditampilkan ke peserta saat mendaftar.',bank_name:'Nama Bank',acc_num:'Nomor Rekening / Nomor HP',acc_owner:'Nama Pemilik Rekening',wa_confirm:'No. WhatsApp Konfirmasi',btn_save_bank:'💾 Simpan Info Bank',saved:'✓ Tersimpan!',expansion:'EKSPANSI SEA',prize_pool:'Total Prize Pool',slots_left:'Slot Tersisa',slot_filled:'Slot Terisi',about:'TENTANG',reg_teams:'TIM TERDAFTAR',full:'❌ Slot Penuh',reg_now:'✅ Daftar Tim Sekarang →',closed_msg:'PENDAFTARAN DITUTUP',reg_title:'DAFTARKAN TIM',pay_title:'CARA PEMBAYARAN',amount:'Jumlah Entry Fee',transfer_to:'Transfer ke:',acc_no:'No. Rek:',an:'A/N:',confirm_wa:'Konfirmasi ke WA:',contact_org:'📱 Hubungi organizer',btn_submit:'🚀 Kirim',registering:'Mendaftarkan...',success_title:'BERHASIL!',success_msg:'terdaftar di',back:'← Kembali',back_detail:'← Lihat Detail',rev_title:'📈 LAPORAN KOMISI',rev_sub:'Pendapatan realtime',saldo:'SALDO TERSEDIA',income:'Masuk:',withdrawn:'Dicairkan:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'SALDO',amount_lbl:'Jumlah (Rp)',acc_lbl:'Rekening',btn_wd:'💸 Cairkan',comm_per:'KOMISI PER TURNAMEN',no_tourn_yet:'Buat turnamen pertamamu!',online:'ONLINE',logout:'Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PREVIEW PESERTA',lang_lbl:'Bahasa',edit:'✏ Edit',profile_title:'PROFIL ORGANIZER',change_photo:'Klik untuk ganti foto',name_lbl:'Nama Organizer',save_profile:'💾 Simpan Profil',profile_saved:'✓ Profil Tersimpan!'},
+  en:{nav:['Dashboard','Revenue','Tournaments','Create','Participants','Bracket','🔴 Live','🏅 Ranking','Finance','Settings'],login:'Login',register:'Register',email:'Email',password:'Password',community:'Community Name',btn_login:'🔑 Login',btn_register:'🚀 Create Account',dash_title:'Dashboard',dash_sub:'Realtime esport tournament platform overview',active_t:'ACTIVE TOURNAMENTS',revenue_lbl:'REVENUE',quick:'QUICK ACTIONS',btn_create:'＋ Create Tournament',btn_comm:'📈 Revenue',btn_part:'👥 Participants',no_active:'No active tournaments',tourn_title:'Tournaments',btn_create_t:'＋ Create',no_tourn:'NO TOURNAMENTS',share:'🔗 Share',live_btn:'▶ Live',close_btn:'■ Close',activate:'✓ Activate',create_title:'＋ CREATE TOURNAMENT',edit_title:'✏ EDIT',tourn_name:'Tournament Name *',game:'Game',format:'Format',city:'City *',date:'Start Date *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slots',desc:'Description',btn_save:'💾 Save',btn_create2:'🚀 Create',btn_cancel:'Cancel',teams_title:'Participants & Teams',all:'All',btn_reg_team:'＋ Register Team',team_name:'Team Name *',captain:'Captain *',contact:'Phone No.',members:'Members',tournament:'Tournament *',paid_lbl:'Entry fee paid',btn_reg2:'Register',no_teams:'No teams yet',finance_title:'Finance',total_entry:'Total Entry',comm_lbl:'Commission 15%',done:'Done',settings_title:'Settings',account:'ORGANIZER ACCOUNT',connected:'✓ Connected to Supabase',bank_title:'💳 PAYMENT INFO',bank_desc:'This info will be shown to participants.',bank_name:'Bank Name',acc_num:'Account / Phone Number',acc_owner:'Account Owner Name',wa_confirm:'WhatsApp Confirmation',btn_save_bank:'💾 Save Payment Info',saved:'✓ Saved!',expansion:'SEA EXPANSION',prize_pool:'Total Prize Pool',slots_left:'Slots Left',slot_filled:'Slots Filled',about:'ABOUT',reg_teams:'REGISTERED TEAMS',full:'❌ Full',reg_now:'✅ Register Now →',closed_msg:'REGISTRATION CLOSED',reg_title:'REGISTER TEAM',pay_title:'HOW TO PAY',amount:'Entry Fee Amount',transfer_to:'Transfer to:',acc_no:'Acc No:',an:'Name:',confirm_wa:'Confirm via WA:',contact_org:'📱 Contact organizer',btn_submit:'🚀 Submit',registering:'Registering...',success_title:'SUCCESS!',success_msg:'registered in',back:'← Back',back_detail:'← View Detail',rev_title:'📈 REVENUE REPORT',rev_sub:'Realtime earnings',saldo:'AVAILABLE BALANCE',income:'Income:',withdrawn:'Withdrawn:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'BALANCE',amount_lbl:'Amount',acc_lbl:'Account',btn_wd:'💸 Withdraw',comm_per:'COMMISSION PER TOURNAMENT',no_tourn_yet:'Create your first tournament!',online:'ONLINE',logout:'Logout',select_bank:'-- Select Bank --',preview_lbl:'PARTICIPANT PREVIEW',lang_lbl:'Language',edit:'✏ Edit',profile_title:'ORGANIZER PROFILE',change_photo:'Click to change photo',name_lbl:'Organizer Name',save_profile:'💾 Save Profile',profile_saved:'✓ Profile Saved!'},
+  fil:{nav:['Dashboard','Komisyon','Torneo','Gumawa','Kalahok','Bracket','🔴 Live','🏅 Ranking','Pananalapi','Setting'],login:'Mag-login',register:'Mag-register',email:'Email',password:'Password',community:'Pangalan ng Komunidad',btn_login:'🔑 Mag-login',btn_register:'🚀 Gumawa ng Account',dash_title:'Dashboard',dash_sub:'Real-time na pangkalahatang-ideya',active_t:'MGA AKTIBONG TORNEO',revenue_lbl:'KITA',quick:'MABILIS NA AKSYON',btn_create:'＋ Gumawa ng Torneo',btn_comm:'📈 Komisyon',btn_part:'👥 Kalahok',no_active:'Walang aktibong torneo',tourn_title:'Mga Torneo',btn_create_t:'＋ Gumawa',no_tourn:'WALANG TORNEO',share:'🔗 Ibahagi',live_btn:'▶ Live',close_btn:'■ Isara',activate:'✓ I-activate',create_title:'＋ GUMAWA NG TORNEO',edit_title:'✏ I-EDIT',tourn_name:'Pangalan ng Torneo *',game:'Laro',format:'Format',city:'Lungsod *',date:'Petsa *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Puwesto',desc:'Paglalarawan',btn_save:'💾 I-save',btn_create2:'🚀 Gumawa',btn_cancel:'Kanselahin',teams_title:'Mga Kalahok at Koponan',all:'Lahat',btn_reg_team:'＋ Mag-register',team_name:'Pangalan ng Koponan *',captain:'Kapitan *',contact:'Telepono',members:'Miyembro',tournament:'Torneo *',paid_lbl:'Nabayaran na',btn_reg2:'Mag-register',no_teams:'Walang koponan pa',finance_title:'Pananalapi',total_entry:'Kabuuang Entry',comm_lbl:'Komisyon 15%',done:'Tapos',settings_title:'Mga Setting',account:'ACCOUNT NG ORGANIZER',connected:'✓ Nakakonekta sa Supabase',bank_title:'💳 IMPORMASYON SA BAYAD',bank_desc:'Ipapakita sa mga kalahok.',bank_name:'Pangalan ng Bangko',acc_num:'Numero ng Account',acc_owner:'Pangalan ng May-ari',wa_confirm:'WhatsApp para sa Kumpirmasyon',btn_save_bank:'💾 I-save',saved:'✓ Na-save!',expansion:'PAGPAPALAWAK SA SEA',prize_pool:'Kabuuang Prize Pool',slots_left:'Natitirang Puwesto',slot_filled:'Napuno na Puwesto',about:'TUNGKOL SA',reg_teams:'MGA NAKAREHISTRONG KOPONAN',full:'❌ Puno na',reg_now:'✅ Mag-register Ngayon →',closed_msg:'SARADO NA',reg_title:'IREHISTRO ANG KOPONAN',pay_title:'PAANO MAGBAYAD',amount:'Halaga ng Entry Fee',transfer_to:'I-transfer sa:',acc_no:'Acc No:',an:'Pangalan:',confirm_wa:'Kumpirmahin sa WA:',contact_org:'📱 Makipag-ugnayan',btn_submit:'🚀 Isumite',registering:'Nagrerehistro...',success_title:'MATAGUMPAY!',success_msg:'nairehistro sa',back:'← Bumalik',back_detail:'← Tingnan',rev_title:'📈 ULAT NG KOMISYON',rev_sub:'Real-time na kita',saldo:'AVAILABLE NA BALANSE',income:'Kita:',withdrawn:'Na-withdraw:',withdraw_btn:'💸 I-withdraw',withdraw_title:'💸 I-WITHDRAW',saldo_lbl:'BALANSE',amount_lbl:'Halaga',acc_lbl:'Account',btn_wd:'💸 I-withdraw',comm_per:'KOMISYON BAWAT TORNEO',no_tourn_yet:'Gumawa ng iyong unang torneo!',online:'ONLINE',logout:'Mag-logout',select_bank:'-- Piliin ang Bangko --',preview_lbl:'PREVIEW NG KALAHOK',lang_lbl:'Wika',edit:'✏ I-edit',profile_title:'PROFILE NG ORGANIZER',change_photo:'I-click para palitan',name_lbl:'Pangalan ng Organizer',save_profile:'💾 I-save ang Profile',profile_saved:'✓ Na-save ang Profile!'},
+  vi:{nav:['Bảng điều khiển','Hoa hồng','Giải đấu','Tạo mới','Người tham gia','Bracket','🔴 Live','🏅 Xếp hạng','Tài chính','Cài đặt'],login:'Đăng nhập',register:'Đăng ký',email:'Email',password:'Mật khẩu',community:'Tên cộng đồng',btn_login:'🔑 Đăng nhập',btn_register:'🚀 Tạo tài khoản',dash_title:'Bảng điều khiển',dash_sub:'Tổng quan thời gian thực',active_t:'GIẢI ĐẤU ĐANG HOẠT ĐỘNG',revenue_lbl:'DOANH THU',quick:'THAO TÁC NHANH',btn_create:'＋ Tạo giải đấu',btn_comm:'📈 Hoa hồng',btn_part:'👥 Người tham gia',no_active:'Không có giải đấu',tourn_title:'Giải đấu',btn_create_t:'＋ Tạo',no_tourn:'KHÔNG CÓ GIẢI ĐẤU',share:'🔗 Chia sẻ',live_btn:'▶ Trực tiếp',close_btn:'■ Đóng',activate:'✓ Kích hoạt',create_title:'＋ TẠO GIẢI ĐẤU',edit_title:'✏ CHỈNH SỬA',tourn_name:'Tên giải đấu *',game:'Trò chơi',format:'Thể thức',city:'Thành phố *',date:'Ngày *',prize:'Tổng giải thưởng *',entry:'Phí tham gia *',slots:'Số suất',desc:'Mô tả',btn_save:'💾 Lưu',btn_create2:'🚀 Tạo',btn_cancel:'Hủy',teams_title:'Người tham gia & Đội',all:'Tất cả',btn_reg_team:'＋ Đăng ký đội',team_name:'Tên đội *',captain:'Đội trưởng *',contact:'Số điện thoại',members:'Thành viên',tournament:'Giải đấu *',paid_lbl:'Đã thanh toán',btn_reg2:'Đăng ký',no_teams:'Chưa có đội',finance_title:'Tài chính',total_entry:'Tổng phí',comm_lbl:'Hoa hồng 15%',done:'Hoàn thành',settings_title:'Cài đặt',account:'TÀI KHOẢN',connected:'✓ Đã kết nối',bank_title:'💳 THÔNG TIN THANH TOÁN',bank_desc:'Hiển thị cho người tham gia.',bank_name:'Tên ngân hàng',acc_num:'Số tài khoản',acc_owner:'Tên chủ tài khoản',wa_confirm:'WhatsApp xác nhận',btn_save_bank:'💾 Lưu',saved:'✓ Đã lưu!',expansion:'MỞ RỘNG ĐÔNG NAM Á',prize_pool:'Tổng giải thưởng',slots_left:'Suất còn lại',slot_filled:'Suất đã đăng ký',about:'GIỚI THIỆU',reg_teams:'ĐỘI ĐÃ ĐĂNG KÝ',full:'❌ Hết suất',reg_now:'✅ Đăng ký ngay →',closed_msg:'ĐÃ ĐÓNG',reg_title:'ĐĂNG KÝ ĐỘI',pay_title:'CÁCH THANH TOÁN',amount:'Số tiền phí',transfer_to:'Chuyển khoản:',acc_no:'Số TK:',an:'Tên:',confirm_wa:'Xác nhận qua WA:',contact_org:'📱 Liên hệ',btn_submit:'🚀 Gửi',registering:'Đang đăng ký...',success_title:'THÀNH CÔNG!',success_msg:'đã đăng ký tham gia',back:'← Quay lại',back_detail:'← Xem chi tiết',rev_title:'📈 BÁO CÁO HOA HỒNG',rev_sub:'Thu nhập thực',saldo:'SỐ DƯ',income:'Thu nhập:',withdrawn:'Đã rút:',withdraw_btn:'💸 Rút tiền',withdraw_title:'💸 RÚT TIỀN',saldo_lbl:'SỐ DƯ',amount_lbl:'Số tiền',acc_lbl:'Tài khoản',btn_wd:'💸 Rút',comm_per:'HOA HỒNG THEO GIẢI',no_tourn_yet:'Tạo giải đấu đầu tiên!',online:'TRỰC TUYẾN',logout:'Đăng xuất',select_bank:'-- Chọn ngân hàng --',preview_lbl:'XEM TRƯỚC',lang_lbl:'Ngôn ngữ',edit:'✏ Sửa',profile_title:'HỒ SƠ',change_photo:'Nhấn để đổi ảnh',name_lbl:'Tên ban tổ chức',save_profile:'💾 Lưu',profile_saved:'✓ Đã lưu!'},
   th:{nav:['แดชบอร์ด','ค่าคอมมิชชัน','ทัวร์นาเมนต์','สร้าง','ผู้เข้าร่วม','แบร็กเก็ต','การเงิน','ตั้งค่า'],login:'เข้าสู่ระบบ',register:'ลงทะเบียน',email:'อีเมล',password:'รหัสผ่าน',community:'ชื่อชุมชน',btn_login:'🔑 เข้าสู่ระบบ',btn_register:'🚀 สร้างบัญชี',dash_title:'แดชบอร์ด',dash_sub:'ภาพรวมแบบเรียลไทม์',active_t:'ทัวร์นาเมนต์ที่ใช้งาน',revenue_lbl:'รายได้',quick:'การดำเนินการด่วน',btn_create:'＋ สร้างทัวร์นาเมนต์',btn_comm:'📈 ค่าคอมมิชชัน',btn_part:'👥 ผู้เข้าร่วม',no_active:'ไม่มีทัวร์นาเมนต์',tourn_title:'ทัวร์นาเมนต์',btn_create_t:'＋ สร้าง',no_tourn:'ไม่มีทัวร์นาเมนต์',share:'🔗 แชร์',live_btn:'▶ ไลฟ์',close_btn:'■ ปิด',activate:'✓ เปิดใช้งาน',create_title:'＋ สร้างทัวร์นาเมนต์',edit_title:'✏ แก้ไข',tourn_name:'ชื่อ *',game:'เกม',format:'รูปแบบ',city:'เมือง *',date:'วันที่ *',prize:'รางวัล *',entry:'ค่าธรรมเนียม *',slots:'ที่นั่ง',desc:'คำอธิบาย',btn_save:'💾 บันทึก',btn_create2:'🚀 สร้าง',btn_cancel:'ยกเลิก',teams_title:'ผู้เข้าร่วมและทีม',all:'ทั้งหมด',btn_reg_team:'＋ ลงทะเบียนทีม',team_name:'ชื่อทีม *',captain:'กัปตัน *',contact:'โทรศัพท์',members:'สมาชิก',tournament:'ทัวร์นาเมนต์ *',paid_lbl:'ชำระแล้ว',btn_reg2:'ลงทะเบียน',no_teams:'ยังไม่มีทีม',finance_title:'การเงิน',total_entry:'ค่าธรรมเนียมรวม',comm_lbl:'ค่าคอมมิชชัน 15%',done:'เสร็จสิ้น',settings_title:'การตั้งค่า',account:'บัญชีผู้จัดงาน',connected:'✓ เชื่อมต่อแล้ว',bank_title:'💳 ข้อมูลการชำระเงิน',bank_desc:'แสดงให้ผู้เข้าร่วมเห็น',bank_name:'ชื่อธนาคาร',acc_num:'เลขบัญชี',acc_owner:'ชื่อเจ้าของบัญชี',wa_confirm:'WhatsApp ยืนยัน',btn_save_bank:'💾 บันทึก',saved:'✓ บันทึกแล้ว!',expansion:'การขยายตัวอาเซียน',prize_pool:'เงินรางวัลรวม',slots_left:'ที่นั่งที่เหลือ',slot_filled:'ที่นั่งที่จอง',about:'เกี่ยวกับ',reg_teams:'ทีมที่ลงทะเบียน',full:'❌ เต็มแล้ว',reg_now:'✅ ลงทะเบียน →',closed_msg:'ปิดรับสมัคร',reg_title:'ลงทะเบียนทีม',pay_title:'วิธีชำระ',amount:'จำนวนเงิน',transfer_to:'โอนไปที่:',acc_no:'เลขบัญชี:',an:'ชื่อ:',confirm_wa:'ยืนยันผ่าน WA:',contact_org:'📱 ติดต่อ',btn_submit:'🚀 ส่ง',registering:'กำลังลงทะเบียน...',success_title:'สำเร็จ!',success_msg:'ลงทะเบียนใน',back:'← กลับ',back_detail:'← ดูรายละเอียด',rev_title:'📈 รายงาน',rev_sub:'รายได้เรียลไทม์',saldo:'ยอดคงเหลือ',income:'รายรับ:',withdrawn:'ถอนออก:',withdraw_btn:'💸 ถอนเงิน',withdraw_title:'💸 ถอนเงิน',saldo_lbl:'ยอดคงเหลือ',amount_lbl:'จำนวน',acc_lbl:'บัญชี',btn_wd:'💸 ถอน',comm_per:'ค่าคอมมิชชันต่อทัวร์',no_tourn_yet:'สร้างทัวร์นาเมนต์แรก!',online:'ออนไลน์',logout:'ออกจากระบบ',select_bank:'-- เลือกธนาคาร --',preview_lbl:'ตัวอย่าง',lang_lbl:'ภาษา',edit:'✏ แก้ไข',profile_title:'โปรไฟล์',change_photo:'คลิกเพื่อเปลี่ยนรูป',name_lbl:'ชื่อผู้จัดงาน',save_profile:'💾 บันทึก',profile_saved:'✓ บันทึกแล้ว!'},
   zh:{nav:['仪表板','佣金','锦标赛','创建','参与者','对阵表','财务','设置'],login:'登录',register:'注册',email:'邮箱',password:'密码',community:'社区名称',btn_login:'🔑 登录',btn_register:'🚀 创建账户',dash_title:'仪表板',dash_sub:'实时概览',active_t:'进行中的锦标赛',revenue_lbl:'收入',quick:'快速操作',btn_create:'＋ 创建锦标赛',btn_comm:'📈 佣金',btn_part:'👥 参与者',no_active:'暂无锦标赛',tourn_title:'锦标赛',btn_create_t:'＋ 创建',no_tourn:'暂无锦标赛',share:'🔗 分享',live_btn:'▶ 直播',close_btn:'■ 关闭',activate:'✓ 激活',create_title:'＋ 创建锦标赛',edit_title:'✏ 编辑',tourn_name:'名称 *',game:'游戏',format:'格式',city:'城市 *',date:'日期 *',prize:'奖金池 *',entry:'报名费 *',slots:'名额',desc:'描述',btn_save:'💾 保存',btn_create2:'🚀 创建',btn_cancel:'取消',teams_title:'参与者和队伍',all:'全部',btn_reg_team:'＋ 注册队伍',team_name:'队伍名称 *',captain:'队长 *',contact:'电话',members:'成员',tournament:'锦标赛 *',paid_lbl:'已支付',btn_reg2:'注册',no_teams:'暂无队伍',finance_title:'财务',total_entry:'总报名费',comm_lbl:'佣金 15%',done:'已完成',settings_title:'设置',account:'主办方账户',connected:'✓ 已连接',bank_title:'💳 支付信息',bank_desc:'显示给参与者。',bank_name:'银行名称',acc_num:'账号',acc_owner:'账户持有人',wa_confirm:'WhatsApp 确认',btn_save_bank:'💾 保存',saved:'✓ 已保存!',expansion:'东南亚扩张',prize_pool:'总奖金池',slots_left:'剩余名额',slot_filled:'已报名',about:'关于',reg_teams:'已注册队伍',full:'❌ 已满',reg_now:'✅ 立即报名 →',closed_msg:'已截止',reg_title:'注册队伍',pay_title:'如何支付',amount:'金额',transfer_to:'转账至:',acc_no:'账号:',an:'姓名:',confirm_wa:'通过WA确认:',contact_org:'📱 联系主办方',btn_submit:'🚀 提交',registering:'注册中...',success_title:'成功!',success_msg:'已报名参加',back:'← 返回',back_detail:'← 查看详情',rev_title:'📈 佣金报告',rev_sub:'实时收入',saldo:'可用余额',income:'收入:',withdrawn:'已提现:',withdraw_btn:'💸 提现',withdraw_title:'💸 提现',saldo_lbl:'余额',amount_lbl:'金额',acc_lbl:'账户',btn_wd:'💸 提现',comm_per:'各锦标赛佣金',no_tourn_yet:'创建第一个锦标赛!',online:'在线',logout:'退出',select_bank:'-- 选择银行 --',preview_lbl:'参与者预览',lang_lbl:'语言',edit:'✏ 编辑',profile_title:'主办方资料',change_photo:'点击更换头像',name_lbl:'名称',save_profile:'💾 保存',profile_saved:'✓ 已保存!'},
-  ms:{nav:['Papan Pemuka','Komisen','Kejohanan','Cipta','Peserta','Bracket','🔴 Live','Kewangan','Tetapan'],login:'Log Masuk',register:'Daftar',email:'E-mel',password:'Kata Laluan',community:'Nama Komuniti',btn_login:'🔑 Log Masuk',btn_register:'🚀 Buat Akaun',dash_title:'Papan Pemuka',dash_sub:'Gambaran masa nyata',active_t:'KEJOHANAN AKTIF',revenue_lbl:'PENDAPATAN',quick:'TINDAKAN PANTAS',btn_create:'＋ Cipta Kejohanan',btn_comm:'📈 Komisen',btn_part:'👥 Peserta',no_active:'Tiada kejohanan aktif',tourn_title:'Kejohanan',btn_create_t:'＋ Cipta',no_tourn:'TIADA KEJOHANAN',share:'🔗 Kongsi',live_btn:'▶ Langsung',close_btn:'■ Tutup',activate:'✓ Aktifkan',create_title:'＋ CIPTA KEJOHANAN',edit_title:'✏ SUNTING',tourn_name:'Nama *',game:'Permainan',format:'Format',city:'Bandar *',date:'Tarikh *',prize:'Hadiah *',entry:'Yuran *',slots:'Slot',desc:'Penerangan',btn_save:'💾 Simpan',btn_create2:'🚀 Cipta',btn_cancel:'Batal',teams_title:'Peserta & Pasukan',all:'Semua',btn_reg_team:'＋ Daftar Pasukan',team_name:'Nama Pasukan *',captain:'Kapten *',contact:'Telefon',members:'Ahli',tournament:'Kejohanan *',paid_lbl:'Yuran dibayar',btn_reg2:'Daftar',no_teams:'Tiada pasukan',finance_title:'Kewangan',total_entry:'Jumlah Yuran',comm_lbl:'Komisen 15%',done:'Selesai',settings_title:'Tetapan',account:'AKAUN PENGANJUR',connected:'✓ Disambungkan',bank_title:'💳 MAKLUMAT BAYARAN',bank_desc:'Dipaparkan kepada peserta.',bank_name:'Nama Bank',acc_num:'Nombor Akaun',acc_owner:'Nama Pemilik',wa_confirm:'WhatsApp Pengesahan',btn_save_bank:'💾 Simpan',saved:'✓ Tersimpan!',expansion:'PENGEMBANGAN SEA',prize_pool:'Jumlah Hadiah',slots_left:'Slot Berbaki',slot_filled:'Slot Diisi',about:'TENTANG',reg_teams:'PASUKAN BERDAFTAR',full:'❌ Penuh',reg_now:'✅ Daftar Sekarang →',closed_msg:'PENDAFTARAN TUTUP',reg_title:'DAFTAR PASUKAN',pay_title:'CARA BAYAR',amount:'Jumlah Yuran',transfer_to:'Pindah ke:',acc_no:'No. Akaun:',an:'Nama:',confirm_wa:'Sahkan WA:',contact_org:'📱 Hubungi',btn_submit:'🚀 Hantar',registering:'Mendaftar...',success_title:'BERJAYA!',success_msg:'didaftarkan dalam',back:'← Kembali',back_detail:'← Lihat',rev_title:'📈 LAPORAN',rev_sub:'Pendapatan masa nyata',saldo:'BAKI',income:'Masuk:',withdrawn:'Keluar:',withdraw_btn:'💸 Keluarkan',withdraw_title:'💸 PENGELUARAN',saldo_lbl:'BAKI',amount_lbl:'Jumlah',acc_lbl:'Akaun',btn_wd:'💸 Keluarkan',comm_per:'KOMISEN PER KEJOHANAN',no_tourn_yet:'Cipta kejohanan pertama!',online:'DALAM TALIAN',logout:'Log Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PRATONTON',lang_lbl:'Bahasa',edit:'✏ Sunting',profile_title:'PROFIL PENGANJUR',change_photo:'Klik untuk tukar foto',name_lbl:'Nama Penganjur',save_profile:'💾 Simpan',profile_saved:'✓ Tersimpan!'},
+  ms:{nav:['Papan Pemuka','Komisen','Kejohanan','Cipta','Peserta','Bracket','🔴 Live','🏅 Kedudukan','Kewangan','Tetapan'],login:'Log Masuk',register:'Daftar',email:'E-mel',password:'Kata Laluan',community:'Nama Komuniti',btn_login:'🔑 Log Masuk',btn_register:'🚀 Buat Akaun',dash_title:'Papan Pemuka',dash_sub:'Gambaran masa nyata',active_t:'KEJOHANAN AKTIF',revenue_lbl:'PENDAPATAN',quick:'TINDAKAN PANTAS',btn_create:'＋ Cipta Kejohanan',btn_comm:'📈 Komisen',btn_part:'👥 Peserta',no_active:'Tiada kejohanan aktif',tourn_title:'Kejohanan',btn_create_t:'＋ Cipta',no_tourn:'TIADA KEJOHANAN',share:'🔗 Kongsi',live_btn:'▶ Langsung',close_btn:'■ Tutup',activate:'✓ Aktifkan',create_title:'＋ CIPTA KEJOHANAN',edit_title:'✏ SUNTING',tourn_name:'Nama *',game:'Permainan',format:'Format',city:'Bandar *',date:'Tarikh *',prize:'Hadiah *',entry:'Yuran *',slots:'Slot',desc:'Penerangan',btn_save:'💾 Simpan',btn_create2:'🚀 Cipta',btn_cancel:'Batal',teams_title:'Peserta & Pasukan',all:'Semua',btn_reg_team:'＋ Daftar Pasukan',team_name:'Nama Pasukan *',captain:'Kapten *',contact:'Telefon',members:'Ahli',tournament:'Kejohanan *',paid_lbl:'Yuran dibayar',btn_reg2:'Daftar',no_teams:'Tiada pasukan',finance_title:'Kewangan',total_entry:'Jumlah Yuran',comm_lbl:'Komisen 15%',done:'Selesai',settings_title:'Tetapan',account:'AKAUN PENGANJUR',connected:'✓ Disambungkan',bank_title:'💳 MAKLUMAT BAYARAN',bank_desc:'Dipaparkan kepada peserta.',bank_name:'Nama Bank',acc_num:'Nombor Akaun',acc_owner:'Nama Pemilik',wa_confirm:'WhatsApp Pengesahan',btn_save_bank:'💾 Simpan',saved:'✓ Tersimpan!',expansion:'PENGEMBANGAN SEA',prize_pool:'Jumlah Hadiah',slots_left:'Slot Berbaki',slot_filled:'Slot Diisi',about:'TENTANG',reg_teams:'PASUKAN BERDAFTAR',full:'❌ Penuh',reg_now:'✅ Daftar Sekarang →',closed_msg:'PENDAFTARAN TUTUP',reg_title:'DAFTAR PASUKAN',pay_title:'CARA BAYAR',amount:'Jumlah Yuran',transfer_to:'Pindah ke:',acc_no:'No. Akaun:',an:'Nama:',confirm_wa:'Sahkan WA:',contact_org:'📱 Hubungi',btn_submit:'🚀 Hantar',registering:'Mendaftar...',success_title:'BERJAYA!',success_msg:'didaftarkan dalam',back:'← Kembali',back_detail:'← Lihat',rev_title:'📈 LAPORAN',rev_sub:'Pendapatan masa nyata',saldo:'BAKI',income:'Masuk:',withdrawn:'Keluar:',withdraw_btn:'💸 Keluarkan',withdraw_title:'💸 PENGELUARAN',saldo_lbl:'BAKI',amount_lbl:'Jumlah',acc_lbl:'Akaun',btn_wd:'💸 Keluarkan',comm_per:'KOMISEN PER KEJOHANAN',no_tourn_yet:'Cipta kejohanan pertama!',online:'DALAM TALIAN',logout:'Log Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PRATONTON',lang_lbl:'Bahasa',edit:'✏ Sunting',profile_title:'PROFIL PENGANJUR',change_photo:'Klik untuk tukar foto',name_lbl:'Nama Penganjur',save_profile:'💾 Simpan',profile_saved:'✓ Tersimpan!'},
 }
 
 const LANG_OPTIONS=[
@@ -35,9 +35,19 @@ const saveProf=p=>{try{localStorage.setItem('arenagg_profile',JSON.stringify(p))
 const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Valorant','Clash Royale']
 const FORMATS=['Single Elimination','Double Elimination','Round Robin','Swiss']
 const fmtRp=n=>'Rp '+Number(n).toLocaleString('id-ID')
+const exportCSV=(rows,filename)=>{
+  const headers=Object.keys(rows[0]||{})
+  const csv=[headers.join(','),...rows.map(r=>headers.map(h=>JSON.stringify(r[h]??'')).join(','))].join('
+')
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'})
+  const url=URL.createObjectURL(blob)
+  const a=document.createElement('a')
+  a.href=url;a.download=filename;a.click()
+  URL.revokeObjectURL(url)
+}
 const uid=()=>Math.random().toString(36).slice(2,18)
-const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','live','finance','settings']
-const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','f':'finance','s':'settings'}
+const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','live','leaderboard','finance','settings']
+const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','l':'live','m':'leaderboard','f':'finance','s':'settings'}
 
 const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',sans-serif;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan);}50%{text-shadow:0 0 4px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 @keyframes scan-line{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
@@ -55,7 +65,13 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:
 .metric-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:1px;}
 .metric-up{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}
 .metric-down{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}
-.metric-neutral{background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);}.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:var(--trans);}.stat-card:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-3px);box-shadow:var(--shadow),var(--glow-cyan);cursor:pointer;}.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent-color,var(--cyan)),transparent);}.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;background:var(--accent-color,var(--cyan));opacity:0.04;border-radius:50%;transition:var(--trans);}.stat-card:hover::after{transform:scale(1.3);}.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-family:var(--fm);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}.tag-active{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.tag-pending{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.tag-closed{background:rgba(74,74,106,0.1);color:var(--muted);border:1px solid var(--border);}.tag-live{background:rgba(255,45,85,0.12);color:var(--red);border:1px solid rgba(255,45,85,0.35);animation:flicker 2s infinite;font-weight:900;}input,select,textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:var(--trans);}[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:rgba(0,0,0,0.03);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;}input:hover,select:hover,textarea:hover{border-color:var(--border2);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-icon{font-size:15px;line-height:1.2;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}`
+.metric-neutral{background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);}.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:var(--trans);}.stat-card:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-3px);box-shadow:var(--shadow),var(--glow-cyan);cursor:pointer;}.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent-color,var(--cyan)),transparent);}.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;background:var(--accent-color,var(--cyan));opacity:0.04;border-radius:50%;transition:var(--trans);}.stat-card:hover::after{transform:scale(1.3);}.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-family:var(--fm);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}.tag-active{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.tag-pending{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.tag-closed{background:rgba(74,74,106,0.1);color:var(--muted);border:1px solid var(--border);}.tag-live{background:rgba(255,45,85,0.12);color:var(--red);border:1px solid rgba(255,45,85,0.35);animation:flicker 2s infinite;font-weight:900;}input,select,textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:var(--trans);}[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:rgba(0,0,0,0.03);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;}input:hover,select:hover,textarea:hover{border-color:var(--border2);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.nav-live-dot{width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse 0.8s infinite;display:inline-block;margin-left:auto;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-icon{font-size:15px;line-height:1.2;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}
+@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
+.skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;}
+@keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
+.tooltip{position:relative;}.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:4px 8px;border-radius:4px;font-family:var(--fm);font-size:9px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:100;}.tooltip:hover::after{opacity:1;}
+[data-theme='light'] .skeleton{background:linear-gradient(90deg,rgba(0,0,0,0.04) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.04) 75%);}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:0.5px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text2);}`
 const styleEl=document.createElement('style');styleEl.textContent=css;document.head.appendChild(styleEl)
 // Add Google Fonts if not present
 if(!document.getElementById('arenagg-fonts')){const lk=document.createElement('link');lk.id='arenagg-fonts';lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(lk)}
@@ -342,6 +358,8 @@ function LiveMatchView({tournament,teams,toast,onBack}){
     const all=getScores()
     all[t.id]=newS
     saveScores(all)
+    // Broadcast to other tabs/windows
+    try{window.dispatchEvent(new StorageEvent('storage',{key:SCORES_KEY}))}catch(e){}
   }
 
   // Chat: send message
@@ -570,7 +588,13 @@ function PublicLivePage({tid,onBack,toast}){
       if(s[tid])setScores({...s[tid]})
       setChatHistory([...getChatHistory(tid)])
     },5000)
-    return()=>clearInterval(poll)
+    // Also listen for storage events (instant sync same browser)
+    const onStorage=()=>{
+      const s=getScores()
+      if(s[tid])setScores({...s[tid]})
+    }
+    window.addEventListener('storage',onStorage)
+    return()=>{clearInterval(poll);window.removeEventListener('storage',onStorage)}
   },[tid])
 
   const sendChat=()=>{
@@ -792,6 +816,114 @@ function LivePage({tournaments,teams,toast,lang}){
 }
 
 
+
+// ============================================================
+// LEADERBOARD — rankings & achievements  
+// ============================================================
+function Leaderboard({tournaments,teams,lang}){
+  const i=T[lang]||T.id
+  const[view,setView]=useState('teams') // teams | organizer
+  
+  // Team stats
+  const teamStats=teams.map(t=>{
+    const tourn=tournaments.find(x=>x.id===t.tournament_id)
+    return{...t,tournName:tourn?.name||'—',game:tourn?.game||'—',prize:tourn?.prize||0}
+  })
+  const paidTeams=teamStats.filter(t=>t.paid).sort((a,b)=>b.prize-a.prize)
+  
+  // Game stats
+  const gameCount={}
+  tournaments.forEach(t=>{if(t.game)gameCount[t.game]=(gameCount[t.game]||0)+1})
+  const topGames=Object.entries(gameCount).sort((a,b)=>b[1]-a[1])
+  
+  // City stats
+  const cityCount={}
+  tournaments.forEach(t=>{if(t.city)cityCount[t.city]=(cityCount[t.city]||0)+1})
+  const topCities=Object.entries(cityCount).sort((a,b)=>b[1]-a[1]).slice(0,5)
+  
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
+  
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:900}}>
+    <div style={{marginBottom:20}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>🏅 Leaderboard</h1>
+      <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>RANKING TIM & STATISTIK PLATFORM</p>
+    </div>
+    
+    {/* OVERVIEW STATS */}
+    <div className="g4" style={{marginBottom:20}}>
+      {[
+        {icon:'🏆',label:'Total Turnamen',val:tournaments.length,color:'var(--cyan)'},
+        {icon:'👥',label:'Total Tim',val:teams.length,color:'var(--green)'},
+        {icon:'✅',label:'Tim Lunas',val:teams.filter(t=>t.paid).length,color:'var(--yellow)'},
+        {icon:'🎮',label:'Jenis Game',val:Object.keys(gameCount).length,color:'var(--orange)'},
+      ].map((s,idx)=>(
+        <div key={idx} className="stat-card" style={{'--accent-color':s.color}}>
+          <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:s.color,marginTop:4}}>{s.val}</div>
+        </div>
+      ))}
+    </div>
+
+    <div className="g2" style={{gap:14}}>
+      {/* TOP TEAMS */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:14}}>🏅 TOP TIM (BERDASAR PRIZE)</div>
+        {paidTeams.length===0
+          ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>Belum ada tim yang lunas</div>
+          :paidTeams.slice(0,10).map((t,idx)=>(
+            <div key={t.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:idx<paidTeams.length-1?'1px solid rgba(255,255,255,0.03)':'none'}}>
+              <span style={{fontSize:18,flexShrink:0,width:28,textAlign:'center'}}>{medals[idx]||`${idx+1}`}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:13,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.name}</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>👤 {t.captain} · 🎮 {t.game}</div>
+              </div>
+              <div style={{textAlign:'right',flexShrink:0}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)'}}>Rp {Number(t.prize).toLocaleString('id-ID')}</div>
+                <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>{t.tournName.slice(0,16)}</div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        {/* TOP GAMES */}
+        <div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>🎮 GAME TERPOPULER</div>
+          {topGames.length===0
+            ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:12}}>Belum ada data</div>
+            :topGames.map(([game,count],idx)=>{
+              const maxCount=topGames[0][1]||1
+              return <div key={game} style={{marginBottom:10}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span style={{fontSize:12,fontWeight:600}}>{game}</span>
+                  <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)'}}>{count} turnamen</span>
+                </div>
+                <div className="pbar"><div className="pfill" style={{width:`${Math.round(count/maxCount*100)}%`,background:'linear-gradient(90deg,var(--cyan),var(--orange))'}}/></div>
+              </div>
+            })
+          }
+        </div>
+
+        {/* TOP CITIES */}
+        <div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>📍 KOTA TERBANYAK</div>
+          {topCities.length===0
+            ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:12}}>Belum ada data</div>
+            :topCities.map(([city,count],idx)=>(
+              <div key={city} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                <span style={{fontSize:12,fontWeight:600}}>{medals[idx]} {city}</span>
+                <span className="badge badge-cyan" style={{fontSize:9}}>{count}x</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
 // QR memakai Google Charts API — dijamin berfungsi
 function QRImg({value,size=155}){
   const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=8`
@@ -809,7 +941,11 @@ function AuthPage({onLogin,lang,setLangFn}){
   const[err,setErr]=useState('')
   const[showPass,setShowPass]=useState(false)
   const submit=async()=>{
-    setErr('');setL(true)
+    setErr('');
+    if(!email.includes('@')||!email.includes('.')){setErr('Format email tidak valid.');return}
+    if(pass.length<6){setErr('Password minimal 6 karakter.');return}
+    if(mode==='register'&&pass.length<8){setErr('Password minimal 8 karakter untuk akun baru.');return}
+    setL(true)
     try{
       if(mode==='login'){
         const{data,error}=await supabase.auth.signInWithPassword({email,password:pass})
@@ -818,10 +954,10 @@ function AuthPage({onLogin,lang,setLangFn}){
       } else {
         const{data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{organizer_name:name||email.split('@')[0]}}})
         if(error)throw error
-        if(data.user&&!data.session){setErr('Cek email untuk konfirmasi akun.');setMode('login')}
+        if(data.user&&!data.session){setErr('✓ Registrasi berhasil! Cek email kamu untuk konfirmasi akun.');setMode('login')}
         else if(data.user)onLogin(data.user)
       }
-    }catch(e){setErr(e.message||'Error')}
+    }catch(e){setErr(e.message==='Invalid login credentials'?'Email atau password salah.':e.message||'Terjadi error, coba lagi.')}
     setL(false)
   }
   return <div className="auth-bg" style={{position:'relative',overflow:'hidden'}}>
@@ -1043,7 +1179,7 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
   const prof=getProf()
   const name=prof.name||user?.user_metadata?.organizer_name||user?.email?.split('@')[0]||'Organizer'
   const photo=prof.photo||null
-  const NAV=[{icon:'⚡'},{icon:'📈'},{icon:'🏆'},{icon:'＋'},{icon:'👥'},{icon:'📊'},{icon:'🔴'},{icon:'💰'},{icon:'⚙'}]
+  const NAV=[{icon:'⚡'},{icon:'📈'},{icon:'🏆'},{icon:'＋'},{icon:'👥'},{icon:'📊'},{icon:'🔴'},{icon:'🏅'},{icon:'💰'},{icon:'⚙'}]
   // Keyboard shortcuts
   useEffect(()=>{
     const handler=e=>{
@@ -1069,6 +1205,8 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
         <span className="nav-icon">{NAV[idx].icon}</span>
         <span>{i.nav[idx]}</span>
         {id==='tournaments'&&(hasLive?<span style={{marginLeft:'auto',width:6,height:6,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>:<span style={{marginLeft:'auto',fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',background:'rgba(255,255,255,0.05)',padding:'1px 5px',borderRadius:8}}>{tournaments?.length||''}</span>)}
+          {id==='live'&&hasLive&&<span className="nav-live-dot"/>}
+          {id==='leaderboard'&&<span style={{marginLeft:'auto',fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',background:'rgba(255,255,255,0.05)',padding:'1px 5px',borderRadius:8}}>{(tournaments||[]).length}</span>}
       </button>)}
     </nav>
     <div style={{padding:'10px 13px',borderTop:'1px solid var(--border)'}}>
@@ -1177,7 +1315,10 @@ function Dashboard({tournaments,teams,setPage,loading,lang}){
         }
       </div>
       <div className="card">
-        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>{i.revenue_lbl}</div>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1}}>{i.revenue_lbl}</div>
+        <button onClick={()=>setPage('revenue')} style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',background:'none',border:'none',cursor:'pointer',letterSpacing:1}}>Ver todo →</button>
+      </div>
         {[{l:i.comm_lbl,v:totalRev*0.7,p:70,c:'var(--cyan)'},{l:'Sponsorship',v:totalRev*0.2,p:20,c:'var(--orange)'},{l:'Premium',v:totalRev*0.1,p:10,c:'var(--green)'}].map(r=><div key={r.l} style={{marginBottom:11}}>
           <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,fontSize:11}}>
             <span style={{color:'var(--muted)',fontFamily:'var(--fm)',fontSize:9}}>{r.l}</span>
@@ -1194,6 +1335,7 @@ function Dashboard({tournaments,teams,setPage,loading,lang}){
         <button className="btn btn-orange" onClick={()=>setPage('revenue')} style={{flex:'1 1 auto'}}>{i.btn_comm}</button>
         <button className="btn btn-ghost" onClick={()=>setPage('teams')} style={{flex:'1 1 auto'}}>{i.btn_part}</button>
         <button className="btn btn-dark" onClick={()=>setPage('tournaments')} style={{flex:'1 1 auto'}}>🏆 {i.tourn_title}</button>
+        <button className="btn btn-dark" onClick={()=>setPage('leaderboard')} style={{flex:'1 1 auto'}}>🏅 Ranking</button>
       </div>
       <div style={{borderTop:'1px solid var(--border)',paddingTop:14}}>
         <div style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:10}}>RINGKASAN STATUS</div>
@@ -1406,10 +1548,12 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
         <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>{i.teams_title}</h1>
         <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{filtered.length} TIM · <span style={{color:'var(--green)'}}>{paidCount} LUNAS</span> · <span style={{color:'var(--orange)'}}>{filtered.length-paidCount} BELUM</span></p>
       </div>
-      <div style={{display:'flex',gap:8,alignItems:'center'}}>
+      <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Cari tim/kapten..." style={{width:160,padding:'7px 12px',fontSize:12}}/>
         <button onClick={()=>setViewMode(v=>v==='table'?'cards':'table')} className="btn btn-dark btn-sm" style={{padding:'6px 10px'}}>{viewMode==='table'?'⊞ Cards':'☰ Tabel'}</button>
+        <button onClick={()=>exportCSV(filtered.map(t=>({Nama:t.name,Kapten:t.captain,Kontak:t.contact,Members:t.members,Bayar:t.paid?'Lunas':'Belum',Turnamen:tournaments.find(x=>x.id===t.tournament_id)?.name||'—'})),'data-peserta.csv')} className="btn btn-dark btn-sm" style={{fontSize:9}}>📥 CSV</button>
         <button className="btn btn-cyan" onClick={()=>setShowAdd(!showAdd)}>{i.btn_reg_team}</button>
+        {filtered.filter(t=>!t.paid).length>0&&<button className="btn btn-ghost btn-sm" style={{fontSize:9}} onClick={()=>{if(window.confirm&&window.confirm(`Tandai semua ${filtered.filter(t=>!t.paid).length} tim sebagai lunas?`))filtered.filter(t=>!t.paid).forEach(t=>updateTeam(t.id,{paid:true}))}} title="Tandai semua lunas">✓✓ Semua Lunas</button>}
       </div>
     </div>
     {/* Tournament filter tabs */}
@@ -1506,184 +1650,13 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
 
 function Finance({tournaments,teams,lang}){
   const i=T[lang]||T.id
-  const rows=tournaments.map(t=>{const p=teams.filter(x=>x.tournament_id===t.id&&x.paid).length;const total=teams.filter(x=>x.tournament_id===t.id).length;const g=p*Number(t.entry);return{...t,paidCount:p,totalTeams:total,gross:g,commission:g*0.15}})
-  const tG=rows.reduce((s,r)=>s+r.gross,0),tC=rows.reduce((s,r)=>s+r.commission,0)
-  const tPaid=rows.reduce((s,r)=>s+r.paidCount,0),tTeams=rows.reduce((s,r)=>s+r.totalTeams,0)
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{marginBottom:20}}>
-      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.finance_title}</h1>
-      <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>LAPORAN KEUANGAN TURNAMEN</p>
-    </div>
-    <div className="g4" style={{marginBottom:20}}>
-      {[
-        {icon:'💰',label:'Total Entry',value:fmtRp(tG),color:'var(--cyan)'},
-        {icon:'📈',label:'Komisi 15%',value:fmtRp(tC),color:'var(--green)'},
-        {icon:'✓',label:'Tim Lunas',value:tPaid+' / '+tTeams,color:'var(--yellow)'},
-        {icon:'🏆',label:'Turnamen',value:rows.length,color:'var(--orange)'},
-      ].map((s,idx)=><div key={idx} className="stat-card" style={{'--accent-color':s.color}}>
-        <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
-        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
-        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:s.color,marginTop:4}}>{s.value}</div>
-      </div>)}
-    </div>
-    <div className="card">
-      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>DETAIL PER TURNAMEN</div>
-      {rows.length===0?<div style={{textAlign:'center',padding:'30px',color:'var(--muted)'}}><div style={{fontSize:28,marginBottom:8}}>💰</div><div style={{fontFamily:'var(--fm)',fontSize:10,letterSpacing:2}}>BELUM ADA DATA</div></div>
-      :rows.map((r,idx)=>{const payPct=r.totalTeams>0?Math.round(r.paidCount/r.totalTeams*100):0;return <div key={r.id} style={{padding:'14px 0',borderBottom:idx<rows.length-1?'1px solid var(--border)':'none'}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
-          <div>
-            <div style={{fontWeight:700,fontSize:14}}>{r.name}</div>
-            <div style={{fontSize:11,color:'var(--muted)',marginTop:2}}>🎮 {r.game} · 📍 {r.city}</div>
-          </div>
-          <div style={{textAlign:'right'}}>
-            <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)'}}>{fmtRp(r.commission)}</div>
-            <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>KOMISI</div>
-          </div>
-        </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:8}}>
-          <div><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)'}}>ENTRY FEE</div><div style={{fontSize:12,fontWeight:600}}>{fmtRp(r.entry)}/tim</div></div>
-          <div><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)'}}>TIM LUNAS</div><div style={{fontSize:12,fontWeight:600,color:r.paidCount>0?'var(--green)':'var(--muted)'}}>{r.paidCount}/{r.totalTeams}</div></div>
-          <div><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)'}}>TOTAL MASUK</div><div style={{fontSize:12,fontWeight:600,color:'var(--yellow)'}}>{fmtRp(r.gross)}</div></div>
-        </div>
-        <div className="pbar"><div className="pfill" style={{width:payPct+'%',background:payPct>=80?'var(--green)':payPct>=50?'var(--cyan)':'var(--orange)'}}/></div>
-        <div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--muted)',marginTop:4,textAlign:'right'}}>{payPct}% LUNAS</div>
-      </div>})}
-    </div>
-  </div>
-}
-
-function RevenuePage({tournaments,teams,toast,lang}){
-  const i=T[lang]||T.id
-  const[showWd,setShowWd]=useState(false);const[wdAmt,setWdAmt]=useState('');const[wdH,setWdH]=useState([{id:'w1',date:'2026-05-28',amount:450000,status:'cair',method:'BCA 1234xxxx'}])
-  const rows=tournaments.map(t=>{const p=teams.filter(x=>x.tournament_id===t.id&&x.paid).length;const g=p*Number(t.entry);return{...t,comm:g*0.15,sp:t.status==='closed'?Number(t.prize)*0.08:0,pr:t.status!=='pending'?50000:0}})
-  const tC=rows.reduce((s,r)=>s+r.comm,0),grand=rows.reduce((s,r)=>s+r.comm+r.sp+r.pr,0),totalWd=wdH.reduce((s,w)=>s+w.amount,0),saldo=grand-totalWd
-  const doWd=()=>{const a=Number(wdAmt);if(!a||a<10000){toast('Min Rp10.000','error');return;}if(a>saldo){toast('Saldo tidak cukup!','error');return;}setWdH(p=>[{id:uid(),date:new Date().toISOString().slice(0,10),amount:a,status:'proses',method:'BCA'},...p]);toast(`${fmtRp(a)} sedang diproses ✓`,'success');setWdAmt('');setShowWd(false)}
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:18,flexWrap:'wrap',gap:11}}>
-      <div><h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700,color:'var(--cyan)'}}>{i.rev_title}</h1><p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)',letterSpacing:1}}>{i.rev_sub}</p></div>
-      <button className="btn btn-orange" onClick={()=>setShowWd(true)}>{i.withdraw_btn}</button>
-    </div>
-    <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:10,padding:20,marginBottom:16,position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',top:10,right:12,fontSize:9,fontFamily:'var(--fm)',color:'var(--cyan)',letterSpacing:1,display:'flex',alignItems:'center',gap:4}}><span className="live-dot"/>REALTIME</div>
-      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:5}}>{i.saldo}</div>
-      <div style={{fontFamily:'var(--fh)',fontSize:26,fontWeight:900,color:'var(--cyan)',marginBottom:3}}>{fmtRp(saldo)}</div>
-      <div style={{fontSize:11,color:'var(--muted)',fontFamily:'var(--fm)'}}>{i.income} <span style={{color:'var(--green)'}}>{fmtRp(grand)}</span> · {i.withdrawn} <span style={{color:'var(--orange)'}}>{fmtRp(totalWd)}</span></div>
-    </div>
-    <div className="g4" style={{marginBottom:16}}>
-      <div className="stat-card" style={{'--accent-color':'var(--cyan)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>🎫 {i.comm_lbl}</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',fontWeight:900}}>{fmtRp(tC)}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--orange)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>🏅 Sponsorship</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--orange)',fontWeight:900}}>{fmtRp(rows.reduce((s,r)=>s+r.sp,0))}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--green)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>⭐ Premium</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--green)',fontWeight:900}}>{fmtRp(rows.reduce((s,r)=>s+r.pr,0))}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--yellow)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>📊 {i.tourn_title}</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--yellow)',fontWeight:900}}>{tournaments.length}</div></div>
-    </div>
-    <div className="card" style={{marginBottom:14}}>
-      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>{i.comm_per}</div>
-      {rows.length===0&&<div style={{color:'var(--muted)',fontSize:12,textAlign:'center',padding:'18px 0'}}>{i.no_tourn_yet}</div>}
-      {[...rows].sort((a,b)=>(b.comm+b.sp+b.pr)-(a.comm+a.sp+a.pr)).map((r,idx)=>{const total=r.comm+r.sp+r.pr;const mx=rows.reduce((m,x)=>Math.max(m,x.comm+x.sp+x.pr),1);return <div key={r.id} style={{marginBottom:11}}>
-        <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,flexWrap:'wrap',gap:3}}>
-          <div style={{display:'flex',gap:7,alignItems:'center'}}><span style={{fontFamily:'var(--fm)',fontSize:9,color:idx===0?'var(--yellow)':'var(--muted)',width:14}}>#{idx+1}</span><div style={{fontSize:13,fontWeight:600}}>{r.name}</div></div>
-          <div style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--cyan)'}}>{fmtRp(total)}</div>
-        </div>
-        <div className="pbar"><div className="pfill" style={{width:`${(total/mx)*100}%`,background:idx===0?'var(--yellow)':'var(--cyan)'}}/></div>
-      </div>})}
-    </div>
-    {showWd&&<div className="overlay" onClick={e=>{if(e.target===e.currentTarget)setShowWd(false)}}>
-      <div className="modal" style={{maxWidth:360}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--orange)',letterSpacing:1}}>{i.withdraw_title}</div><button onClick={()=>setShowWd(false)} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:20}}>×</button></div>
-        <div style={{background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:6,padding:'11px 13px',marginBottom:13}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:3,letterSpacing:1}}>{i.saldo_lbl}</div><div style={{fontFamily:'var(--fh)',fontSize:19,color:'var(--cyan)',fontWeight:700}}>{fmtRp(saldo)}</div></div>
-        <div style={{marginBottom:11}}><label>{i.amount_lbl}</label><input type="number" value={wdAmt} onChange={e=>setWdAmt(e.target.value)} placeholder="Min Rp 10.000"/></div>
-        <div style={{marginBottom:16}}><label>{i.acc_lbl}</label><input value="BCA 1234xxxx" readOnly style={{color:'var(--muted)'}}/></div>
-        <div style={{display:'flex',gap:8}}><button className="btn btn-orange btn-full" onClick={doWd}>{i.btn_wd}</button><button className="btn btn-ghost" onClick={()=>setShowWd(false)}>{i.btn_cancel}</button></div>
-      </div>
-    </div>}
-  </div>
-}
-
-function BracketView({tournaments,teams,lang}){
-  const i=T[lang]||T.id
-  const[selT,setSelT]=useState(tournaments[0]?.id||'')
-  const[winMap,setWinMap]=useState({})
-  const t=tournaments.find(x=>x.id===selT)
-  const tTeams=teams.filter(x=>x.tournament_id===selT)
-  const pairs=[]
-  for(let k=0;k<Math.min(tTeams.length,16);k+=2)pairs.push({id:k,a:tTeams[k],b:tTeams[k+1]})
-  const setWin=(pairId,teamId)=>setWinMap(m=>({...m,[pairId]:teamId}))
-  const winners=pairs.map(p=>p.a&&p.b?winMap[p.id]||null:p.a?.id||null).filter(Boolean)
-  const sf_pairs=[];for(let k=0;k<Math.min(winners.length,4);k+=2)sf_pairs.push({id:'sf'+k,a:tTeams.find(x=>x.id===winners[k]),b:tTeams.find(x=>x.id===winners[k+1])})
-  const finalW=winMap['sf0'];const finalTeam=tTeams.find(x=>x.id===finalW)
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:10}}>
-      <div>
-        <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>📊 {i.nav[5]}</h1>
-        <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{tTeams.length} TIM TERDAFTAR</p>
-      </div>
-      {finalTeam&&<div style={{display:'flex',alignItems:'center',gap:10,padding:'8px 16px',background:'linear-gradient(135deg,rgba(255,215,0,0.12),rgba(255,107,0,0.08))',border:'1px solid rgba(255,215,0,0.3)',borderRadius:8}}>
-        <span style={{fontSize:20}}>🏆</span>
-        <div><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:1}}>JUARA</div><div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700}}>{finalTeam.name}</div></div>
-      </div>}
-    </div>
-    <div style={{display:'flex',gap:6,marginBottom:16,flexWrap:'wrap'}}>
-      {tournaments.map(x=><button key={x.id} onClick={()=>{setSelT(x.id);setWinMap({})}} style={{padding:'5px 13px',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,border:'1px solid',letterSpacing:1,transition:'var(--trans)',background:selT===x.id?'var(--cyan)':'transparent',color:selT===x.id?'#000':'var(--muted)',borderColor:selT===x.id?'var(--cyan)':'var(--border)'}}>{x.name}</button>)}
-    </div>
-    {!t?<div className="card" style={{textAlign:'center',padding:'48px 20px',color:'var(--muted)'}}>
-          <div style={{fontSize:48,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>📊</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:8}}>PILIH TURNAMEN</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:16}}>Pilih turnamen dari tab di atas untuk melihat bracket</div>
-        </div>
-    :<div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr auto 1fr',gap:0,alignItems:'flex-start',overflowX:'auto',paddingBottom:16}}>
-      {/* ROUND 1 */}
-      <div>
-        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12,textAlign:'center',padding:'4px 0',borderBottom:'1px solid var(--border)'}}>BABAK 1</div>
-        <div style={{display:'flex',flexDirection:'column',gap:8}}>
-          {pairs.length===0?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:16}}>Belum ada tim</div>
-          :pairs.map((p,idx)=><div key={p.id} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:8,overflow:'hidden',transition:'var(--trans)'}}>
-            {[p.a,p.b].map((team,ti)=><div key={ti} onClick={()=>team&&p.b&&setWin(p.id,team?.id)} style={{padding:'8px 12px',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:team&&p.b?'pointer':'default',borderBottom:ti===0?'1px solid var(--border)':'none',background:winMap[p.id]===team?.id?'rgba(0,255,136,0.08)':winMap[p.id]&&winMap[p.id]!==team?.id?'rgba(74,74,106,0.06)':'transparent',transition:'background 0.2s'}}>
-              <span style={{fontSize:12,fontWeight:600,color:winMap[p.id]===team?.id?'var(--green)':winMap[p.id]&&winMap[p.id]!==team?.id?'var(--muted)':'var(--text)'}}>{team?team.name:<span style={{color:'var(--muted)',fontStyle:'italic'}}>BYE</span>}</span>
-              {winMap[p.id]===team?.id&&<span style={{fontSize:10,color:'var(--green)'}}>✓</span>}
-            </div>)}
-          </div>)}
-        </div>
-      </div>
-      {/* CONNECTOR 1→SF */}
-      <div style={{display:'flex',alignItems:'center',padding:'0 8px',marginTop:32}}><div style={{width:24,height:1,background:'var(--border)'}}/></div>
-      {/* SEMIFINAL */}
-      <div>
-        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,marginBottom:12,textAlign:'center',padding:'4px 0',borderBottom:'1px solid var(--border)'}}>SEMIFINAL</div>
-        <div style={{display:'flex',flexDirection:'column',gap:8,marginTop:24}}>
-          {sf_pairs.length===0?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:16}}>Menunggu hasil R1</div>
-          :sf_pairs.map((p,idx)=><div key={p.id} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:8,overflow:'hidden'}}>
-            {[p.a,p.b].map((team,ti)=><div key={ti} onClick={()=>team&&p.b&&setWin(p.id,team?.id)} style={{padding:'8px 12px',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:team&&p.b?'pointer':'default',borderBottom:ti===0?'1px solid var(--border)':'none',background:winMap[p.id]===team?.id?'rgba(0,255,136,0.08)':'transparent',transition:'background 0.2s'}}>
-              <span style={{fontSize:12,fontWeight:600,color:winMap[p.id]===team?.id?'var(--green)':'var(--text)'}}>{team?team.name:<span style={{color:'var(--muted)',fontStyle:'italic'}}>TBD</span>}</span>
-              {winMap[p.id]===team?.id&&<span style={{fontSize:10,color:'var(--green)'}}>✓</span>}
-            </div>)}
-          </div>)}
-        </div>
-      </div>
-      {/* CONNECTOR SF→F */}
-      <div style={{display:'flex',alignItems:'center',padding:'0 8px',marginTop:32}}><div style={{width:24,height:1,background:'var(--border)'}}/></div>
-      {/* FINAL */}
-      <div>
-        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:2,marginBottom:12,textAlign:'center',padding:'4px 0',borderBottom:'1px solid rgba(255,215,0,0.3)'}}>🏆 FINAL</div>
-        <div style={{marginTop:60}}>
-          <div style={{background:finalW?'linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.08))':'var(--panel)',border:`1px solid ${finalW?'rgba(255,215,0,0.4)':'var(--border)'}`,borderRadius:8,overflow:'hidden',transition:'all 0.4s'}}>
-            {[sf_pairs[0]?.a,sf_pairs[0]?.b].map((team,ti)=><div key={ti} onClick={()=>team&&sf_pairs[0]?.b&&setWin('sf0',team?.id)} style={{padding:'10px 14px',display:'flex',justifyContent:'space-between',alignItems:'center',cursor:team&&sf_pairs[0]?.b?'pointer':'default',borderBottom:ti===0?'1px solid var(--border)':'none',background:winMap['sf0']===team?.id?'rgba(255,215,0,0.08)':'transparent',transition:'background 0.2s'}}>
-              <span style={{fontSize:13,fontWeight:700,color:winMap['sf0']===team?.id?'var(--yellow)':'var(--text)'}}>{team?team.name:<span style={{color:'var(--muted)',fontStyle:'italic'}}>TBD</span>}</span>
-              {winMap['sf0']===team?.id&&<span style={{fontSize:14}}>🏆</span>}
-            </div>)}
-          </div>
-          {finalTeam&&<div style={{textAlign:'center',marginTop:10,fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,animation:'glow-pulse 3s infinite'}}>⚔ JUARA: {finalTeam.name}</div>}
-        </div>
-      </div>
-    </div>}
-    <div style={{marginTop:16,padding:'10px 14px',background:'rgba(0,229,255,0.04)',borderRadius:7,border:'1px solid rgba(0,229,255,0.1)',fontSize:11,color:'var(--muted)',fontFamily:'var(--fm)'}}>💡 Klik nama tim untuk menentukan pemenang</div>
-  </div>
-}
-
-function Finance({tournaments,teams,lang}){
-  const i=T[lang]||T.id
   const rows=tournaments.map(t=>{const p=teams.filter(x=>x.tournament_id===t.id&&x.paid).length;const g=p*Number(t.entry);return{...t,paid:p,gross:g,commission:g*0.15}})
   const tG=rows.reduce((s,r)=>s+r.gross,0),tC=rows.reduce((s,r)=>s+r.commission,0)
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{marginBottom:16}}><h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.finance_title}</h1></div>
+    <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.finance_title}</h1>
+      <button className="btn btn-dark btn-sm" onClick={()=>exportCSV(rows.map(r=>({Turnamen:r.name,Game:r.game,'Masuk':r.gross,'Komisi':r.commission,Status:r.status})),'laporan.csv')} style={{fontSize:9}}>📥 Export CSV</button>
+    </div>
     <div className="g3" style={{marginBottom:16}}>
       <div className="stat-card" style={{'--accent-color':'var(--cyan)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>💵 {i.total_entry}</div><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',fontWeight:900}}>{fmtRp(tG)}</div></div>
       <div className="stat-card" style={{'--accent-color':'var(--orange)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🏦 {i.comm_lbl}</div><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--orange)',fontWeight:900}}>{fmtRp(tC)}</div></div>
@@ -2076,11 +2049,13 @@ export default function App(){
         {page==='teams'&&<div className='animate-in'><TeamsView {...sharedProps}/></div>}
         {page==='bracket'&&<div className='animate-in'><BracketView {...sharedProps}/></div>}
         {page==='live'&&<div className='animate-in'><LivePage {...sharedProps} toast={toast}/></div>}
+        {page==='leaderboard'&&<div className='animate-in'><Leaderboard {...sharedProps}/></div>}
         {page==='finance'&&<div className='animate-in'><Finance {...sharedProps}/></div>}
         {page==='settings'&&<div className='animate-in'><Settings user={user} lang={lang} toast={toast}/></div>}
       </main>
     </div>
     <BottomNav page={page} setPage={setPage} lang={lang} hasLive={hasLive}/>
+    <button onClick={()=>document.querySelector('main')?.scrollTo({top:0,behavior:'smooth'})} style={{position:'fixed',bottom:80,right:16,width:36,height:36,borderRadius:'50%',background:'rgba(0,229,255,0.15)',border:'1px solid rgba(0,229,255,0.3)',color:'var(--cyan)',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:90,backdropFilter:'blur(4px)',transition:'var(--trans)'}} title="Back to top" onMouseEnter={e=>e.currentTarget.style.background='rgba(0,229,255,0.25)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(0,229,255,0.15)'}>↑</button>
     <Toasts list={toasts}/>
   </div>
 }
