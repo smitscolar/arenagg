@@ -87,10 +87,10 @@ const styleEl=document.createElement('style');styleEl.textContent=css;document.h
 if(!document.getElementById('arenagg-particles')){
   const canvas=document.createElement('canvas')
   canvas.id='arenagg-particles'
-  canvas.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:0.35;'
-  document.body.prepend(canvas)
+  canvas.style.cssText='position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:-1;opacity:0.35;display:block;'
+  document.body.appendChild(canvas)
   const ctx=canvas.getContext('2d')
-  let W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight
+  canvas.width=window.screen.width;canvas.height=window.screen.height;let W=canvas.width,H=canvas.height
   window.addEventListener('resize',()=>{W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight})
   const stars=Array.from({length:80},()=>({
     x:Math.random()*W,y:Math.random()*H,
