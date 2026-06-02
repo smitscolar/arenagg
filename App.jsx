@@ -38,7 +38,9 @@ const fmtRp=n=>'Rp '+Number(n).toLocaleString('id-ID')
 const uid=()=>Math.random().toString(36).slice(2,18)
 const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','finance','settings']
 
-const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',sans-serif;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan);}50%{text-shadow:0 0 4px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}.animate-in{animation:slide-in 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',sans-serif;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan);}50%{text-shadow:0 0 4px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes count-up{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+@keyframes border-glow{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0);}50%{box-shadow:0 0 0 3px rgba(0,229,255,0.15);}}.animate-in{animation:slide-in 0.35s cubic-bezier(0.4,0,0.2,1) both;}
 .animate-in>*:nth-child(1){animation-delay:0s}
 .animate-in>*:nth-child(2){animation-delay:0.04s}
 .animate-in>*:nth-child(3){animation-delay:0.08s}
@@ -61,7 +63,7 @@ tr{transition:background 0.15s ease;}
 .badge-red{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}
 .badge-yellow{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}
 .divider{height:1px;background:var(--border);margin:16px 0;}
-select option{background:var(--bg2);color:var(--text);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;transform:none;}input:hover:not(:focus),select:hover:not(:focus),textarea:hover:not(:focus){border-color:var(--border2);}[data-theme='light'] input:focus,[data-theme='light'] select:focus,[data-theme='light'] textarea:focus{box-shadow:0 0 0 3px rgba(0,119,170,0.1);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-item.active .bnav-icon{transform:translateY(-1px);}.bnav-icon{font-size:15px;line-height:1.2;transition:transform 0.2s;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}@media(min-width:769px){.bottom-nav{display:none !important;}}`
+select option{background:var(--bg2);color:var(--text);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;transform:none;}input:hover:not(:focus),select:hover:not(:focus),textarea:hover:not(:focus){border-color:var(--border2);}[data-theme='light'] input:focus,[data-theme='light'] select:focus,[data-theme='light'] textarea:focus{box-shadow:0 0 0 3px rgba(0,119,170,0.1);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-item.active .bnav-icon{transform:translateY(-1px);}.bnav-icon{font-size:15px;line-height:1.2;transition:transform 0.2s;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}.page-wrap{animation:slide-in 0.35s cubic-bezier(0.4,0,0.2,1);}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-corner{background:transparent;}@media(min-width:769px){.bottom-nav{display:none !important;}}`
 const styleEl=document.createElement('style');styleEl.textContent=css;document.head.appendChild(styleEl)
 // Add Google Fonts if not present
 if(!document.getElementById('arenagg-fonts')){const lk=document.createElement('link');lk.id='arenagg-fonts';lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(lk)}
@@ -220,7 +222,7 @@ function ShareModal({t,onClose,toast,onPreview}){
       </div>
       <button onClick={()=>{onClose();onPreview(t.id)}} className="btn btn-ghost btn-full" style={{marginBottom:10,fontSize:10}}>👁 PREVIEW HALAMAN PESERTA</button>
       <div style={{display:'flex',gap:7}}>
-        <a href={`https://wa.me/?text=${wa}`} target="_blank" rel="noreferrer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'#25D366',borderRadius:5,color:'white',textDecoration:'none',fontWeight:700,fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>📱 WhatsApp</a>
+        <a href={`https://wa.me/?text=${wa}`} target="_blank" rel="noreferrer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:10,background:'#25D366',borderRadius:6,color:'white',textDecoration:'none',fontWeight:700,fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,boxShadow:'0 4px 12px rgba(37,211,102,0.3)'}}>📱 WhatsApp</a>
         <a href={`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.name)}`} target="_blank" rel="noreferrer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'#229ED9',borderRadius:5,color:'white',textDecoration:'none',fontWeight:700,fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>✈ Telegram</a>
         <button onClick={copy} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'var(--panel)',borderRadius:5,border:'1px solid var(--border)',color:'var(--text)',cursor:'pointer',fontWeight:700,fontFamily:'var(--fh)',fontSize:9}}>🔗 Copy</button>
       </div>
@@ -320,7 +322,7 @@ function PublicPage({tid,onBack,toast}){
           <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
           <div style={{marginBottom:14}}><label>{i.members}</label><select value={form.members} onChange={set('members')}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
           <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:6,padding:'10px 12px',marginBottom:14,fontSize:12}}>
-            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',marginBottom:6,letterSpacing:1}}>{i.pay_title}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',marginBottom:6,letterSpacing:1}}>💳 {i.pay_title}</div>
             <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{color:'var(--muted)'}}>{i.amount}</span><span style={{fontFamily:'var(--fm)',color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.entry)}</span></div>
             {(()=>{try{const b=JSON.parse(localStorage.getItem('arenagg_bank_info')||'{}');return b.bankName?<div style={{marginTop:7,padding:'8px 10px',background:'rgba(0,229,255,0.06)',borderRadius:5,lineHeight:2,fontSize:12}}><div>🏦 {i.transfer_to} <b>{b.bankName}</b></div><div>💳 {i.acc_no} <b style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{b.accNumber}</b></div><div>👤 {i.an} <b>{b.accName}</b></div>{b.waNumber&&<div>📱 {i.confirm_wa} <a href={`https://wa.me/62${b.waNumber.replace(/^0/,'')}`} target="_blank" rel="noreferrer" style={{color:'var(--green)'}}>{b.waNumber}</a></div>}</div>:<div style={{color:'var(--muted)',fontSize:11,marginTop:4}}>{i.contact_org}</div>}catch(e){return null}})()}
           </div>
@@ -476,11 +478,27 @@ function Dashboard({tournaments,teams,setPage,loading,lang}){
     </div>
     <div className="card">
       <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>{i.quick}</div>
-      <div style={{display:'flex',gap:9,flexWrap:'wrap'}}>
-        <button className="btn btn-cyan" onClick={()=>setPage('create')}>{i.btn_create}</button>
-        <button className="btn btn-orange" onClick={()=>setPage('revenue')}>{i.btn_comm}</button>
-        <button className="btn btn-ghost" onClick={()=>setPage('teams')}>{i.btn_part}</button>
-        <button className="btn btn-dark" onClick={()=>setPage('tournaments')}>🏆 {i.tourn_title}</button>
+      <div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+        <button className="btn btn-cyan" onClick={()=>setPage('create')} style={{flex:'1 1 auto'}}>{i.btn_create}</button>
+        <button className="btn btn-orange" onClick={()=>setPage('revenue')} style={{flex:'1 1 auto'}}>{i.btn_comm}</button>
+        <button className="btn btn-ghost" onClick={()=>setPage('teams')} style={{flex:'1 1 auto'}}>{i.btn_part}</button>
+        <button className="btn btn-dark" onClick={()=>setPage('tournaments')} style={{flex:'1 1 auto'}}>🏆 {i.tourn_title}</button>
+      </div>
+      <div style={{borderTop:'1px solid var(--border)',paddingTop:14}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:10}}>RINGKASAN STATUS</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
+          {[
+            {label:'Live',val:liveT.length,color:'var(--red)',icon:'🔴'},
+            {label:'Aktif',val:activeT.length,color:'var(--green)',icon:'●'},
+            {label:'Total',val:tournaments.length,color:'var(--cyan)',icon:'🏆'},
+          ].map(s=>(
+            <div key={s.label} style={{textAlign:'center',padding:'8px 4px',background:'rgba(255,255,255,0.03)',borderRadius:6,border:'1px solid var(--border)'}}>
+              <div style={{fontSize:16,marginBottom:2}}>{s.icon}</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:s.color,lineHeight:1}}>{s.val}</div>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1,marginTop:2}}>{s.label}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -1113,14 +1131,14 @@ function BracketView({tournaments,teams,lang}){
 function Settings({user,lang,toast}){
   const i=T[lang]||T.id
   const BANK_KEY='arenagg_bank_info'
-  const loadBank=()=>{try{return JSON.parse(localStorage.getItem(BANK_KEY)||'{}')}catch(e){return{}}}
-  const[bank,setBank]=useState(loadBank)
+  const[tab,setTab]=useState('profile')
+  const[bank,setBank]=useState(()=>{try{return JSON.parse(localStorage.getItem(BANK_KEY)||'{}')}catch(e){return{}}})
   const[bankSaved,setBankSaved]=useState(false)
   const[prof,setProf]=useState(getProf)
   const[profSaved,setProfSaved]=useState(false)
   const setB=k=>e=>setBank(b=>({...b,[k]:e.target.value}))
-  const saveBankFn=()=>{localStorage.setItem(BANK_KEY,JSON.stringify(bank));setBankSaved(true);setTimeout(()=>setBankSaved(false),2200);if(toast)toast('✓ Info bank tersimpan!','success')}
-  const saveProfFn=()=>{saveProf(prof);setProfSaved(true);setTimeout(()=>setProfSaved(false),2200);window.dispatchEvent(new Event('profile-updated'));if(toast)toast('✓ Profil tersimpan!','success')}
+  const saveBankFn=()=>{localStorage.setItem(BANK_KEY,JSON.stringify(bank));setBankSaved(true);setTimeout(()=>setBankSaved(false),2500);if(toast)toast('✓ Info bank tersimpan!','success')}
+  const saveProfFn=()=>{saveProf(prof);setProfSaved(true);setTimeout(()=>setProfSaved(false),2500);window.dispatchEvent(new Event('profile-updated'));if(toast)toast('✓ Profil tersimpan!','success')}
   const emailName=user?.email?.split('@')[0]||'Organizer'
   const memberSince=user?.created_at?new Date(user.created_at).toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'}):'—'
   const BANKS=['BCA','BRI','BNI','Mandiri','BSI','DANA','OVO','GoPay','ShopeePay','SeaBank']
@@ -1132,129 +1150,120 @@ function Settings({user,lang,toast}){
     {img:'https://flagcdn.com/w40/my.png',country:'Malaysia',status:'soon',note:'2027'},
     {img:'https://flagcdn.com/w40/cn.png',country:'China',status:'soon',note:'2028'},
   ]
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:600}}>
-    <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700,marginBottom:18}}>{i.settings_title}</h1>
-    {/* PROFIL ORGANIZER */}
-    <div className="card" style={{marginBottom:13,borderColor:'rgba(0,229,255,0.2)'}}>
-      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',marginBottom:14,letterSpacing:2}}>{i.profile_title}</div>
-      <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:18}}>
-        <div style={{position:'relative',cursor:'pointer',marginBottom:8}} onClick={()=>document.getElementById('prof_photo_inp').click()}>
-          <div style={{width:96,height:96,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',border:'3px solid rgba(0,229,255,0.5)',fontSize:34,color:'#000',boxShadow:'0 0 20px rgba(0,229,255,0.2)'}}>
-            {prof.photo?<img src={prof.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="profil"/>:<span>{(prof.name||emailName)[0].toUpperCase()}</span>}
+  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'expansion',icon:'🌏',label:'Ekspansi'}]
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:700}}>
+    <div style={{marginBottom:20}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.settings_title}</h1>
+      <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>KONFIGURASI AKUN & PLATFORM</p>
+    </div>
+    {/* TABS */}
+    <div style={{display:'flex',gap:4,marginBottom:20,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',flexWrap:'wrap'}}>
+      {TABS.map(t=>(
+        <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:'1 1 auto',padding:'8px 12px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,transition:'var(--trans)',display:'flex',alignItems:'center',justifyContent:'center',gap:5,background:tab===t.id?'var(--cyan)':'transparent',color:tab===t.id?'#000':'var(--muted)',fontWeight:700}}>
+          <span>{t.icon}</span><span>{t.label}</span>
+        </button>
+      ))}
+    </div>
+
+    {/* PROFILE TAB */}
+    {tab==='profile'&&<div className="card">
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:16}}>{i.profile_title}</div>
+      {/* Avatar */}
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:20}}>
+        <div style={{position:'relative',cursor:'pointer'}} onClick={()=>document.getElementById('prof_photo_inp').click()}>
+          <div style={{width:80,height:80,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:700,color:'#000',overflow:'hidden',border:'3px solid rgba(0,229,255,0.3)',boxShadow:'0 8px 24px rgba(0,229,255,0.2)'}}>
+            {prof.photo?<img src={prof.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>{(prof.name||emailName)[0].toUpperCase()}</span>}
           </div>
-          <div style={{position:'absolute',bottom:3,right:3,width:28,height:28,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),#0099bb)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:13,color:'#000',border:'2px solid var(--bg)',boxShadow:'0 2px 8px rgba(0,0,0,0.4)'}}>📷</div>
+          <div style={{position:'absolute',bottom:2,right:2,width:24,height:24,borderRadius:'50%',background:'var(--cyan)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,color:'#000',border:'2px solid var(--bg)',boxShadow:'0 2px 8px rgba(0,229,255,0.4)'}}>📷</div>
         </div>
-        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:1}}>{i.change_photo}</div>
         <input id="prof_photo_inp" type="file" accept="image/*" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setProf(p=>({...p,photo:ev.target.result}));r.readAsDataURL(f)}}/>
+        <div style={{fontSize:9,color:'var(--muted)',marginTop:8,fontFamily:'var(--fm)',letterSpacing:1}}>{i.change_photo}</div>
       </div>
-      <div style={{marginBottom:12}}><label>{i.name_lbl}</label><input value={prof.name||''} onChange={e=>setProf(p=>({...p,name:e.target.value}))} placeholder={emailName}/></div>
-      <div style={{marginBottom:12}}><label>Email</label><input value={user?.email||''} readOnly style={{color:'var(--muted)',cursor:'not-allowed'}}/></div>
-      <div style={{fontSize:10,color:'var(--green)',marginBottom:13,fontFamily:'var(--fm)',letterSpacing:0.5}}>{i.connected}</div>
-      <button className="btn btn-cyan" onClick={saveProfFn}>{profSaved?i.profile_saved:i.save_profile}</button>
-    </div>
-    {/* BANK INFO */}
-    <div className="card" style={{marginBottom:13,borderColor:'rgba(255,215,0,0.2)'}}>
-      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',marginBottom:13,letterSpacing:2}}>{i.bank_title}</div>
-      <div style={{fontSize:11,color:'var(--muted)',marginBottom:13,lineHeight:1.7}}>{i.bank_desc}</div>
-      <div style={{marginBottom:11}}><label>{i.bank_name}</label><select value={bank.bankName||''} onChange={setB('bankName')}><option value=''>{i.select_bank}</option>{BANKS.map(b=><option key={b}>{b}</option>)}</select></div>
-      <div style={{marginBottom:11}}><label>{i.acc_num}</label><input value={bank.accNumber||''} onChange={setB('accNumber')} placeholder="1234567890"/></div>
-      <div style={{marginBottom:11}}><label>{i.acc_owner}</label><input value={bank.accName||''} onChange={setB('accName')} placeholder="ARENAGG ORG"/></div>
-      <div style={{marginBottom:16}}><label>{i.wa_confirm}</label><input value={bank.waNumber||''} onChange={setB('waNumber')} placeholder="08xxxxxxxxxx" type="tel"/></div>
-      {bank.bankName&&bank.accNumber&&<div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:6,padding:'11px 13px',marginBottom:13}}>
-        <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',marginBottom:7,letterSpacing:1}}>{i.preview_lbl}</div>
-        <div style={{fontSize:13,lineHeight:2}}><div>🏦 <b>{bank.bankName}</b></div><div>💳 <b style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{bank.accNumber}</b></div><div>👤 {bank.accName}</div>{bank.waNumber&&<div>📱 WA: <b>{bank.waNumber}</b></div>}</div>
-      </div>}
-      <button className="btn btn-cyan" onClick={saveBankFn}>{bankSaved?i.saved:i.btn_save_bank}</button>
-    </div>
-    {/* EKSPANSI SEA dengan bendera */}
-    <div className="card">
-      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',marginBottom:13,letterSpacing:2}}>{i.expansion}</div>
-      {SEA.map(c=><div key={c.country} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 10px',background:'rgba(255,255,255,0.02)',borderRadius:6,marginBottom:5,border:'1px solid var(--border)'}}>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <img src={c.img} style={{width:30,height:20,objectFit:'cover',borderRadius:3,border:'1px solid rgba(255,255,255,0.08)',flexShrink:0}} alt={c.country} onError={e=>{e.target.style.display='none'}}/>
-          <div><div style={{fontWeight:600,fontSize:13}}>{c.country}</div><div style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>{c.note}</div></div>
+      <div style={{marginBottom:14}}>
+        <label>{i.name_lbl}</label>
+        <input value={prof.name||''} onChange={e=>setProf(p=>({...p,name:e.target.value}))} placeholder={emailName}/>
+      </div>
+      <div style={{marginBottom:16,padding:'10px 14px',background:'rgba(255,255,255,0.03)',borderRadius:7,border:'1px solid var(--border)'}}>
+        <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
+          <div><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>EMAIL</div><div style={{fontSize:12,marginTop:3}}>{user?.email||'—'}</div></div>
+          <div><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>BERGABUNG</div><div style={{fontSize:12,marginTop:3}}>{memberSince}</div></div>
+          <div><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>STATUS</div><div style={{fontSize:12,marginTop:3,display:'flex',alignItems:'center',gap:5}}><span style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',display:'inline-block',animation:'pulse 1.5s infinite'}}/>{i.online}</div></div>
         </div>
-        <span className={`tag ${c.status==='active'?'tag-active':'tag-pending'}`}>{c.status==='active'?'AKTIF':'SEGERA'}</span>
-      </div>)}
-    </div>
+      </div>
+      <button className="btn btn-cyan" onClick={saveProfFn} style={{minWidth:140}}>
+        {profSaved?'✓ Tersimpan!':i.save_profile}
+      </button>
+    </div>}
+
+    {/* PAYMENT TAB */}
+    {tab==='payment'&&<div className="card">
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:4}}>{i.bank_title}</div>
+      <div style={{fontSize:11,color:'var(--muted)',marginBottom:16}}>{i.bank_desc}</div>
+      <div style={{marginBottom:14}}><label>{i.bank_name}</label>
+        <select value={bank.bankName||''} onChange={e=>setBank(b=>({...b,bankName:e.target.value}))}>
+          <option value="">{i.select_bank}</option>
+          {BANKS.map(b=><option key={b}>{b}</option>)}
+        </select>
+      </div>
+      <div style={{marginBottom:14}}><label>{i.acc_num}</label><input value={bank.accNumber||''} onChange={setB('accNumber')} placeholder="1234567890 / 08xxxxxxxxxx"/></div>
+      <div style={{marginBottom:14}}><label>{i.acc_owner}</label><input value={bank.accName||''} onChange={setB('accName')} placeholder="Nama Sesuai Rekening"/></div>
+      <div style={{marginBottom:20}}><label>📱 {i.wa_confirm}</label><input value={bank.waNumber||''} onChange={setB('waNumber')} placeholder="08xx" type="tel"/></div>
+      {bank.bankName&&bank.accNumber&&<div style={{marginBottom:16,padding:'12px 14px',background:'rgba(0,229,255,0.04)',borderRadius:8,border:'1px solid rgba(0,229,255,0.15)'}}>
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:1,marginBottom:8}}>👁 PREVIEW TAMPILAN PESERTA</div>
+        <div style={{fontSize:12,lineHeight:2}}>
+          🏦 Bank: <b>{bank.bankName}</b><br/>
+          💳 {i.acc_no} <b style={{fontFamily:'var(--fm)',color:'var(--cyan)'}}>{bank.accNumber}</b><br/>
+          👤 {i.an} <b>{bank.accName||'—'}</b>
+          {bank.waNumber&&<><br/>📱 WA: <b style={{color:'var(--green)'}}>{bank.waNumber}</b></>}
+        </div>
+      </div>}
+      <button className="btn btn-cyan" onClick={saveBankFn} style={{minWidth:140}}>
+        {bankSaved?'✓ Tersimpan!':i.btn_save_bank}
+      </button>
+    </div>}
+
+    {/* ACCOUNT TAB */}
+    {tab==='account'&&<div className="card">
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:16}}>{i.account}</div>
+      <div style={{padding:'14px 16px',background:'rgba(0,255,136,0.04)',borderRadius:8,border:'1px solid rgba(0,255,136,0.15)',marginBottom:16,display:'flex',alignItems:'center',gap:12}}>
+        <div style={{width:36,height:36,borderRadius:8,background:'rgba(0,255,136,0.1)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>🔒</div>
+        <div>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--green)',letterSpacing:1}}>SUPABASE AUTH</div>
+          <div style={{fontSize:12,marginTop:2,display:'flex',alignItems:'center',gap:6}}><span className="live-dot"/>{i.connected}</div>
+        </div>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:16}}>
+        {[
+          {icon:'📧',label:'Email',val:user?.email},
+          {icon:'🆔',label:'User ID',val:user?.id?.slice(0,16)+'...'},
+          {icon:'📅',label:'Dibuat',val:memberSince},
+          {icon:'🔐',label:'Provider',val:user?.app_metadata?.provider||'email'},
+        ].map((s,idx)=>(
+          <div key={idx} style={{padding:'10px 12px',background:'rgba(255,255,255,0.03)',borderRadius:7,border:'1px solid var(--border)'}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1,marginBottom:4}}>{s.icon} {s.label}</div>
+            <div style={{fontSize:11,fontFamily:'var(--fm)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{s.val||'—'}</div>
+          </div>
+        ))}
+      </div>
+    </div>}
+
+    {/* EXPANSION TAB */}
+    {tab==='expansion'&&<div className="card">
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:16}}>{i.expansion}</div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {SEA.map(s=>(
+          <div key={s.country} style={{display:'flex',alignItems:'center',gap:12,padding:'12px 14px',background:s.status==='active'?'rgba(0,255,136,0.05)':'rgba(255,255,255,0.02)',borderRadius:8,border:`1px solid ${s.status==='active'?'rgba(0,255,136,0.2)':'var(--border)'}`}}>
+            <img src={s.img} style={{width:28,height:18,objectFit:'cover',borderRadius:3,border:'1px solid rgba(255,255,255,0.1)'}} alt={s.country} onError={e=>{e.target.style.display='none'}}/>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13,fontWeight:600}}>{s.country}</div>
+              <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>{s.note}</div>
+            </div>
+            <span className={`tag ${s.status==='active'?'tag-active':'tag-pending'}`} style={{fontSize:8}}>{s.status==='active'?'✓ AKTIF':'SEGERA'}</span>
+          </div>
+        ))}
+      </div>
+    </div>}
   </div>
 }
 
-// APP ROOT — Fix hash routing untuk link peserta
-export default function App(){
-  const[user,setUser]=useState(null);const[loading,setLoading]=useState(true);const[page,setPage]=useState('dashboard');const[editT,setEditT]=useState(null);const[toasts,setToasts]=useState([])
-  // Init pubTid LANGSUNG dari hash saat komponen pertama kali render
-  const initTid=()=>{const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/);return(m&&m[1])?decodeURIComponent(m[1]).trim():null}
-  const[pubTid,setPubTid]=useState(initTid)
-  const[lang,setLangState]=useState(getLang())
-  const[isLight,setIsLight]=useState(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})
-  const toggleTheme=()=>{setIsLight(prev=>{const next=!prev;saveTheme(next?'light':'dark');return next})}
-  useEffect(()=>{document.documentElement.setAttribute('data-theme',isLight?'light':'')},[isLight])
-  const[,forceUpdate]=useState(0)
-  const setLangFn=l=>{setLangState(l);setLang(l)}
-  const toast=useCallback((msg,type='info')=>{const id=uid();setToasts(p=>[...p,{id,msg,type}]);setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),3200)},[])
 
-  // Listen for profile updates to refresh sidebar
-  useEffect(()=>{
-    const handler=()=>forceUpdate(n=>n+1)
-    window.addEventListener('profile-updated',handler)
-    return()=>window.removeEventListener('profile-updated',handler)
-  },[])
-
-  // Hash routing listener — untuk update jika hash berubah setelah mount
-  useEffect(()=>{
-    const parse=()=>{
-      const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/)
-      if(m&&m[1])setPubTid(decodeURIComponent(m[1]).trim())
-      else setPubTid(null)
-    }
-    window.addEventListener('hashchange',parse)
-    return()=>window.removeEventListener('hashchange',parse)
-  },[])
-
-  useEffect(()=>{
-    supabase.auth.getSession().then(({data})=>{setUser(data.session?.user||null);setLoading(false)})
-    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>setUser(session?.user||null))
-    return()=>subscription.unsubscribe()
-  },[])
-
-  const{tournaments,teams,loading:dataLoading,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}=useData(user?.id,toast)
-  useEffect(()=>{if(page!=='create')setEditT(null)},[page])
-
-  const logout=async()=>{await supabase.auth.signOut();setUser(null)}
-  const hasLive=tournaments.some(t=>t.status==='live')
-
-  const goBack=()=>{
-    window.location.hash=''
-    window.history.pushState('',document.title,window.location.pathname+window.location.search)
-  }
-
-  // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
-  if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
-  // AUTH loading spinner
-  if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
-  if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
-
-  // Scroll to top on page change
-  useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
-  const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
-
-  return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}>
-    <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
-    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0}}>
-      <LiveBanner tournaments={tournaments}/>
-      <main style={{flex:1,overflowY:'auto',overflowX:'hidden'}}>
-        {page==='dashboard'&&<div className='animate-in' key='dashboard'><Dashboard {...sharedProps}/></div>}
-        {page==='revenue'&&<div className='animate-in'><RevenuePage {...sharedProps}/></div>}
-        {page==='tournaments'&&<div className='animate-in'><TournamentList {...sharedProps}/></div>}
-        {page==='create'&&<div className='animate-in'><CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/></div>}
-        {page==='teams'&&<div className='animate-in'><TeamsView {...sharedProps}/></div>}
-        {page==='bracket'&&<div className='animate-in'><BracketView {...sharedProps}/></div>}
-        {page==='finance'&&<div className='animate-in'><Finance {...sharedProps}/></div>}
-        {page==='settings'&&<div className='animate-in'><Settings user={user} lang={lang} toast={toast}/></div>}
-      </main>
-    </div>
-    <BottomNav page={page} setPage={setPage} lang={lang} hasLive={hasLive}/>
-    <Toasts list={toasts}/>
-  </div>
-}
