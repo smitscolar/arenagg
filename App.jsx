@@ -1195,7 +1195,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
 
       {/* WALLET TAB */}
       {activeTab==='wallet'&&<div className="animate-in">
-        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:16}}>💳 Wallet & Pembayaran</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:16}}>💳 WALLET PESERTA</div>
 
         {/* STATUS PEMBAYARAN */}
         <div style={{background:participant.paid?'linear-gradient(135deg,rgba(0,255,136,0.1),rgba(0,229,255,0.06))':'linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.06))',border:`1px solid ${participant.paid?'rgba(0,255,136,0.3)':'rgba(255,215,0,0.3)'}`,borderRadius:14,padding:'18px',marginBottom:14}}>
