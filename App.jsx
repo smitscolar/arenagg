@@ -2739,6 +2739,8 @@ export default function App(){
       const ml=window.location.hash.match(/^#\/live\/([a-zA-Z0-9\-_]+)$/)
       if(ml&&ml[1])setPubLiveTid(decodeURIComponent(ml[1]).trim())
       else setPubLiveTid(null)
+      if(window.location.hash.startsWith('#/peserta'))setPubPeserta(true)
+      else setPubPeserta(false)
     }
     window.addEventListener('hashchange',parse)
     return()=>window.removeEventListener('hashchange',parse)
@@ -2762,6 +2764,8 @@ export default function App(){
   }
 
   // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
+  // PORTAL PESERTA — accessible at /#/peserta without login
+  if(pubPeserta)return <><ParticipantPortal toast={toast}/><Toasts list={toasts}/></>
   if(pubLiveTid!==null)return <><PublicLivePage tid={pubLiveTid} onBack={()=>{window.location.hash='';window.history.pushState('',document.title,window.location.pathname+window.location.search);setPubLiveTid(null)}} toast={toast}/><Toasts list={toasts}/></>
   if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
   // AUTH loading spinner
