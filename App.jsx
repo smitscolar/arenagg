@@ -1067,7 +1067,7 @@ function ShareModal({t,onClose,toast,onPreview}){
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
-  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:''});const[saving,setSaving]=useState(false)
+  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5'});const[saving,setSaving]=useState(false)
   const[lang,setLangState]=useState(getLang())
   const i=T[lang]||T.id
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
@@ -1142,15 +1142,6 @@ function PublicPage({tid,onBack,toast}){
         <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4,color:'var(--cyan)'}}>{i.reg_title}</div>
         <div style={{fontSize:12,color:'var(--muted)',marginBottom:14}}>{t.name}</div>
         <div className="card">
-          <div style={{display:'flex',flexDirection:'column',alignItems:'center',marginBottom:14}}>
-            <div style={{position:'relative',cursor:'pointer'}} onClick={()=>document.getElementById('pub_photo_inp').click()}>
-              <div style={{width:72,height:72,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',overflow:'hidden',border:'3px solid var(--cyan)',fontSize:26,color:'#000'}}>
-                {form.photo?<img src={form.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>👤</span>}
-              </div>
-              <div style={{position:'absolute',bottom:1,right:1,width:22,height:22,borderRadius:'50%',background:'var(--cyan)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,color:'#000',border:'2px solid var(--bg)'}}>📷</div>
-            </div>
-            <div style={{fontSize:9,color:'var(--muted)',marginTop:5,fontFamily:'var(--fm)',letterSpacing:1}}>FOTO TIM (opsional)</div>
-            <input id="pub_photo_inp" type="file" accept="image/*" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setForm(p=>({...p,photo:ev.target.result}));r.readAsDataURL(f)}}/>
           </div>
           <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} placeholder="Alpha Squad"/></div>
           <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
