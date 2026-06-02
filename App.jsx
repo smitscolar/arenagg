@@ -1044,6 +1044,41 @@ function ParticipantDashboard({participant,onLogout,toast}){
   const[scores,setScores]=useState(()=>{const s=getScores();return s[participant.tournamentId]||{}})
   const[lang,setLangState]=useState(getLang())
   const i=T[lang]||T.id
+  const fmtRp2=n=>'Rp '+Number(n).toLocaleString('id-ID')
+
+  // Bank info organizer (tersimpan di localStorage oleh organizer)
+  const bank=(()=>{try{return JSON.parse(localStorage.getItem('arenagg_bank_info')||'{}')}catch(e){return{}}})()
+
+  // Wallet state
+  const WALLET_KEY='arenagg_wallet_'+participant.id
+  const getWallet=()=>{try{return JSON.parse(localStorage.getItem(WALLET_KEY)||'{}')}catch(e){return{}}}
+  const saveWallet=w=>{try{localStorage.setItem(WALLET_KEY,JSON.stringify(w))}catch(e){}}
+  const[wallet,setWallet]=useState(()=>getWallet())
+  const[payProof,setPayProof]=useState('')
+  const[payNote,setPayNote]=useState('')
+  const[payMethod,setPayMethod]=useState(bank.bankName||'Transfer Bank')
+  const[submitting,setSubmitting]=useState(false)
+  const entryFee=Number(participant.tournament?.entry||0)
+
+  // Submit bukti bayar
+  const submitPayment=()=>{
+    if(!payProof.trim()){toast('Isi nomor bukti transfer / referensi pembayaran','error');return}
+    setSubmitting(true)
+    const rec={
+      id:'pay_'+Date.now(),
+      amount:entryFee,
+      method:payMethod,
+      proof:payProof,
+      note:payNote,
+      submittedAt:new Date().toLocaleString('id-ID'),
+      status:'pending' // organizer belum konfirmasi
+    }
+    const updated={...wallet,payments:[...(wallet.payments||[]),rec],lastSubmit:Date.now()}
+    setWallet(updated);saveWallet(updated)
+    setPayProof('');setPayNote('')
+    toast('✓ Bukti bayar terkirim! Tunggu konfirmasi organizer.','success')
+    setSubmitting(false)
+  }
 
   // Poll for updates every 5s
   useState(()=>{
@@ -1069,6 +1104,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
 
   const TABS=[
     {id:'home',icon:'🏠',label:'Beranda'},
+    {id:'wallet',icon:'💳',label:'Wallet'},
     {id:'live',icon:'🔴',label:'Live'},
     {id:'chat',icon:'💬',label:'Chat'+(chatHistory.length>0?` (${chatHistory.length})`:'')},
     {id:'info',icon:'ℹ',label:'Info'},
@@ -1144,12 +1180,119 @@ function ParticipantDashboard({participant,onLogout,toast}){
         </div>}
 
         {/* Payment reminder */}
-        {!participant.paid&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.25)',borderRadius:10,padding:'12px 14px',marginBottom:14}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:6}}>⚠ ENTRY FEE BELUM DIBAYAR</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>Segera bayar entry fee untuk konfirmasi keikutsertaan tim kamu.</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--yellow)',fontWeight:900}}>{t?fmtRpLocal(t.entry):'-'}</div>
-          <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:2,marginBottom:10}}>ENTRY FEE</div>
-          <div style={{fontSize:10,color:'var(--muted)'}}>Hubungi organizer untuk konfirmasi pembayaran.</div>
+        {!participant.paid&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.25)',borderRadius:10,padding:'14px',marginBottom:14,cursor:'pointer',transition:'var(--trans)'}} onClick={()=>setActiveTab('wallet')} onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,215,0,0.5)'} onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(255,215,0,0.25)'}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1}}>⚠ ENTRY FEE BELUM DIBAYAR</div>
+            <span className="tag tag-pending" style={{fontSize:8,animation:'pulse 2s infinite'}}>TAP UNTUK BAYAR</span>
+          </div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div style={{fontSize:11,color:'var(--muted)'}}>Buka Wallet untuk info rekening & kirim bukti bayar</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--yellow)'}}>{fmtRp2(entryFee)}</div>
+          </div>
+        </div>}
+      </div>}
+
+      {/* WALLET TAB */}
+      {activeTab==='wallet'&&<div className="animate-in">
+        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:16}}>💳 Wallet & Pembayaran</div>
+
+        {/* STATUS PEMBAYARAN */}
+        <div style={{background:participant.paid?'linear-gradient(135deg,rgba(0,255,136,0.1),rgba(0,229,255,0.06))':'linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.06))',border:`1px solid ${participant.paid?'rgba(0,255,136,0.3)':'rgba(255,215,0,0.3)'}`,borderRadius:14,padding:'18px',marginBottom:14}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
+            <div>
+              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:4}}>{participant.paid?'✓ STATUS PEMBAYARAN':'⏳ STATUS PEMBAYARAN'}</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:participant.paid?'var(--green)':'var(--yellow)'}}>{participant.paid?'LUNAS':'BELUM BAYAR'}</div>
+            </div>
+            <div style={{textAlign:'right'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:3}}>ENTRY FEE</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--yellow)'}}>{fmtRp2(entryFee)}</div>
+            </div>
+          </div>
+          {participant.paid
+            ?<div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:'rgba(0,255,136,0.08)',borderRadius:7,border:'1px solid rgba(0,255,136,0.2)'}}>
+              <span style={{fontSize:20}}>✅</span>
+              <div>
+                <div style={{fontSize:12,fontWeight:700,color:'var(--green)'}}>Pembayaran Terkonfirmasi</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>Slot kamu di turnamen sudah terjamin. Semangat bertanding!</div>
+              </div>
+            </div>
+            :<div>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:10}}>Segera lakukan pembayaran entry fee untuk mengonfirmasi keikutsertaan timmu.</div>
+              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+                {bank.waNumber&&<a href={`https://wa.me/${bank.waNumber.replace(/[^0-9]/g,'').replace(/^0/,'62')}?text=${encodeURIComponent('Halo, saya ingin konfirmasi pembayaran entry fee\nNama Tim: '+participant.name+'\nKapten: '+participant.captain+'\nTurnamen: '+(participant.tournament?.name||''))}`} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'8px 14px',background:'#25D366',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>📱 Konfirmasi via WA</a>}
+              </div>
+            </div>
+          }
+        </div>
+
+        {/* INFO REKENING ORGANIZER */}
+        {(bank.bankName||bank.accNumber)&&<div className="card" style={{marginBottom:14,borderColor:'rgba(255,215,0,0.2)',background:'rgba(255,215,0,0.03)'}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:12}}>🏦 INFO PEMBAYARAN ORGANIZER</div>
+          <div style={{display:'flex',flexDirection:'column',gap:0}}>
+            {[
+              {label:'Bank / E-Wallet',val:bank.bankName,icon:'🏦'},
+              {label:'Nomor Rekening / HP',val:bank.accNumber,icon:'💳',copy:true},
+              {label:'Atas Nama',val:bank.accName,icon:'👤'},
+              {label:'WhatsApp',val:bank.waNumber,icon:'📱'},
+            ].filter(s=>s.val).map(s=>(
+              <div key={s.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'9px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                <span style={{fontSize:11,color:'var(--muted)'}}>{s.icon} {s.label}</span>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span style={{fontFamily:s.copy?'var(--fm)':'inherit',fontSize:13,fontWeight:700,color:s.copy?'var(--cyan)':'var(--text)',letterSpacing:s.copy?1:0}}>{s.val}</span>
+                  {s.copy&&<button onClick={()=>{if(navigator.clipboard)navigator.clipboard.writeText(s.val).then(()=>toast('✓ Disalin!','success')).catch(()=>{})}} style={{background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,padding:'2px 7px',cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>SALIN</button>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{marginTop:12,padding:'10px 12px',background:'rgba(0,229,255,0.04)',borderRadius:7,border:'1px solid rgba(0,229,255,0.1)',fontSize:11,color:'var(--muted)'}}>
+            💡 Transfer <b style={{color:'var(--yellow)'}}>{fmtRp2(entryFee)}</b> ke rekening di atas, lalu submit bukti bayar di bawah.
+          </div>
+        </div>}
+
+        {/* METODE PEMBAYARAN */}
+        {!bank.bankName&&!bank.accNumber&&<div className="card" style={{marginBottom:14,borderColor:'rgba(255,215,0,0.2)'}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:8}}>💳 CARA PEMBAYARAN</div>
+          <div style={{fontSize:11,color:'var(--muted)',lineHeight:1.8}}>Hubungi organizer untuk info rekening pembayaran entry fee.<br/>Gunakan tombol WA di atas atau tanyakan langsung ke panitia.</div>
+        </div>}
+
+        {/* FORM SUBMIT BUKTI BAYAR */}
+        {!participant.paid&&<div className="card" style={{marginBottom:14,borderColor:'rgba(0,229,255,0.2)',background:'rgba(0,229,255,0.02)'}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>📤 SUBMIT BUKTI PEMBAYARAN</div>
+          <div style={{marginBottom:12}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>METODE PEMBAYARAN</label>
+            <select value={payMethod} onChange={e=>setPayMethod(e.target.value)} style={{fontSize:13}}>
+              {['Transfer Bank','DANA','OVO','GoPay','ShopeePay','QRIS','Tunai'].map(m=><option key={m}>{m}</option>)}
+            </select>
+          </div>
+          <div style={{marginBottom:12}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>NO. REFERENSI / BUKTI TRANSFER *</label>
+            <input value={payProof} onChange={e=>setPayProof(e.target.value)} placeholder="Contoh: REF1234567890 atau nomor transaksi" style={{fontSize:13}}/>
+            <div style={{fontSize:9,color:'var(--muted)',marginTop:4,fontFamily:'var(--fm)'}}>Masukkan nomor referensi / kode unik transaksi dari bukti pembayaran</div>
+          </div>
+          <div style={{marginBottom:14}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>CATATAN (opsional)</label>
+            <input value={payNote} onChange={e=>setPayNote(e.target.value)} placeholder="Keterangan tambahan..." style={{fontSize:13}}/>
+          </div>
+          <button className="btn btn-cyan btn-full" onClick={submitPayment} disabled={!payProof.trim()||submitting} style={{fontSize:11,padding:12}}>
+            {submitting?<><Spinner size={13} color="#000"/> Mengirim...</>:'📤 Kirim Bukti Pembayaran'}
+          </button>
+          <div style={{fontSize:10,color:'var(--muted)',marginTop:8,textAlign:'center'}}>Setelah dikirim, organizer akan mengonfirmasi pembayaran kamu</div>
+        </div>}
+
+        {/* RIWAYAT PEMBAYARAN */}
+        {(wallet.payments||[]).length>0&&<div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>📋 RIWAYAT PENGIRIMAN BUKTI</div>
+          {(wallet.payments||[]).slice().reverse().map((p,idx)=>(
+            <div key={p.id} style={{padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,color:'var(--cyan)'}}>{fmtRp2(p.amount)}</div>
+                <span className={`tag ${p.status==='confirmed'?'tag-active':'tag-pending'}`} style={{fontSize:8}}>{p.status==='confirmed'?'✓ KONFIRMASI':'⏳ MENUNGGU'}</span>
+              </div>
+              <div style={{fontSize:11,color:'var(--muted)'}}>💳 {p.method} · Ref: <b style={{color:'var(--text)',fontFamily:'var(--fm)'}}>{p.proof}</b></div>
+              {p.note&&<div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>📝 {p.note}</div>}
+              <div style={{fontSize:9,color:'var(--muted)',marginTop:3,fontFamily:'var(--fm)'}}>📅 {p.submittedAt}</div>
+            </div>
+          ))}
         </div>}
       </div>}
 
@@ -1256,6 +1399,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
           ))}
         </div>
         <button className="btn btn-dark btn-full" onClick={onLogout} style={{marginTop:12,fontSize:10,color:'var(--red)',borderColor:'rgba(255,45,85,0.2)'}}>Keluar dari Portal</button>
+        <button className="btn btn-cyan btn-full" onClick={()=>setActiveTab('wallet')} style={{marginTop:8,fontSize:10}}>💳 Buka Wallet & Pembayaran</button>
       </div>}
     </div>
   </div>
