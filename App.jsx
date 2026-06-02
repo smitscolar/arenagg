@@ -924,7 +924,7 @@ function Leaderboard({tournaments,teams,lang}){
   </div>
 }
 
-// QR memakai Google Charts API — dijamin berfungsi
+// QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
 function QRImg({value,size=155}){
   const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=8`
   return <img src={url} width={size} height={size} style={{borderRadius:7,display:'block',border:'4px solid white'}} alt="QR"/>
