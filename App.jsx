@@ -1090,7 +1090,7 @@ function PublicPage({tid,onBack,toast}){
   const submit=async()=>{
     if(!form.name||!form.captain||!form.contact){toast('Isi semua field!','error');return}
     setSaving(true)
-    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:form.name,captain:form.captain,contact:form.contact,members:Number(form.members),paid:false,photo:form.photo||null})
+    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:form.name,captain:form.captain,contact:form.contact,members:Number(form.members),paid:false})
     if(error){toast('Error: '+error.message,'error');setSaving(false);return}
     await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
     setStep('success');setSaving(false)
