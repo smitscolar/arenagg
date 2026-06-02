@@ -1060,6 +1060,7 @@ function ShareModal({t,onClose,toast,onPreview}){
         <a href={`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.name)}`} target="_blank" rel="noreferrer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'#229ED9',borderRadius:5,color:'white',textDecoration:'none',fontWeight:700,fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>✈ Telegram</a>
         <button onClick={copy} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'var(--panel)',borderRadius:5,border:'1px solid var(--border)',color:'var(--text)',cursor:'pointer',fontWeight:700,fontFamily:'var(--fh)',fontSize:9}}>🔗 Copy</button>
       </div>
+              <button style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,flex:1,padding:'9px 10px',background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:5,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1,color:'var(--red)',transition:'var(--trans)'}} onClick={()=>{const link=window.location.origin+'/#/live/'+tid;if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>toast('✓ Link live disalin!','success')).catch(()=>{})}}>🔴 Link Live</button>
     </div>
   </div>
 }
@@ -1163,11 +1164,79 @@ function PublicPage({tid,onBack,toast}){
           <button className="btn btn-cyan btn-full" style={{fontSize:12,padding:12}} onClick={submit} disabled={saving}>{saving?<><Spinner size={13} color="#000"/>{i.registering}</>:i.btn_submit}</button>
         </div>
       </div>}
-      {step==='success'&&<div className="animate-in" style={{textAlign:'center',paddingTop:40}}>
-        <div style={{fontSize:56,marginBottom:12,animation:'bounce-in 0.6s ease'}}>🎉</div>
-        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:'var(--green)',marginBottom:8}}>{i.success_title}</div>
-        <div style={{fontSize:13,color:'var(--muted)',marginBottom:20,lineHeight:1.8}}>{form.name} {i.success_msg} <b style={{color:'var(--text)'}}>{t.name}</b></div>
-        <button className="btn btn-ghost" onClick={()=>setStep('detail')}>{i.back_detail}</button>
+      {step==='success'&&<div className="animate-in" style={{padding:'24px 0'}}>
+        {/* HEADER SUKSES */}
+        <div style={{textAlign:'center',marginBottom:24}}>
+          <div style={{fontSize:60,marginBottom:10,animation:'bounce-in 0.6s ease'}}>🎉</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--green)',marginBottom:6,letterSpacing:1}}>{i.success_title}</div>
+          <div style={{fontSize:13,color:'var(--muted)',lineHeight:1.8}}><b style={{color:'var(--text)'}}>{form.name}</b> {i.success_msg} <b style={{color:'var(--cyan)'}}>{t.name}</b></div>
+        </div>
+
+        {/* KARTU INFO TIM */}
+        <div style={{background:'linear-gradient(135deg,rgba(0,255,136,0.07),rgba(0,229,255,0.05))',border:'1px solid rgba(0,255,136,0.25)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--green)',letterSpacing:2,marginBottom:12}}>✓ DATA PENDAFTARAN</div>
+          {[
+            {label:'Nama Tim',val:form.name,icon:'⚔'},
+            {label:'Kapten',val:form.captain,icon:'👤'},
+            {label:'No. HP',val:form.contact,icon:'📱'},
+            {label:'Jumlah Member',val:form.members+' orang',icon:'👥'},
+            {label:'Turnamen',val:t.name,icon:'🏆'},
+            {label:'Game',val:t.game,icon:'🎮'},
+            {label:'Kota',val:t.city,icon:'📍'},
+          ].map(s=>(
+            <div key={s.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+              <span style={{fontSize:11,color:'var(--muted)'}}>{s.icon} {s.label}</span>
+              <span style={{fontSize:12,fontWeight:600}}>{s.val}</span>
+            </div>
+          ))}
+          <div style={{display:'flex',justifyContent:'space-between',padding:'8px 0',marginTop:4}}>
+            <span style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--yellow)'}}>🏅 ENTRY FEE</span>
+            <span style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--yellow)'}}>Rp {Number(t.entry).toLocaleString('id-ID')}</span>
+          </div>
+        </div>
+
+        {/* LINK LIVE — cara akses saat bertanding */}
+        <div style={{background:'rgba(255,45,85,0.06)',border:'1px solid rgba(255,45,85,0.25)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--red)',letterSpacing:2,marginBottom:10,display:'flex',alignItems:'center',gap:6}}>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
+            LINK LIVE PERTANDINGAN
+          </div>
+          <div style={{fontSize:12,color:'var(--muted)',marginBottom:12,lineHeight:1.7}}>
+            Gunakan link ini saat turnamen berlangsung untuk <b style={{color:'var(--text)'}}>pantau skor real-time</b> & <b style={{color:'var(--text)'}}>obrolan langsung</b>
+          </div>
+          <div style={{background:'rgba(0,0,0,0.2)',borderRadius:7,padding:'10px 12px',marginBottom:10,display:'flex',alignItems:'center',gap:8,border:'1px solid rgba(255,255,255,0.06)'}}>
+            <span style={{fontFamily:'var(--fm)',fontSize:10,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--cyan)'}}>{window.location.origin}/#/live/{t.id}</span>
+          </div>
+          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
+            <button className="btn btn-danger" style={{flex:'1 1 auto',justifyContent:'center',fontSize:10}} onClick={()=>{
+              const link=window.location.origin+'/#/live/'+t.id
+              if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>{}).catch(()=>{})
+              else{const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el)}
+              toast('✓ Link live disalin!','success')
+            }}>🔗 Salin Link Live</button>
+            <a href={`https://wa.me/?text=${encodeURIComponent('🔴 LINK LIVE TURNAMEN\n⚔ '+t.name+'\n🎮 '+t.game+'\n\n👉 Pantau skor & chat live:\n'+window.location.origin+'/#/live/'+t.id+'\n\nBuka link di atas saat pertandingan dimulai!')}`} target="_blank" rel="noreferrer"
+              style={{flex:'1 1 auto',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'9px 12px',background:'#25D366',borderRadius:7,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:10,fontWeight:700,letterSpacing:1,boxShadow:'0 4px 12px rgba(37,211,102,0.25)'}}>📱 Share via WA</a>
+          </div>
+        </div>
+
+        {/* CARA PEMBAYARAN */}
+        {(bank.bankName||bank.waNumber)&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:2,marginBottom:10}}>💳 CARA PEMBAYARAN ENTRY FEE</div>
+          {bank.bankName&&<div style={{fontSize:13,marginBottom:4}}>🏦 <b>{bank.bankName}</b></div>}
+          {bank.accNumber&&<div style={{fontSize:13,marginBottom:4}}>No: <b style={{fontFamily:'var(--fm)',color:'var(--cyan)',letterSpacing:1}}>{bank.accNumber}</b></div>}
+          {bank.accName&&<div style={{fontSize:13,marginBottom:4}}>a.n. <b>{bank.accName}</b></div>}
+          {bank.waNumber&&<div style={{marginTop:8}}>
+            <a href={`https://wa.me/${bank.waNumber.replace(/[^0-9]/g,'').replace(/^0/,'62')}?text=${encodeURIComponent('Halo, saya ingin konfirmasi pembayaran entry fee turnamen '+t.name+'\nNama Tim: '+form.name+'\nKapten: '+form.captain)}`}
+              target="_blank" rel="noreferrer"
+              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',background:'#25D366',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>📱 Konfirmasi Bayar via WA</a>
+          </div>}
+        </div>}
+
+        {/* TOMBOL */}
+        <div style={{display:'flex',gap:8,justifyContent:'center'}}>
+          <button className="btn btn-ghost" onClick={()=>setStep('detail')} style={{fontSize:11}}>{i.back_detail}</button>
+          <button className="btn btn-dark btn-sm" onClick={()=>{const link=window.location.origin+'/#/live/'+t.id;if(navigator.clipboard)navigator.clipboard.writeText(link).catch(()=>{})}} style={{fontSize:9}}>🔗 Copy Link</button>
+        </div>
       </div>}
     </div>
   </div>
