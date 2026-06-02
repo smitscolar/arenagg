@@ -40,6 +40,7 @@ const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','f
 const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','f':'finance','s':'settings'}
 
 const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',sans-serif;--fb:'Rajdhani',sans-serif;--fm:'Share Tech Mono',monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan);}50%{text-shadow:0 0 4px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes scan-line{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
 @keyframes count-up{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 @keyframes border-glow{0%,100%{box-shadow:0 0 0 0 rgba(0,229,255,0);}50%{box-shadow:0 0 0 3px rgba(0,229,255,0.15);}}.animate-in{animation:slide-in 0.35s cubic-bezier(0.4,0,0.2,1) both;}
 .animate-in>*:nth-child(1){animation-delay:0s}
@@ -84,13 +85,212 @@ function LangSelector({lang,setLangFn}){
 
 function LiveBanner({tournaments}){
   const liveT=(tournaments||[]).filter(t=>t.status==='live')
-  if(!liveT.length)return null
-  return <div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'9px 20px',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap',boxShadow:'0 2px 20px rgba(255,45,85,0.3)'}}>
-    <span style={{width:10,height:10,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>
-    <span style={{fontFamily:'var(--fh)',fontSize:11,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 LIVE NOW</span>
-    {liveT.map(t=><span key={t.id} style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',background:'rgba(0,0,0,0.2)',padding:'2px 10px',borderRadius:20,border:'1px solid rgba(255,255,255,0.2)'}}>⚔ {t.name}</span>)}
+  return <div>
+    {liveT.length>0&&<div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'9px 20px',display:'flex',alignItems:'center',gap:12,flexWrap:'wrap',boxShadow:'0 2px 20px rgba(255,45,85,0.3)'}}>
+      <span style={{width:10,height:10,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>
+      <span style={{fontFamily:'var(--fh)',fontSize:11,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 LIVE NOW</span>
+      {liveT.map(t=><span key={t.id} style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',background:'rgba(0,0,0,0.2)',padding:'2px 10px',borderRadius:20,border:'1px solid rgba(255,255,255,0.2)'}}>⚔ {t.name}</span>)}
+    </div>}
+    <AdBanner compact={true}/>
   </div>
 }
+
+
+
+// ============================================================
+// AD BANNER SYSTEM — auto-rotate game ads + sponsor slots
+// ============================================================
+const DEFAULT_ADS = [
+  {id:'ml',game:'Mobile Legends',img:'https://i.imgur.com/JKT5D8P.png',tagline:'Jadilah Legenda di Arena!',cta:'Main Sekarang',color:'#1a6fd4',accent:'#ffd700',bg:'linear-gradient(135deg,#0d1b4b,#1a3a7a)',url:'https://mobilelegends.com'},
+  {id:'pubg',game:'PUBG Mobile',img:'https://i.imgur.com/QKJ3nXP.png',tagline:'Survive. Win. Repeat.',cta:'Download Gratis',color:'#f5a623',accent:'#ff6b00',bg:'linear-gradient(135deg,#1a1208,#3d2b0a)',url:'https://pubgmobile.com'},
+  {id:'ff',game:'Free Fire',img:'https://i.imgur.com/9xP3kWZ.png',tagline:'Battle Royale Terpanas!',cta:'Mainkan Sekarang',color:'#ff6b35',accent:'#ffcc00',bg:'linear-gradient(135deg,#1a0a00,#4a1500)',url:'https://garena.com/freefire'},
+  {id:'val',game:'Valorant',img:'https://i.imgur.com/nZtRpjP.png',tagline:'Taktik + Skill = Kemenangan',cta:'Main Gratis',color:'#ff4655',accent:'#00d4ff',bg:'linear-gradient(135deg,#0d0d0d,#1a0505)',url:'https://playvalorant.com'},
+  {id:'cr',game:'Clash Royale',img:'https://i.imgur.com/mKpL9WN.png',tagline:'Raja Arena paling seru!',cta:'Main Gratis',color:'#a855f7',accent:'#fbbf24',bg:'linear-gradient(135deg,#1e0938,#3b1068)',url:'https://clashroyale.com'},
+]
+
+const AD_STORAGE_KEY = 'arenagg_custom_ads'
+
+function getCustomAds(){try{return JSON.parse(localStorage.getItem(AD_STORAGE_KEY)||'[]')}catch(e){return[]}}
+function saveCustomAds(ads){try{localStorage.setItem(AD_STORAGE_KEY,JSON.stringify(ads))}catch(e){}}
+
+function AdBanner({compact=false}){
+  const customAds = getCustomAds()
+  const allAds = [...DEFAULT_ADS, ...customAds.filter(a=>a.active)]
+  const[current,setCurrent]=useState(0)
+  const[paused,setPaused]=useState(false)
+  const[entered,setEntered]=useState(false)
+  
+  useEffect(()=>{
+    if(paused||allAds.length<=1)return
+    const t=setInterval(()=>setCurrent(c=>(c+1)%allAds.length),4000)
+    return()=>clearInterval(t)
+  },[paused,allAds.length])
+  
+  const ad = allAds[current]
+  if(!ad)return null
+  
+  const isCustom = ad.isCustom
+  
+  if(compact){
+    // Compact horizontal ticker for LiveBanner area
+    return <div style={{background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'7px 20px',display:'flex',alignItems:'center',gap:12,overflow:'hidden',position:'relative'}}>
+      <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.02) 50%,transparent 100%)',animation:'scan-line 3s linear infinite',pointerEvents:'none'}}/>
+      <span style={{fontFamily:'var(--fh)',fontSize:8,color:'rgba(255,255,255,0.4)',letterSpacing:2,flexShrink:0,padding:'2px 6px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:3}}>AD</span>
+      <span style={{fontSize:14,flexShrink:0}}>🎮</span>
+      <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:1,fontWeight:700,flexShrink:0}}>{ad.game}</span>
+      <span style={{fontSize:11,color:'rgba(255,255,255,0.7)',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.tagline}</span>
+      <a href={ad.url||'#'} target="_blank" rel="noreferrer" style={{flexShrink:0,padding:'4px 12px',background:ad.accent||'#ffd700',color:'#000',borderRadius:4,fontFamily:'var(--fh)',fontSize:8,fontWeight:700,letterSpacing:1,textDecoration:'none',whiteSpace:'nowrap'}}>{ad.cta}</a>
+      <div style={{display:'flex',gap:3,flexShrink:0}}>
+        {allAds.map((_,i)=><div key={i} onClick={()=>setCurrent(i)} style={{width:i===current?16:5,height:5,borderRadius:3,background:i===current?ad.accent||'#fff':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.3s'}}/>)}
+      </div>
+    </div>
+  }
+  
+  // Full banner card
+  return <div
+    onMouseEnter={()=>setPaused(true)}
+    onMouseLeave={()=>setPaused(false)}
+    style={{
+      background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',
+      borderRadius:12,
+      border:`1px solid ${ad.accent||'rgba(255,215,0,0.3)'}30`,
+      padding:'16px 20px',
+      marginBottom:18,
+      display:'flex',
+      alignItems:'center',
+      gap:16,
+      position:'relative',
+      overflow:'hidden',
+      transition:'transform 0.2s,box-shadow 0.2s',
+      cursor:'pointer',
+      boxShadow:`0 4px 24px rgba(0,0,0,0.3)`,
+    }}
+    onClick={()=>ad.url&&window.open(ad.url,'_blank','noopener')}
+  >
+    {/* Animated background shine */}
+    <div style={{position:'absolute',top:0,left:'-100%',width:'60%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent)',animation:'scan-line 4s linear infinite',pointerEvents:'none'}}/>
+    
+    {/* AD Badge */}
+    <div style={{position:'absolute',top:8,right:8,display:'flex',alignItems:'center',gap:4}}>
+      {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',letterSpacing:1,padding:'2px 5px',border:`1px solid ${ad.accent||'#ffd700'}40`,borderRadius:3}}>SPONSOR</span>}
+      <span style={{fontFamily:'var(--fh)',fontSize:7,color:'rgba(255,255,255,0.3)',letterSpacing:1,padding:'2px 5px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:3}}>AD</span>
+    </div>
+    
+    {/* Game Icon */}
+    <div style={{width:52,height:52,borderRadius:12,background:`linear-gradient(135deg,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'}30)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,flexShrink:0,border:`1px solid ${ad.accent||'#ffd700'}30`,boxShadow:`0 0 20px ${ad.color||'#1a6fd4'}40`}}>
+      {ad.emoji||'🎮'}
+    </div>
+    
+    {/* Content */}
+    <div style={{flex:1,minWidth:0}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:ad.accent||'#ffd700',letterSpacing:2,marginBottom:3,opacity:0.8}}>🎮 {ad.game}</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2}}>{ad.tagline}</div>
+      {ad.description&&<div style={{fontSize:11,color:'rgba(255,255,255,0.6)',marginBottom:6,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.description}</div>}
+    </div>
+    
+    {/* CTA Button */}
+    <div style={{flexShrink:0}}>
+      <div style={{padding:'8px 16px',background:ad.accent||'#ffd700',color:'#000',borderRadius:7,fontFamily:'var(--fh)',fontSize:9,fontWeight:900,letterSpacing:1.5,boxShadow:`0 4px 12px ${ad.accent||'#ffd700'}40`,whiteSpace:'nowrap'}}>{ad.cta}</div>
+    </div>
+    
+    {/* Dots nav */}
+    <div style={{position:'absolute',bottom:7,left:'50%',transform:'translateX(-50%)',display:'flex',gap:4}}>
+      {allAds.map((_,i)=>(
+        <div key={i} onClick={e=>{e.stopPropagation();setCurrent(i)}} style={{width:i===current?14:5,height:5,borderRadius:3,background:i===current?ad.accent||'#fff':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}/>
+      ))}
+    </div>
+  </div>
+}
+
+// Ad Manager for Settings
+function AdManager({toast}){
+  const[ads,setAds]=useState(getCustomAds)
+  const[form,setForm]=useState({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',active:true})
+  const[showForm,setShowForm]=useState(false)
+  const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
+  
+  const save=()=>{
+    if(!form.name||!form.tagline){toast('Nama & tagline wajib!','error');return}
+    const newAd={...form,id:'custom_'+Date.now(),isCustom:true,game:form.name,bg:`linear-gradient(135deg,${form.color}22,${form.accent}11)`}
+    const updated=[...ads,newAd]
+    setAds(updated);saveCustomAds(updated)
+    setForm({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',active:true})
+    setShowForm(false)
+    toast('✓ Iklan sponsor ditambahkan!','success')
+  }
+  
+  const toggle=(id)=>{
+    const updated=ads.map(a=>a.id===id?{...a,active:!a.active}:a)
+    setAds(updated);saveCustomAds(updated)
+  }
+  
+  const remove=(id)=>{
+    const updated=ads.filter(a=>a.id!==id)
+    setAds(updated);saveCustomAds(updated)
+    toast('Iklan dihapus','info')
+  }
+  
+  return <div>
+    <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>📺 SLOT IKLAN AKTIF</div>
+    
+    {/* Default ads list */}
+    <div style={{marginBottom:14}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>IKLAN BAWAAN (AUTO)</div>
+      <div style={{display:'flex',flexDirection:'column',gap:6}}>
+        {DEFAULT_ADS.map(ad=>(
+          <div key={ad.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 12px',background:'rgba(255,255,255,0.03)',borderRadius:7,border:'1px solid var(--border)'}}>
+            <span style={{fontSize:18}}>{ad.emoji||'🎮'}</span>
+            <div style={{flex:1}}><div style={{fontSize:12,fontWeight:600}}>{ad.game}</div><div style={{fontSize:10,color:'var(--muted)'}}>{ad.tagline}</div></div>
+            <span className="tag tag-active" style={{fontSize:8}}>● AKTIF</span>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    {/* Custom sponsor ads */}
+    {ads.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1,marginBottom:8}}>IKLAN SPONSOR KAMU</div>
+      {ads.map(ad=>(
+        <div key={ad.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:'rgba(255,107,0,0.05)',borderRadius:7,border:'1px solid rgba(255,107,0,0.2)',marginBottom:6}}>
+          <span style={{fontSize:18}}>{ad.emoji||'🎮'}</span>
+          <div style={{flex:1}}>
+            <div style={{fontSize:12,fontWeight:700}}>{ad.game}</div>
+            <div style={{fontSize:10,color:'var(--muted)'}}>{ad.tagline}</div>
+          </div>
+          <button onClick={()=>toggle(ad.id)} style={{background:'none',border:'none',cursor:'pointer',fontSize:18}}>{ad.active?'✅':'⬜'}</button>
+          <button onClick={()=>remove(ad.id)} className="btn btn-danger btn-sm" style={{padding:'3px 8px',fontSize:9}}>✕</button>
+        </div>
+      ))}
+    </div>}
+    
+    {/* Add Sponsor Form */}
+    {!showForm
+      ?<button className="btn btn-orange btn-full" onClick={()=>setShowForm(true)} style={{fontSize:10}}>＋ TAMBAH IKLAN SPONSOR</button>
+      :<div style={{background:'rgba(255,107,0,0.04)',border:'1px solid rgba(255,107,0,0.25)',borderRadius:10,padding:'16px 14px'}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:14}}>📢 IKLAN SPONSOR BARU</div>
+        <div className="g2" style={{marginBottom:10}}>
+          <div><label>Nama Brand / Game *</label><input value={form.name} onChange={set('name')} placeholder="Misal: Garena FF"/></div>
+          <div><label>Emoji</label><input value={form.emoji} onChange={set('emoji')} style={{width:60}}/></div>
+        </div>
+        <div style={{marginBottom:10}}><label>Tagline *</label><input value={form.tagline} onChange={set('tagline')} placeholder="Kalimat iklan singkat..."/></div>
+        <div style={{marginBottom:10}}><label>Deskripsi (opsional)</label><input value={form.description} onChange={set('description')} placeholder="Info tambahan..."/></div>
+        <div className="g2" style={{marginBottom:10}}>
+          <div><label>URL Tujuan</label><input value={form.url} onChange={set('url')} placeholder="https://..."/></div>
+          <div><label>Teks Tombol</label><input value={form.cta} onChange={set('cta')} placeholder="Kunjungi"/></div>
+        </div>
+        <div className="g2" style={{marginBottom:14}}>
+          <div><label>Warna Utama</label><input type="color" value={form.color} onChange={set('color')} style={{height:36,padding:'4px 8px',cursor:'pointer'}}/></div>
+          <div><label>Warna Aksen</label><input type="color" value={form.accent} onChange={set('accent')} style={{height:36,padding:'4px 8px',cursor:'pointer'}}/></div>
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-orange" onClick={save} style={{flex:1,justifyContent:'center'}}>💾 Simpan Iklan</button>
+          <button className="btn btn-ghost" onClick={()=>setShowForm(false)}>Batal</button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
 
 // QR memakai Google Charts API — dijamin berfungsi
 function QRImg({value,size=155}){
@@ -430,6 +630,8 @@ function Dashboard({tournaments,teams,setPage,loading,lang}){
         {activeT.length>0&&<span className="metric-chip metric-up">● {activeT.length} Turnamen Aktif</span>}
       </div>
     </div>
+    {/* AD BANNER — auto-rotate game ads + sponsor */}
+    <AdBanner/>
     {/* LIVE ALERT CARDS */}
     {liveT.map(lt=><div key={lt.id} style={{background:'linear-gradient(135deg,rgba(255,45,85,0.12),rgba(255,107,0,0.08))',border:'1px solid rgba(255,45,85,0.35)',borderRadius:10,padding:'13px 16px',marginBottom:14,display:'flex',alignItems:'center',gap:12,boxShadow:'0 4px 20px rgba(255,45,85,0.15)'}}>
       <div style={{width:40,height:40,borderRadius:'50%',background:'rgba(255,45,85,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0,border:'1px solid rgba(255,45,85,0.3)'}}>🔴</div>
@@ -1163,7 +1365,7 @@ function Settings({user,lang,toast}){
     {img:'https://flagcdn.com/w40/my.png',country:'Malaysia',status:'soon',note:'2027'},
     {img:'https://flagcdn.com/w40/cn.png',country:'China',status:'soon',note:'2028'},
   ]
-  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'expansion',icon:'🌏',label:'Ekspansi'}]
+  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'sponsor',icon:'📺',label:'Iklan'},{id:'expansion',icon:'🌏',label:'Ekspansi'}]
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:700}}>
     <div style={{marginBottom:20}}>
       <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.settings_title}</h1>
@@ -1259,6 +1461,9 @@ function Settings({user,lang,toast}){
         ))}
       </div>
     </div>}
+
+    {/* SPONSOR TAB */}
+    {tab==='sponsor'&&<div className="card"><AdManager toast={toast}/></div>}
 
     {/* EXPANSION TAB */}
     {tab==='expansion'&&<div className="card">
