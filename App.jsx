@@ -924,6 +924,354 @@ function Leaderboard({tournaments,teams,lang}){
   </div>
 }
 
+
+// ============================================================
+// PARTICIPANT PORTAL — Login/Register + Dashboard Peserta
+// ============================================================
+
+const PARTICIPANT_KEY = 'arenagg_participant'
+
+function getParticipant(){
+  try{return JSON.parse(localStorage.getItem(PARTICIPANT_KEY)||'null')}catch(e){return null}
+}
+function saveParticipant(p){
+  try{localStorage.setItem(PARTICIPANT_KEY,JSON.stringify(p))}catch(e){}
+}
+function clearParticipant(){
+  try{localStorage.removeItem(PARTICIPANT_KEY)}catch(e){}
+}
+
+// Auth peserta — login via nama tim + no HP (no email needed)
+function ParticipantAuth({onLogin,toast}){
+  const[mode,setMode]=useState('login')
+  const[teamName,setTeamName]=useState('')
+  const[contact,setContact]=useState('')
+  const[captain,setCaptain]=useState('')
+  const[loading,setL]=useState(false)
+  const[err,setErr]=useState('')
+  const[lang,setLangState]=useState(getLang())
+  const i=T[lang]||T.id
+
+  const login=async()=>{
+    if(!teamName.trim()||!contact.trim()){setErr('Isi nama tim dan no. HP');return}
+    setErr('');setL(true)
+    try{
+      // Find team by name + contact
+      const{data,error}=await supabase.from('teams').select('*,tournaments(*)').ilike('name',teamName.trim()).eq('contact',contact.trim()).single()
+      if(error||!data){setErr('Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai saat pendaftaran.');setL(false);return}
+      const participant={
+        id:data.id,name:data.name,captain:data.captain,contact:data.contact,
+        members:data.members,photo:data.photo,paid:data.paid,
+        tournamentId:data.tournament_id,
+        tournament:data.tournaments,
+        loginAt:Date.now()
+      }
+      saveParticipant(participant)
+      toast('✓ Selamat datang, '+data.name+'!','success')
+      onLogin(participant)
+    }catch(e){setErr('Error: '+e.message)}
+    setL(false)
+  }
+
+  return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20,backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)'}}>
+    <div style={{width:'100%',maxWidth:400}}>
+      {/* LOGO */}
+      <div style={{textAlign:'center',marginBottom:28}}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
+          <div style={{width:40,height:40,borderRadius:10,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}>⚔</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
+        </div>
+        <div style={{fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:2,fontWeight:700}}>PORTAL PESERTA</div>
+        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:2,marginTop:4}}>Akses dashboard tim & pantau pertandingan live</div>
+        <div style={{marginTop:12}}><LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/></div>
+      </div>
+
+      {/* CARD */}
+      <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:14,padding:'28px 24px',boxShadow:'var(--shadow),0 0 40px rgba(255,107,0,0.05)',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,var(--orange),var(--cyan),transparent)'}}/>
+
+        {/* TABS */}
+        <div style={{display:'flex',background:'rgba(255,255,255,0.04)',borderRadius:8,padding:4,marginBottom:22,gap:4}}>
+          {[{id:'login',label:'Masuk Tim'},{id:'info',label:'Cara Masuk'}].map(t=>(
+            <button key={t.id} onClick={()=>{setMode(t.id);setErr('')}} style={{flex:1,padding:9,border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,transition:'var(--trans)',background:mode===t.id?'var(--orange)':'transparent',color:mode===t.id?'#fff':'var(--muted)',fontWeight:700}}>{t.label}</button>
+          ))}
+        </div>
+
+        {mode==='login'&&<>
+          <div style={{marginBottom:12}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>⚔ NAMA TIM *</label>
+            <input value={teamName} onChange={e=>setTeamName(e.target.value)} placeholder="Nama tim saat daftar..." onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
+          </div>
+          <div style={{marginBottom:20}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📱 NO. HP (saat daftar) *</label>
+            <input value={contact} onChange={e=>setContact(e.target.value)} placeholder="08xxxxxxxxxx" type="tel" onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
+          </div>
+          {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
+          <button className="btn btn-orange btn-full" onClick={login} disabled={!teamName.trim()||!contact.trim()||loading} style={{fontSize:11,padding:13,borderRadius:8}}>
+            {loading?<><Spinner size={14} color="#fff"/> Mencari...</>:'⚡ Masuk ke Dashboard Tim'}
+          </button>
+          <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>Belum daftar? <a href={window.location.origin} style={{color:'var(--cyan)',textDecoration:'none',fontWeight:600}}>Daftar tim →</a></div>
+        </>}
+
+        {mode==='info'&&<div style={{fontSize:12,lineHeight:1.9,color:'var(--muted)'}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--orange)',marginBottom:12,letterSpacing:1}}>CARA MASUK PORTAL PESERTA</div>
+          {[
+            {icon:'1️⃣',title:'Daftar Tim',desc:'Buka link turnamen → isi form pendaftaran tim'},
+            {icon:'2️⃣',title:'Simpan Data',desc:'Catat Nama Tim dan No. HP yang kamu daftarkan'},
+            {icon:'3️⃣',title:'Login di sini',desc:'Masukkan Nama Tim + No. HP → klik Masuk'},
+            {icon:'4️⃣',title:'Akses Dashboard',desc:'Lihat status tim, pantau jadwal & skor live'},
+            {icon:'5️⃣',title:'Saat Bertanding',desc:'Buka tab Live di dashboard untuk skor real-time & chat'},
+          ].map(s=>(
+            <div key={s.icon} style={{display:'flex',gap:10,padding:'7px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+              <span style={{fontSize:18,flexShrink:0}}>{s.icon}</span>
+              <div><b style={{color:'var(--text)'}}>{s.title}</b> — {s.desc}</div>
+            </div>
+          ))}
+        </div>}
+      </div>
+      <div style={{textAlign:'center',marginTop:14,fontSize:9,color:'rgba(255,255,255,0.12)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · PORTAL PESERTA</div>
+    </div>
+  </div>
+}
+
+// Dashboard Peserta — setelah login
+function ParticipantDashboard({participant,onLogout,toast}){
+  const t=participant.tournament
+  const[activeTab,setActiveTab]=useState('home')
+  const[chatMsg,setChatMsg]=useState('')
+  const[chatHistory,setChatHistory]=useState(()=>getChatHistory(participant.tournamentId||''))
+  const[chatName]=useState(participant.name)
+  const[scores,setScores]=useState(()=>{const s=getScores();return s[participant.tournamentId]||{}})
+  const[lang,setLangState]=useState(getLang())
+  const i=T[lang]||T.id
+
+  // Poll for updates every 5s
+  useState(()=>{
+    const poll=setInterval(()=>{
+      setChatHistory([...getChatHistory(participant.tournamentId||'')])
+      const s=getScores();if(s[participant.tournamentId])setScores({...s[participant.tournamentId]})
+    },5000)
+    return()=>clearInterval(poll)
+  })
+
+  const sendChat=()=>{
+    if(!chatMsg.trim())return
+    const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false,isPlayer:true}
+    const updated=[...chatHistory,msg]
+    setChatHistory(updated)
+    saveChatHistory(participant.tournamentId,updated)
+    setChatMsg('')
+  }
+
+  // Build match data for this team
+  const matchScores=Object.entries(scores)
+  const fmtRpLocal=n=>'Rp '+Number(n).toLocaleString('id-ID')
+
+  const TABS=[
+    {id:'home',icon:'🏠',label:'Beranda'},
+    {id:'live',icon:'🔴',label:'Live'},
+    {id:'chat',icon:'💬',label:'Chat'+(chatHistory.length>0?` (${chatHistory.length})`:'')},
+    {id:'info',icon:'ℹ',label:'Info'},
+  ]
+
+  return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
+    {/* TOP NAV */}
+    <div style={{background:'rgba(5,5,8,0.97)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)'}}>
+      <div style={{display:'flex',alignItems:'center',gap:10}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)',letterSpacing:2,fontWeight:900}}>⚔ ARENAGG</div>
+        <div style={{width:1,height:16,background:'var(--border)'}}/>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1}}>PORTAL PESERTA</div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:8}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,fontWeight:700,color:'var(--cyan)'}}>{participant.name}</div>
+        <LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/>
+        <button onClick={onLogout} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'3px 9px',color:'var(--muted)',cursor:'pointer',fontSize:9,fontFamily:'var(--fm)'}}>Keluar</button>
+      </div>
+    </div>
+
+    {/* LIVE BANNER */}
+    {t?.status==='live'&&<div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'8px 16px',display:'flex',alignItems:'center',gap:8}}>
+      <span style={{width:8,height:8,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
+      <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 TURNAMEN SEDANG LIVE!</span>
+      <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
+    </div>}
+
+    <div style={{maxWidth:600,margin:'0 auto',padding:'16px 14px'}}>
+      {/* TABS */}
+      <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',marginBottom:16}}>
+        {TABS.map(tab=>(
+          <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'7px 4px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:8,letterSpacing:0.8,transition:'var(--trans)',background:activeTab===tab.id?'var(--orange)':'transparent',color:activeTab===tab.id?'#fff':'var(--muted)',fontWeight:700}}>
+            <span style={{fontSize:16}}>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* HOME TAB */}
+      {activeTab==='home'&&<div className="animate-in">
+        {/* Tim Card */}
+        <div style={{background:'linear-gradient(135deg,rgba(255,107,0,0.1),rgba(0,229,255,0.06))',border:'1px solid rgba(255,107,0,0.25)',borderRadius:14,padding:'18px',marginBottom:14,display:'flex',gap:14,alignItems:'center'}}>
+          <div style={{width:56,height:56,borderRadius:14,background:'linear-gradient(135deg,var(--orange),var(--cyan))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:20,color:'#000',flexShrink:0,overflow:'hidden',border:'2px solid rgba(255,107,0,0.3)'}}>
+            {participant.photo?<img src={participant.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>⚔</span>}
+          </div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,marginBottom:3}}>{participant.name}</div>
+            <div style={{fontSize:11,color:'var(--muted)',marginBottom:5}}>👤 Kapten: {participant.captain} · 👥 {participant.members} orang</div>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              <span className={`tag tag-${participant.paid?'active':'pending'}`} style={{fontSize:8}}>{participant.paid?'✓ LUNAS':'⏳ BELUM BAYAR'}</span>
+              {t&&<span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',background:'rgba(0,229,255,0.08)',padding:'2px 7px',borderRadius:3,border:'1px solid rgba(0,229,255,0.15)'}}>{t.game}</span>}
+            </div>
+          </div>
+        </div>
+
+        {/* Tournament Info */}
+        {t&&<div className="card" style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>🏆 INFO TURNAMEN</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4}}>{t.name}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>🎮 {t.game} · 📍 {t.city} · 📅 {t.date}</div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
+            {[
+              {label:'Prize Pool',val:fmtRpLocal(t.prize),color:'var(--yellow)'},
+              {label:'Entry Fee',val:fmtRpLocal(t.entry)+'/tim',color:'var(--text)'},
+              {label:'Format',val:t.format,color:'var(--text)'},
+              {label:'Status',val:t.status,color:t.status==='live'?'var(--red)':t.status==='active'?'var(--green)':'var(--muted)'},
+            ].map(s=><div key={s.label} style={{background:'rgba(255,255,255,0.03)',borderRadius:6,padding:'8px 10px'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
+              <div style={{fontSize:12,fontWeight:600,color:s.color,marginTop:2}}>{s.val}</div>
+            </div>)}
+          </div>
+          {t.status==='live'&&<button className="btn btn-danger btn-full" onClick={()=>setActiveTab('live')} style={{fontSize:10,animation:'pulse 2s infinite'}}>🔴 Lihat Pertandingan Live →</button>}
+        </div>}
+
+        {/* Payment reminder */}
+        {!participant.paid&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.25)',borderRadius:10,padding:'12px 14px',marginBottom:14}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:6}}>⚠ ENTRY FEE BELUM DIBAYAR</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>Segera bayar entry fee untuk konfirmasi keikutsertaan tim kamu.</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--yellow)',fontWeight:900}}>{t?fmtRpLocal(t.entry):'-'}</div>
+          <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:2,marginBottom:10}}>ENTRY FEE</div>
+          <div style={{fontSize:10,color:'var(--muted)'}}>Hubungi organizer untuk konfirmasi pembayaran.</div>
+        </div>}
+      </div>}
+
+      {/* LIVE TAB */}
+      {activeTab==='live'&&<div className="animate-in">
+        <div style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>🔴 Live Pertandingan</div>
+          <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
+        </div>
+        {t?.status!=='live'&&t?.status!=='active'
+          ?<div className="card" style={{textAlign:'center',padding:'36px 20px',color:'var(--muted)'}}>
+            <div style={{fontSize:48,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>📡</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:6}}>BELUM DIMULAI</div>
+            <div style={{fontSize:11}}>Pertandingan akan dimulai saat turnamen aktif. Pantau terus halaman ini!</div>
+          </div>
+          :<div>
+            {Object.keys(scores).length===0
+              ?<div className="card" style={{textAlign:'center',padding:'32px 20px',color:'var(--muted)'}}>
+                <div style={{fontSize:40,marginBottom:8,animation:'float 3s ease-in-out infinite'}}>⚡</div>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MENUNGGU SKOR</div>
+                <div style={{fontSize:11,marginTop:6}}>Skor akan muncul saat organizer mulai update pertandingan</div>
+                <div style={{fontSize:9,color:'var(--muted)',marginTop:8,fontFamily:'var(--fm)'}}>🔄 Auto-refresh setiap 5 detik</div>
+              </div>
+              :<div style={{display:'flex',flexDirection:'column',gap:10}}>
+                {Array.from({length:Math.ceil(Object.keys(scores).filter(k=>k.includes('_a')).length)}).map((_,idx)=>{
+                  const sA=scores['m'+idx*2+'_a']||scores['m'+idx+'_a']||0
+                  const sB=scores['m'+idx*2+'_b']||scores['m'+idx+'_b']||0
+                  return <div key={idx} style={{background:'var(--panel)',border:`1px solid ${sA!==sB?'rgba(0,229,255,0.2)':'var(--border)'}`,borderRadius:12,padding:'16px'}}>
+                    <div style={{textAlign:'center',fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',marginBottom:10,letterSpacing:1}}>MATCH {idx+1}</div>
+                    <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:8,alignItems:'center',textAlign:'center'}}>
+                      <div style={{fontSize:14,fontWeight:700,color:sA>sB?'var(--green)':'var(--text)'}}>Tim A</div>
+                      <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900}}>{sA} <span style={{color:'var(--muted)',fontSize:14}}>:</span> {sB}</div>
+                      <div style={{fontSize:14,fontWeight:700,color:sB>sA?'var(--cyan)':'var(--text)'}}>Tim B</div>
+                    </div>
+                  </div>
+                })}
+                <div style={{textAlign:'center',fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>🔄 Skor auto-refresh setiap 5 detik</div>
+              </div>
+            }
+          </div>
+        }
+      </div>}
+
+      {/* CHAT TAB */}
+      {activeTab==='chat'&&<div className="animate-in" style={{display:'flex',flexDirection:'column',height:'60vh'}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:12}}>💬 Obrolan Live</div>
+        <div style={{flex:1,overflow:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:12}}>
+          {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}>
+            <div style={{fontSize:32,marginBottom:8}}>💬</div>
+            <div style={{fontSize:11}}>Belum ada pesan. Mulai obrolan!</div>
+          </div>}
+          {chatHistory.map(msg=>(
+            <div key={msg.id} style={{display:'flex',gap:8,alignItems:'flex-start',flexDirection:msg.name===participant.name?'row-reverse':'row'}}>
+              <div style={{width:28,height:28,borderRadius:'50%',background:msg.isOrg?'linear-gradient(135deg,var(--cyan),#003366)':msg.name===participant.name?'linear-gradient(135deg,var(--orange),#660022)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:10,color:'#fff',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
+              <div style={{maxWidth:'75%'}}>
+                <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:2,flexDirection:msg.name===participant.name?'row-reverse':'row'}}>
+                  <span style={{fontWeight:700,fontSize:11}}>{msg.name}</span>
+                  {msg.isOrg&&<span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',background:'rgba(0,229,255,0.1)',padding:'1px 4px',borderRadius:3}}>ORG</span>}
+                  {msg.name===participant.name&&<span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',background:'rgba(255,107,0,0.1)',padding:'1px 4px',borderRadius:3}}>KAMU</span>}
+                  <span style={{fontSize:8,color:'var(--muted)'}}>{msg.time}</span>
+                </div>
+                <div style={{fontSize:12,background:msg.name===participant.name?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:msg.name===participant.name?'8px 0 8px 8px':'0 8px 8px 8px',padding:'7px 10px',border:`1px solid ${msg.name===participant.name?'rgba(255,107,0,0.2)':'var(--border)'}`}}>{msg.text}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:8,borderTop:'1px solid var(--border)',paddingTop:10}}>
+          <input value={chatMsg} onChange={e=>setChatMsg(e.target.value)} placeholder={participant.name+': tulis pesan...'} onKeyDown={e=>e.key==='Enter'&&sendChat()} style={{flex:1,fontSize:13}}/>
+          <button onClick={sendChat} disabled={!chatMsg.trim()} className="btn btn-orange" style={{padding:'8px 14px',fontSize:10}}>Kirim →</button>
+        </div>
+        <div style={{fontSize:8,color:'var(--muted)',textAlign:'center',marginTop:5,fontFamily:'var(--fm)'}}>🔄 Chat diperbarui setiap 5 detik</div>
+      </div>}
+
+      {/* INFO TAB */}
+      {activeTab==='info'&&<div className="animate-in">
+        <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:14}}>ℹ Info & Bantuan</div>
+        <div className="card" style={{marginBottom:12}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>DATA TIM KAMU</div>
+          {[
+            {label:'Nama Tim',val:participant.name},
+            {label:'Kapten',val:participant.captain},
+            {label:'No. HP',val:participant.contact},
+            {label:'Jumlah Member',val:participant.members+' orang'},
+            {label:'Status Bayar',val:participant.paid?'✓ Lunas':'⏳ Belum Bayar'},
+          ].map(s=>(
+            <div key={s.label} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+              <span style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>{s.label}</span>
+              <span style={{fontSize:12,fontWeight:600}}>{s.val}</span>
+            </div>
+          ))}
+        </div>
+        <div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>PANDUAN PORTAL PESERTA</div>
+          {[
+            {icon:'🏠',title:'Beranda',desc:'Lihat info tim & turnamen, status pembayaran'},
+            {icon:'🔴',title:'Live',desc:'Pantau skor pertandingan real-time saat turnamen berlangsung'},
+            {icon:'💬',title:'Chat',desc:'Obrolan langsung dengan sesama peserta & organizer'},
+            {icon:'🔄',title:'Auto-refresh',desc:'Skor & chat diperbarui otomatis setiap 5 detik'},
+          ].map(s=>(
+            <div key={s.icon} style={{display:'flex',gap:10,padding:'7px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+              <span style={{fontSize:18,flexShrink:0}}>{s.icon}</span>
+              <div><b style={{fontSize:12}}>{s.title}</b><div style={{fontSize:11,color:'var(--muted)'}}>{s.desc}</div></div>
+            </div>
+          ))}
+        </div>
+        <button className="btn btn-dark btn-full" onClick={onLogout} style={{marginTop:12,fontSize:10,color:'var(--red)',borderColor:'rgba(255,45,85,0.2)'}}>Keluar dari Portal</button>
+      </div>}
+    </div>
+  </div>
+}
+
+// Main Participant Portal wrapper
+function ParticipantPortal({toast}){
+  const[participant,setParticipant]=useState(()=>getParticipant())
+
+  const login=p=>{setParticipant(p)}
+  const logout=()=>{clearParticipant();setParticipant(null)}
+
+  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast}/>
+  return <ParticipantAuth onLogin={login} toast={toast}/>
+}
+
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
 function QRImg({value,size=155}){
   const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=8`
@@ -1233,9 +1581,14 @@ function PublicPage({tid,onBack,toast}){
         </div>}
 
         {/* TOMBOL */}
+        {/* Link portal peserta */}
+        <div style={{background:'rgba(255,107,0,0.05)',border:'1px solid rgba(255,107,0,0.2)',borderRadius:10,padding:'12px 14px',marginBottom:14}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,marginBottom:6}}>⚡ PORTAL PESERTA</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>Login dengan <b style={{color:'var(--text)'}}>Nama Tim</b> & <b style={{color:'var(--text)'}}>No. HP</b> untuk akses dashboard tim, pantau skor live & chat</div>
+          <a href={window.location.origin+'/#/peserta'} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',background:'var(--orange)',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>⚡ Buka Portal Peserta →</a>
+        </div>
         <div style={{display:'flex',gap:8,justifyContent:'center'}}>
           <button className="btn btn-ghost" onClick={()=>setStep('detail')} style={{fontSize:11}}>{i.back_detail}</button>
-          <button className="btn btn-dark btn-sm" onClick={()=>{const link=window.location.origin+'/#/live/'+t.id;if(navigator.clipboard)navigator.clipboard.writeText(link).catch(()=>{})}} style={{fontSize:9}}>🔗 Copy Link</button>
         </div>
       </div>}
     </div>
@@ -2049,6 +2402,7 @@ export default function App(){
   const initTid=()=>{const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/);return(m&&m[1])?decodeURIComponent(m[1]).trim():null}
   const[pubTid,setPubTid]=useState(initTid)
   const[pubLiveTid,setPubLiveTid]=useState(()=>{const m=window.location.hash.match(/^#\/live\/([a-zA-Z0-9\-_]+)$/);return m?m[1].trim():null})
+  const[pubPeserta,setPubPeserta]=useState(()=>window.location.hash.startsWith('#/peserta'))
   const[lang,setLangState]=useState(getLang())
   const[isLight,setIsLight]=useState(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})
   const toggleTheme=()=>{setIsLight(prev=>{const next=!prev;saveTheme(next?'light':'dark');return next})}
