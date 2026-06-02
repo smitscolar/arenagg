@@ -51,7 +51,17 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}:root{--bg:#050508;--bg2:
 .metric-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:1px;}
 .metric-up{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}
 .metric-down{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}
-.metric-neutral{background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);}.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:var(--trans);}.stat-card:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-3px);box-shadow:var(--shadow),var(--glow-cyan);}.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent-color,var(--cyan)),transparent);}.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;background:var(--accent-color,var(--cyan));opacity:0.04;border-radius:50%;transition:var(--trans);}.stat-card:hover::after{transform:scale(1.3);}.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-family:var(--fm);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}.tag-active{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.tag-pending{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.tag-closed{background:rgba(74,74,106,0.1);color:var(--muted);border:1px solid var(--border);}.tag-live{background:rgba(255,45,85,0.12);color:var(--red);border:1px solid rgba(255,45,85,0.35);animation:flicker 2s infinite;font-weight:900;}input,select,textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:var(--trans);}[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:rgba(0,0,0,0.03);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;}input:hover,select:hover,textarea:hover{border-color:var(--border2);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-icon{font-size:15px;line-height:1.2;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}@media(min-width:769px){.bottom-nav{display:none !important;}}`
+.metric-neutral{background:rgba(0,229,255,0.08);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);}.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:var(--trans);}.stat-card:hover{border-color:rgba(0,229,255,0.2);transform:translateY(-3px);box-shadow:var(--shadow),var(--glow-cyan);}.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent-color,var(--cyan)),transparent);}.stat-card::after{content:'';position:absolute;top:-30px;right:-30px;width:80px;height:80px;background:var(--accent-color,var(--cyan));opacity:0.04;border-radius:50%;transition:var(--trans);}.stat-card:hover::after{transform:scale(1.3);}.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:4px;font-family:var(--fm);font-size:9px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}.tag-active{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.tag-pending{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.tag-closed{background:rgba(74,74,106,0.1);color:var(--muted);border:1px solid var(--border);}.tag-live{background:rgba(255,45,85,0.12);color:var(--red);border:1px solid rgba(255,45,85,0.35);animation:flicker 2s infinite;font-weight:900;}input,select,textarea{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--fb);font-size:14px;padding:10px 14px;width:100%;outline:none;transition:var(--trans);}[data-theme="light"] input,[data-theme="light"] select,[data-theme="light"] textarea{background:rgba(0,0,0,0.03);}
+table{width:100%;border-collapse:collapse;}
+th{font-weight:400!important;}
+tr{transition:background 0.15s ease;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:10px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:0.5px;}
+.badge-cyan{background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid rgba(0,229,255,0.2);}
+.badge-green{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}
+.badge-red{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}
+.badge-yellow{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+select option{background:var(--bg2);color:var(--text);}input:focus,select:focus,textarea:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,229,255,0.07);outline:none;transform:none;}input:hover:not(:focus),select:hover:not(:focus),textarea:hover:not(:focus){border-color:var(--border2);}[data-theme='light'] input:focus,[data-theme='light'] select:focus,[data-theme='light'] textarea:focus{box-shadow:0 0 0 3px rgba(0,119,170,0.1);}input::placeholder,textarea::placeholder{color:var(--muted);}label{display:block;font-size:10px;font-family:var(--fm);color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px;}.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}@media(max-width:900px){.g4{grid-template-columns:1fr 1fr;}.g3{grid-template-columns:1fr 1fr;}}@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr;}}hr.div{border:none;border-top:1px solid var(--border);margin:16px 0;}.pbar{height:4px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden;}[data-theme="light"] .pbar{background:rgba(0,0,0,0.06);}.pfill{height:100%;border-radius:4px;animation:bar-fill 0.9s cubic-bezier(0.4,0,0.2,1);}.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;z-index:100;transition:var(--trans);}.sidebar::after{content:'';position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--cyan),transparent);opacity:0.15;}.nav-item{display:flex;align-items:center;gap:9px;padding:9px 13px;border-radius:7px;cursor:pointer;font-family:var(--fb);font-size:13px;font-weight:500;color:var(--muted);transition:var(--trans);border:none;background:none;width:100%;text-align:left;margin-bottom:2px;position:relative;overflow:hidden;}.nav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);transition:width 0.3s ease;border-radius:7px;}.nav-item:hover{color:var(--text);}.nav-item:hover::before{width:100%;}.nav-item.active{color:var(--cyan);background:linear-gradient(90deg,rgba(0,229,255,0.1),transparent);border-left:2px solid var(--cyan);padding-left:11px;}.nav-item.active::before{width:100%;}.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,0.03);cursor:pointer;transition:var(--trans);width:100%;margin-bottom:6px;}.theme-toggle-btn:hover{border-color:rgba(0,229,255,0.3);background:rgba(0,229,255,0.04);}.tt-label{font-family:var(--fm);font-size:9px;color:var(--muted);letter-spacing:1px;}.tt-track{width:34px;height:18px;border-radius:9px;background:var(--border);position:relative;transition:background 0.3s ease;flex-shrink:0;}.tt-track.on{background:var(--cyan);}.tt-knob{width:13px;height:13px;background:#fff;border-radius:50%;position:absolute;top:2.5px;left:2.5px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.tt-track.on .tt-knob{transform:translateX(16px);}.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);z-index:200;padding:4px 0;grid-template-columns:repeat(8,1fr);backdrop-filter:blur(10px);}.bnav-item{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border:none;background:none;cursor:pointer;color:var(--muted);font-family:var(--fm);font-size:6px;text-transform:uppercase;transition:var(--trans);flex:1;}.bnav-item.active{color:var(--cyan);}.bnav-item.active .bnav-icon{transform:translateY(-1px);}.bnav-icon{font-size:15px;line-height:1.2;transition:transform 0.2s;}.toast-wrap{position:fixed;bottom:80px;right:14px;z-index:9999;display:flex;flex-direction:column;gap:6px;}@media(min-width:769px){.toast-wrap{bottom:18px;}}.toast{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;animation:slide-in-r 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;align-items:center;gap:8px;max-width:290px;box-shadow:var(--shadow);}.toast-success{border-left:3px solid var(--green);}.toast-error{border-left:3px solid var(--red);}.toast-info{border-left:3px solid var(--cyan);}.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;animation:fade-in 0.2s ease;}.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:pop-in 0.25s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--shadow);}.auth-bg{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.04) 0%,transparent 60%);}.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;display:inline-block;margin-right:5px;vertical-align:middle;}.b-match{background:var(--panel);border:1px solid var(--border);border-radius:5px;width:155px;overflow:hidden;}.b-team{padding:7px 10px;font-size:11px;font-weight:600;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}.b-team:last-child{border-bottom:none;}.b-team.winner{background:rgba(0,255,136,0.06);color:var(--green);}.b-team.loser{color:var(--muted);}.lang-btn{background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:5px;padding:4px 7px;cursor:pointer;transition:var(--trans);display:inline-flex;align-items:center;gap:4px;}[data-theme="light"] .lang-btn{background:rgba(0,0,0,0.03);}.lang-btn:hover,.lang-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.08);}.lang-flag{width:20px;height:13px;object-fit:cover;border-radius:2px;display:block;}.lang-code{font-size:9px;color:var(--muted);font-family:var(--fm);line-height:1;}.lang-btn.active .lang-code{color:var(--cyan);}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}@media(min-width:769px){.bottom-nav{display:none !important;}}`
 const styleEl=document.createElement('style');styleEl.textContent=css;document.head.appendChild(styleEl)
 // Add Google Fonts if not present
 if(!document.getElementById('arenagg-fonts')){const lk=document.createElement('link');lk.id='arenagg-fonts';lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(lk)}
@@ -91,25 +101,80 @@ function QRImg({value,size=155}){
 // AUTH — pilih bahasa hanya di sini
 function AuthPage({onLogin,lang,setLangFn}){
   const i=T[lang]||T.id
-  const[mode,setMode]=useState('login');const[email,setEmail]=useState('');const[pass,setPass]=useState('');const[name,setName]=useState('');const[loading,setL]=useState(false);const[err,setErr]=useState('')
-  const submit=async()=>{setErr('');setL(true);try{if(mode==='login'){const{data,error}=await supabase.auth.signInWithPassword({email,password:pass});if(error)throw error;onLogin(data.user);}else{const{data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{organizer_name:name||email.split('@')[0]}}});if(error)throw error;if(data.user&&!data.session){setErr('Cek email untuk konfirmasi.');setMode('login');}else if(data.user)onLogin(data.user);}}catch(e){setErr(e.message||'Error')}setL(false)}
-  return <div className="auth-bg"><div style={{width:'100%',maxWidth:420}}>
-    <div style={{textAlign:'center',marginBottom:30}}>
-      <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 3s infinite',marginBottom:6}}>⚔ ARENAGG</div>
-      <div style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:2}}>ESPORT TOURNAMENT PLATFORM</div>
-      <div style={{fontSize:8,color:'rgba(0,229,255,0.35)',fontFamily:'var(--fm)',letterSpacing:3,marginTop:2}}>— MULTILINGUAL PLATFORM —</div>
-      <div style={{marginTop:14,display:'flex',justifyContent:'center'}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
+  const[mode,setMode]=useState('login')
+  const[email,setEmail]=useState('')
+  const[pass,setPass]=useState('')
+  const[name,setName]=useState('')
+  const[loading,setL]=useState(false)
+  const[err,setErr]=useState('')
+  const[showPass,setShowPass]=useState(false)
+  const submit=async()=>{
+    setErr('');setL(true)
+    try{
+      if(mode==='login'){
+        const{data,error}=await supabase.auth.signInWithPassword({email,password:pass})
+        if(error)throw error
+        onLogin(data.user)
+      } else {
+        const{data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{organizer_name:name||email.split('@')[0]}}})
+        if(error)throw error
+        if(data.user&&!data.session){setErr('Cek email untuk konfirmasi akun.');setMode('login')}
+        else if(data.user)onLogin(data.user)
+      }
+    }catch(e){setErr(e.message||'Error')}
+    setL(false)
+  }
+  return <div className="auth-bg" style={{position:'relative',overflow:'hidden'}}>
+    {/* Animated background grid */}
+    <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
+    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 50%,rgba(0,229,255,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
+    <div style={{width:'100%',maxWidth:440,position:'relative',zIndex:1}}>
+      {/* Logo */}
+      <div style={{textAlign:'center',marginBottom:32}}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
+          <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}>⚔</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:26,fontWeight:900,color:'var(--cyan)',letterSpacing:4,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
+        </div>
+        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:3}}>ESPORT TOURNAMENT PLATFORM · MULTILINGUAL</div>
+        <div style={{marginTop:14,display:'flex',justifyContent:'center'}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
+      </div>
+      {/* Card */}
+      <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:16,padding:'32px 28px',boxShadow:'var(--shadow), 0 0 60px rgba(0,229,255,0.05)',position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,var(--cyan),var(--orange),transparent)'}}/>
+        {/* Tabs */}
+        <div style={{display:'flex',background:'rgba(255,255,255,0.04)',borderRadius:8,padding:4,marginBottom:24,gap:4}}>
+          {[{id:'login',label:i.login},{id:'register',label:i.register}].map(t=>(
+            <button key={t.id} onClick={()=>{setMode(t.id);setErr('')}} style={{flex:1,padding:10,border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,transition:'var(--trans)',background:mode===t.id?'var(--cyan)':'transparent',color:mode===t.id?'#000':'var(--muted)',fontWeight:700}}>{t.label}</button>
+          ))}
+        </div>
+        {/* Fields */}
+        {mode==='register'&&(
+          <div style={{marginBottom:14}}>
+            <label style={{display:'flex',alignItems:'center',gap:6,marginBottom:6,fontSize:10,fontFamily:'var(--fm)',color:'var(--muted)',letterSpacing:1}}>🏢 {i.community}</label>
+            <input value={name} onChange={e=>setName(e.target.value)} placeholder="GamingID Org" style={{paddingLeft:14}}/>
+          </div>
+        )}
+        <div style={{marginBottom:14}}>
+          <label style={{display:'flex',alignItems:'center',gap:6,marginBottom:6,fontSize:10,fontFamily:'var(--fm)',color:'var(--muted)',letterSpacing:1}}>✉ {i.email}</label>
+          <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="kamu@email.com" onKeyDown={e=>e.key==='Enter'&&submit()}/>
+        </div>
+        <div style={{marginBottom:22,position:'relative'}}>
+          <label style={{display:'flex',alignItems:'center',gap:6,marginBottom:6,fontSize:10,fontFamily:'var(--fm)',color:'var(--muted)',letterSpacing:1}}>🔑 {i.password}</label>
+          <input type={showPass?'text':'password'} value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==='Enter'&&submit()} style={{paddingRight:40}}/>
+          <button onClick={()=>setShowPass(!showPass)} style={{position:'absolute',right:12,bottom:10,background:'none',border:'none',cursor:'pointer',fontSize:14,color:'var(--muted)',lineHeight:1}}>{showPass?'🙈':'👁'}</button>
+        </div>
+        {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:16,padding:'10px 14px',background:'rgba(255,45,85,0.06)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',alignItems:'center',gap:8}}><span>⚠</span><span>{err}</span></div>}
+        <button className="btn btn-cyan btn-full" onClick={submit} disabled={!email||!pass||loading} style={{fontSize:12,padding:14,borderRadius:8}}>
+          {loading?<><Spinner size={14} color="#000"/> Memproses...</>:mode==='login'?i.btn_login:i.btn_register}
+        </button>
+        {mode==='login'&&<div style={{textAlign:'center',marginTop:16,fontSize:11,color:'var(--muted)'}}>Belum punya akun? <span onClick={()=>setMode('register')} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>Daftar sekarang →</span></div>}
+        {mode==='register'&&<div style={{textAlign:'center',marginTop:16,fontSize:11,color:'var(--muted)'}}>Sudah punya akun? <span onClick={()=>setMode('login')} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>Masuk →</span></div>}
+      </div>
+      <div style={{textAlign:'center',marginTop:16,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA</div>
     </div>
-    <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:12,padding:'28px 24px',boxShadow:'var(--shadow)'}}>
-      <div style={{display:'flex',background:'rgba(255,255,255,0.04)',borderRadius:6,padding:3,marginBottom:22}}>{[{id:'login',label:i.login},{id:'register',label:i.register}].map(t=><button key={t.id} onClick={()=>{setMode(t.id);setErr('')}} style={{flex:1,padding:9,border:'none',borderRadius:4,cursor:'pointer',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1,transition:'all 0.2s',background:mode===t.id?'var(--cyan)':'transparent',color:mode===t.id?'#000':'var(--muted)'}}>{t.label}</button>)}</div>
-      {mode==='register'&&<div style={{marginBottom:13}}><label>{i.community}</label><input value={name} onChange={e=>setName(e.target.value)} placeholder="GamingID Org"/></div>}
-      <div style={{marginBottom:13}}><label>{i.email}</label><input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="kamu@email.com"/></div>
-      <div style={{marginBottom:20}}><label>{i.password}</label><input type="password" value={pass} onChange={e=>setPass(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==='Enter'&&submit()}/></div>
-      {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:13,padding:'9px 12px',background:'rgba(255,45,85,0.06)',borderRadius:5,border:'1px solid rgba(255,45,85,0.2)'}}>⚠ {err}</div>}
-      <button className="btn btn-cyan btn-full" onClick={submit} disabled={!email||!pass||loading} style={{fontSize:12,padding:13}}>{loading?<><Spinner size={13} color="#000"/>...</>:mode==='login'?i.btn_login:i.btn_register}</button>
-    </div>
-  </div></div>
+  </div>
 }
+
 
 function useData(userId,toast){
   const[tournaments,setT]=useState([]);const[teams,setTeams]=useState([]);const[loading,setL]=useState(true)
@@ -485,57 +550,215 @@ function TournamentList({tournaments,updateT,deleteT,setPage,setEditT,toast,onPr
 function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   const i=T[lang]||T.id
   const empty={name:'',game:GAMES[0],prize:'',entry:'',slots:'16',format:FORMATS[0],date:'',city:'',description:''}
-  const[form,setForm]=useState(editData?{...editData,description:editData.description||''}:empty);const[saving,setSaving]=useState(false)
+  const[form,setForm]=useState(editData?{...editData,description:editData.description||''}:empty)
+  const[saving,setSaving]=useState(false)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
   useEffect(()=>{setForm(editData?{...editData,description:editData.description||''}:empty)},[editData?.id])
-  const submit=async()=>{if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return;}setSaving(true);if(editData)await updateT(editData.id,{name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,city:form.city,description:form.description});else await addT({name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,city:form.city,description:form.description,registered:0,status:'pending'});setForm(empty);setEditT(null);setSaving(false)}
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:640}}>
-    <div style={{marginBottom:16}}><h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700,color:'var(--cyan)'}}>{editData?i.edit_title:i.create_title}</h1></div>
-    <div className="card">
-      <div style={{marginBottom:12}}><label>{i.tourn_name}</label><input value={form.name} onChange={set('name')} placeholder="ML Grand Prix 2026"/></div>
-      <div className="g2" style={{marginBottom:12}}><div><label>{i.game}</label><select value={form.game} onChange={set('game')}>{GAMES.map(g=><option key={g}>{g}</option>)}</select></div><div><label>{i.format}</label><select value={form.format} onChange={set('format')}>{FORMATS.map(f=><option key={f}>{f}</option>)}</select></div></div>
-      <div className="g2" style={{marginBottom:12}}><div><label>{i.city}</label><input value={form.city} onChange={set('city')} placeholder="Batam"/></div><div><label>{i.date}</label><input type="date" value={form.date} onChange={set('date')}/></div></div>
-      <hr className="div"/>
-      <div className="g3" style={{marginBottom:12}}><div><label>{i.prize}</label><input type="number" value={form.prize} onChange={set('prize')} placeholder="2000000"/></div><div><label>{i.entry}</label><input type="number" value={form.entry} onChange={set('entry')} placeholder="25000"/></div><div><label>{i.slots}</label><select value={form.slots} onChange={set('slots')}>{[4,8,16,32,64].map(n=><option key={n}>{n}</option>)}</select></div></div>
-      {form.prize&&form.entry&&<div style={{background:'rgba(0,229,255,0.04)',borderRadius:5,padding:'7px 11px',marginBottom:12,fontSize:11,border:'1px solid rgba(0,229,255,0.1)',fontFamily:'var(--fm)'}}><span>Total: <b style={{color:'var(--cyan)'}}>{fmtRp(Number(form.entry)*Number(form.slots))}</b></span> · <span>{i.comm_lbl}: <b style={{color:'var(--orange)'}}>{fmtRp(Number(form.entry)*Number(form.slots)*0.15)}</b></span></div>}
-      <hr className="div"/>
-      <div style={{marginBottom:16}}><label>{i.desc}</label><textarea rows={3} value={form.description} onChange={set('description')} placeholder="Deskripsi turnamen..." style={{resize:'vertical'}}/></div>
-      <div style={{display:'flex',gap:8}}><button className="btn btn-cyan" onClick={submit} disabled={saving}>{saving?<><Spinner size={13} color="#000"/>...</>:editData?i.btn_save:i.btn_create2}</button>{editData&&<button className="btn btn-ghost" onClick={()=>{setEditT(null);setForm(empty)}}>{i.btn_cancel}</button>}</div>
+  const submit=async()=>{
+    if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
+    setSaving(true)
+    const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,city:form.city,description:form.description}
+    if(editData) await updateT(editData.id,data)
+    else await addT({...data,registered:0,status:'pending'})
+    toast(editData?'✓ Turnamen diupdate!':'✓ Turnamen dibuat!','success')
+    setForm(empty);setEditT(null);setSaving(false)
+  }
+  const estTotal=Number(form.entry||0)*Number(form.slots||0)
+  const estComm=estTotal*0.15
+  const fillPct=editData?Math.round(((editData.registered||0)/Number(form.slots||1))*100):0
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:900}}>
+    <div style={{marginBottom:18}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700,color:'var(--cyan)'}}>{editData?i.edit_title:i.create_title}</h1>
+      <p style={{color:'var(--muted)',fontSize:10,marginTop:3,fontFamily:'var(--fm)'}}>LENGKAPI INFORMASI TURNAMEN</p>
     </div>
-  </div>
-}
-
-function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
-  const i=T[lang]||T.id
-  const[selT,setSelT]=useState('all');const[showAdd,setShowAdd]=useState(false);const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''});const[saving,setSaving]=useState(false)
-  const filtered=selT==='all'?teams:teams.filter(t=>t.tournament_id===selT)
-  const submit=async()=>{if(!form.name||!form.captain||!form.tournament_id)return;setSaving(true);await addTeam({name:form.name,captain:form.captain,contact:form.contact,members:Number(form.members),paid:form.paid,tournament_id:form.tournament_id});setShowAdd(false);setSaving(false);setForm({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''})}
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:10}}>
-      <div><h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>{i.teams_title}</h1><p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{filtered.length} TIM · {filtered.filter(t=>t.paid).length} LUNAS</p></div>
-      <button className="btn btn-cyan" onClick={()=>setShowAdd(!showAdd)}>{i.btn_reg_team}</button>
-    </div>
-    <div style={{display:'flex',gap:5,marginBottom:12,flexWrap:'wrap'}}>
-      <button onClick={()=>setSelT('all')} style={{padding:'4px 11px',borderRadius:4,border:'1px solid',cursor:'pointer',fontFamily:'var(--fm)',fontSize:9,textTransform:'uppercase',background:selT==='all'?'var(--cyan)':'transparent',color:selT==='all'?'#000':'var(--muted)',borderColor:selT==='all'?'var(--cyan)':'var(--border)'}}>{i.all}</button>
-      {tournaments.map(t=><button key={t.id} onClick={()=>setSelT(t.id)} style={{padding:'4px 11px',borderRadius:4,border:'1px solid',cursor:'pointer',fontFamily:'var(--fm)',fontSize:9,textTransform:'uppercase',background:selT===t.id?'var(--cyan)':'transparent',color:selT===t.id?'#000':'var(--muted)',borderColor:selT===t.id?'var(--cyan)':'var(--border)'}}>{t.name.split(' ').slice(0,2).join(' ')}</button>)}
-    </div>
-    {showAdd&&<div className="card" style={{marginBottom:12,borderColor:'rgba(0,229,255,0.3)'}}>
-      <div className="g2" style={{marginBottom:10}}><div><label>{i.team_name}</label><input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Alpha Squad"/></div><div><label>{i.captain}</label><input value={form.captain} onChange={e=>setForm(f=>({...f,captain:e.target.value}))} placeholder="Nama Kapten"/></div></div>
-      <div className="g3" style={{marginBottom:10}}><div><label>{i.contact}</label><input value={form.contact} onChange={e=>setForm(f=>({...f,contact:e.target.value}))} placeholder="08xx"/></div><div><label>{i.members}</label><select value={form.members} onChange={e=>setForm(f=>({...f,members:e.target.value}))}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div><div><label>{i.tournament}</label><select value={form.tournament_id} onChange={e=>setForm(f=>({...f,tournament_id:e.target.value}))}>{tournaments.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div></div>
-      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}><input type="checkbox" checked={form.paid} onChange={e=>setForm(f=>({...f,paid:e.target.checked}))} style={{width:14,height:14,accentColor:'var(--cyan)'}}/><span style={{fontSize:13}}>{i.paid_lbl}</span></div>
-      <div style={{display:'flex',gap:7}}><button className="btn btn-cyan" onClick={submit} disabled={saving}>{saving?<Spinner size={13} color="#000"/>:i.btn_reg2}</button><button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>{i.btn_cancel}</button></div>
-    </div>}
-    <div className="card" style={{padding:0,overflow:'hidden'}}>
-      <div style={{overflowX:'auto'}}>
-        <table style={{width:'100%',borderCollapse:'collapse',minWidth:480}}>
-          <thead><tr style={{borderBottom:'1px solid var(--border)'}}>{[i.team_name,i.captain,i.contact,i.members,i.tournament,'✓','⋯'].map(h=><th key={h} style={{padding:'9px 12px',textAlign:'left',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,textTransform:'uppercase',fontWeight:400}}>{h}</th>)}</tr></thead>
-          <tbody>{filtered.map((t,idx)=>{const tr=tournaments.find(x=>x.id===t.tournament_id);return <tr key={t.id} style={{borderBottom:'1px solid var(--border)',background:idx%2===0?'transparent':'rgba(255,255,255,0.01)'}}><td style={{padding:'9px 12px',fontWeight:600,fontSize:13}}>{t.name}</td><td style={{padding:'9px 12px',fontSize:12,color:'var(--muted)'}}>{t.captain}</td><td style={{padding:'9px 12px',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)'}}>{t.contact||'-'}</td><td style={{padding:'9px 12px',textAlign:'center',fontFamily:'var(--fm)',fontSize:11}}>{t.members}</td><td style={{padding:'9px 12px',fontSize:11,color:'var(--cyan)',fontFamily:'var(--fm)'}}>{tr?.name||'-'}</td><td style={{padding:'9px 12px'}}><button onClick={()=>updateTeam(t.id,{paid:!t.paid})} style={{background:'none',border:'none',cursor:'pointer',fontSize:14}}>{t.paid?'✅':'⬜'}</button></td><td style={{padding:'9px 12px'}}><button onClick={()=>deleteTeam(t.id,t.tournament_id)} style={{background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.2)',borderRadius:3,padding:'3px 8px',color:'var(--red)',cursor:'pointer',fontSize:10}}>✕</button></td></tr>})}</tbody>
-        </table>
-        {filtered.length===0&&<div style={{textAlign:'center',padding:24,color:'var(--muted)',fontSize:12}}>{i.no_teams}</div>}
+    <div style={{display:'grid',gridTemplateColumns:'1fr 340px',gap:16,alignItems:'start'}}>
+      {/* FORM */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:14}}>INFO DASAR</div>
+        <div style={{marginBottom:12}}><label>{i.tourn_name}</label><input value={form.name} onChange={set('name')} placeholder="ML Grand Prix 2026"/></div>
+        <div className="g2" style={{marginBottom:12}}>
+          <div><label>{i.game}</label><select value={form.game} onChange={set('game')}>{GAMES.map(g=><option key={g}>{g}</option>)}</select></div>
+          <div><label>{i.format}</label><select value={form.format} onChange={set('format')}>{FORMATS.map(f=><option key={f}>{f}</option>)}</select></div>
+        </div>
+        <div className="g2" style={{marginBottom:12}}>
+          <div><label>📍 {i.city}</label><input value={form.city} onChange={set('city')} placeholder="Jakarta"/></div>
+          <div><label>📅 {i.date}</label><input type="date" value={form.date} onChange={set('date')}/></div>
+        </div>
+        <hr className="div"/>
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:14}}>PRIZE & BIAYA</div>
+        <div className="g3" style={{marginBottom:12}}>
+          <div><label>🏆 {i.prize}</label><input type="number" value={form.prize} onChange={set('prize')} placeholder="2000000"/></div>
+          <div><label>🎫 {i.entry}</label><input type="number" value={form.entry} onChange={set('entry')} placeholder="25000"/></div>
+          <div><label>👥 {i.slots}</label><select value={form.slots} onChange={set('slots')}>{[4,8,16,32,64].map(n=><option key={n}>{n}</option>)}</select></div>
+        </div>
+        <hr className="div"/>
+        <div style={{marginBottom:16}}><label>📝 {i.desc}</label><textarea rows={3} value={form.description} onChange={set('description')} placeholder="Deskripsi, syarat, info hadiah..." style={{resize:'vertical'}}/></div>
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-cyan" onClick={submit} disabled={saving} style={{minWidth:130}}>
+            {saving?<><Spinner size={13} color="#000"/> Menyimpan...</>:editData?i.btn_save:i.btn_create2}
+          </button>
+          {editData&&<button className="btn btn-ghost" onClick={()=>{setEditT(null);setForm(empty)}}>{i.btn_cancel}</button>}
+        </div>
+      </div>
+      {/* LIVE PREVIEW */}
+      <div style={{display:'flex',flexDirection:'column',gap:12}}>
+        <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:12,padding:18,position:'sticky',top:20}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>👁 PREVIEW PESERTA</div>
+          <div style={{textAlign:'center',marginBottom:14}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:6}}>🎮 {form.game||'Game'}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,marginBottom:4,lineHeight:1.2}}>{form.name||'Nama Turnamen'}</div>
+            <div style={{fontSize:11,color:'var(--muted)',marginBottom:10}}>📍 {form.city||'Kota'} · 📅 {form.date||'Tanggal'}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:22,color:'var(--yellow)',fontWeight:900}}>{form.prize?fmtRp(Number(form.prize)):'Rp 0'}</div>
+            <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:2}}>PRIZE POOL</div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
+            {[
+              {label:'Entry Fee',val:form.entry?fmtRp(Number(form.entry))+'/tim':'—'},
+              {label:'Slot',val:`${editData?.registered||0}/${form.slots} Tim`},
+              {label:'Format',val:form.format||'—'},
+              {label:'Status',val:editData?.status||'pending'},
+            ].map(s=><div key={s.label} style={{background:'rgba(255,255,255,0.04)',borderRadius:6,padding:'8px 10px'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
+              <div style={{fontSize:11,fontWeight:600,marginTop:2}}>{s.val}</div>
+            </div>)}
+          </div>
+          {editData&&<div style={{marginBottom:12}}>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:10,marginBottom:4}}><span style={{color:'var(--muted)',fontFamily:'var(--fm)',fontSize:9}}>SLOT TERISI</span><span style={{fontFamily:'var(--fm)',fontSize:9,color:fillPct>=90?'var(--red)':'var(--cyan)'}}>{fillPct}%</span></div>
+            <div className="pbar"><div className="pfill" style={{width:fillPct+'%',background:fillPct>=90?'var(--red)':fillPct>=70?'var(--orange)':'var(--cyan)'}}/></div>
+          </div>}
+          {estTotal>0&&<div style={{borderTop:'1px solid var(--border)',paddingTop:12}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>ESTIMASI PENDAPATAN</div>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:12,marginBottom:4}}><span>Total Entry</span><span style={{fontFamily:'var(--fh)',color:'var(--cyan)'}}>{fmtRp(estTotal)}</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',fontSize:12}}><span>Komisi 15%</span><span style={{fontFamily:'var(--fh)',color:'var(--green)'}}>{fmtRp(estComm)}</span></div>
+          </div>}
+        </div>
       </div>
     </div>
   </div>
 }
+
+
+function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
+  const i=T[lang]||T.id
+  const[selT,setSelT]=useState('all')
+  const[showAdd,setShowAdd]=useState(false)
+  const[search,setSearch]=useState('')
+  const[viewMode,setViewMode]=useState('table') // 'table' or 'cards'
+  const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''})
+  const[saving,setSaving]=useState(false)
+  const filtered=(selT==='all'?teams:teams.filter(t=>t.tournament_id===selT))
+    .filter(t=>!search||t.name.toLowerCase().includes(search.toLowerCase())||t.captain.toLowerCase().includes(search.toLowerCase()))
+  const paidCount=filtered.filter(t=>t.paid).length
+  const submit=async()=>{
+    if(!form.name||!form.captain||!form.tournament_id)return
+    setSaving(true)
+    await addTeam({name:form.name,captain:form.captain,contact:form.contact,members:Number(form.members),paid:form.paid,tournament_id:form.tournament_id})
+    setShowAdd(false);setSaving(false)
+    setForm({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''})
+  }
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:10}}>
+      <div>
+        <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>{i.teams_title}</h1>
+        <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{filtered.length} TIM · <span style={{color:'var(--green)'}}>{paidCount} LUNAS</span> · <span style={{color:'var(--orange)'}}>{filtered.length-paidCount} BELUM</span></p>
+      </div>
+      <div style={{display:'flex',gap:8,alignItems:'center'}}>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Cari tim/kapten..." style={{width:160,padding:'7px 12px',fontSize:12}}/>
+        <button onClick={()=>setViewMode(v=>v==='table'?'cards':'table')} className="btn btn-dark btn-sm" style={{padding:'6px 10px'}}>{viewMode==='table'?'⊞ Cards':'☰ Tabel'}</button>
+        <button className="btn btn-cyan" onClick={()=>setShowAdd(!showAdd)}>{i.btn_reg_team}</button>
+      </div>
+    </div>
+    {/* Tournament filter tabs */}
+    <div style={{display:'flex',gap:5,marginBottom:12,flexWrap:'wrap'}}>
+      {[{id:'all',label:i.all,count:teams.length},...tournaments.map(t=>({id:t.id,label:t.name.split(' ').slice(0,2).join(' '),count:teams.filter(x=>x.tournament_id===t.id).length}))].map(tab=>(
+        <button key={tab.id} onClick={()=>setSelT(tab.id)} style={{padding:'4px 11px',borderRadius:5,border:'1px solid',cursor:'pointer',fontFamily:'var(--fm)',fontSize:9,textTransform:'uppercase',letterSpacing:1,transition:'var(--trans)',display:'flex',alignItems:'center',gap:5,background:selT===tab.id?'var(--cyan)':'transparent',color:selT===tab.id?'#000':'var(--muted)',borderColor:selT===tab.id?'var(--cyan)':'var(--border)'}}>
+          {tab.label}<span style={{background:selT===tab.id?'rgba(0,0,0,0.15)':'rgba(255,255,255,0.1)',padding:'0 4px',borderRadius:10,fontSize:8}}>{tab.count}</span>
+        </button>
+      ))}
+    </div>
+    {/* Add team form */}
+    {showAdd&&<div className="card" style={{marginBottom:12,borderColor:'rgba(0,229,255,0.3)',background:'rgba(0,229,255,0.02)'}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>＋ DAFTARKAN TIM BARU</div>
+      <div className="g2" style={{marginBottom:10}}>
+        <div><label>{i.team_name}</label><input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Alpha Squad"/></div>
+        <div><label>{i.captain}</label><input value={form.captain} onChange={e=>setForm(f=>({...f,captain:e.target.value}))} placeholder="Nama Kapten"/></div>
+      </div>
+      <div className="g3" style={{marginBottom:10}}>
+        <div><label>📱 {i.contact}</label><input value={form.contact} onChange={e=>setForm(f=>({...f,contact:e.target.value}))} placeholder="08xx" type="tel"/></div>
+        <div><label>👥 {i.members}</label><select value={form.members} onChange={e=>setForm(f=>({...f,members:e.target.value}))}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
+        <div><label>🏆 {i.tournament}</label><select value={form.tournament_id} onChange={e=>setForm(f=>({...f,tournament_id:e.target.value}))}>{tournaments.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
+      </div>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12,padding:'8px 12px',background:'rgba(255,215,0,0.05)',borderRadius:6,border:'1px solid rgba(255,215,0,0.15)'}}>
+        <input type="checkbox" checked={form.paid} onChange={e=>setForm(f=>({...f,paid:e.target.checked}))} style={{width:16,height:16,accentColor:'var(--cyan)',cursor:'pointer'}}/>
+        <span style={{fontSize:13,cursor:'pointer'}} onClick={()=>setForm(f=>({...f,paid:!f.paid}))}>{i.paid_lbl}</span>
+        {form.paid&&<span style={{marginLeft:'auto',fontSize:10,color:'var(--green)',fontFamily:'var(--fm)'}}>✓ LUNAS</span>}
+      </div>
+      <div style={{display:'flex',gap:8}}>
+        <button className="btn btn-cyan" onClick={submit} disabled={saving}>{saving?<Spinner size={13} color="#000"/>:i.btn_reg2}</button>
+        <button className="btn btn-ghost" onClick={()=>setShowAdd(false)}>{i.btn_cancel}</button>
+      </div>
+    </div>}
+    {/* TABLE VIEW */}
+    {viewMode==='table'&&<div className="card" style={{padding:0,overflow:'hidden'}}>
+      <div style={{overflowX:'auto'}}>
+        <table style={{width:'100%',borderCollapse:'collapse',minWidth:500}}>
+          <thead><tr style={{borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)'}}>
+            {['#',i.team_name,i.captain,i.contact,i.members,'Turnamen','Bayar',''].map((h,i)=>(
+              <th key={i} style={{padding:'10px 12px',textAlign:'left',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,fontWeight:400}}>{h}</th>
+            ))}
+          </tr></thead>
+          <tbody>{filtered.length===0
+            ?<tr><td colSpan={8} style={{padding:28,textAlign:'center',color:'var(--muted)',fontSize:12}}>{i.no_teams}</td></tr>
+            :filtered.map((t,idx)=>{
+              const tr=tournaments.find(x=>x.id===t.tournament_id)
+              return <tr key={t.id} style={{borderBottom:'1px solid rgba(255,255,255,0.03)',transition:'background 0.15s'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.02)'} onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+                <td style={{padding:'10px 12px',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)'}}>{idx+1}</td>
+                <td style={{padding:'10px 12px',fontWeight:700,fontSize:13}}>{t.name}</td>
+                <td style={{padding:'10px 12px',fontSize:12,color:'var(--text2)'}}>{t.captain}</td>
+                <td style={{padding:'10px 12px',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)'}}>{t.contact||'—'}</td>
+                <td style={{padding:'10px 12px',textAlign:'center',fontFamily:'var(--fh)',fontSize:12,color:'var(--cyan)'}}>{t.members}</td>
+                <td style={{padding:'10px 12px',fontSize:11,color:'var(--cyan)',fontFamily:'var(--fm)',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{tr?.name||'—'}</td>
+                <td style={{padding:'10px 12px'}}>
+                  <button onClick={()=>updateTeam(t.id,{paid:!t.paid})} style={{background:'none',border:'none',cursor:'pointer',fontSize:18,padding:0,display:'block'}} title="Toggle bayar">{t.paid?'✅':'⬜'}</button>
+                </td>
+                <td style={{padding:'10px 12px'}}>
+                  <button onClick={()=>deleteTeam(t.id,t.tournament_id)} className="btn btn-danger btn-sm" style={{padding:'3px 8px',fontSize:9}}>✕</button>
+                </td>
+              </tr>
+            })
+          }</tbody>
+        </table>
+      </div>
+    </div>}
+    {/* CARDS VIEW */}
+    {viewMode==='cards'&&<div>
+      {filtered.length===0
+        ?<div className="card" style={{textAlign:'center',padding:'30px',color:'var(--muted)'}}><div style={{fontSize:28,marginBottom:8}}>👥</div><div style={{fontFamily:'var(--fm)',fontSize:10,letterSpacing:2}}>{i.no_teams}</div></div>
+        :<div className="g3">
+          {filtered.map((t,idx)=>{
+            const tr=tournaments.find(x=>x.id===t.tournament_id)
+            return <div key={t.id} className="card" style={{padding:14,borderColor:t.paid?'rgba(0,255,136,0.2)':'var(--border)'}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
+                <div style={{width:36,height:36,borderRadius:9,background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:14,color:'#000',flexShrink:0}}>{idx+1}</div>
+                <button onClick={()=>updateTeam(t.id,{paid:!t.paid})} style={{background:'none',border:'none',cursor:'pointer',fontSize:18}}>{t.paid?'✅':'⬜'}</button>
+              </div>
+              <div style={{fontWeight:700,fontSize:14,marginBottom:3}}>{t.name}</div>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>👤 {t.captain}{t.contact&&` · 📱 ${t.contact}`}</div>
+              <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}}>
+                <span className="tag tag-active" style={{fontSize:8}}>{t.members} Member</span>
+                {t.paid&&<span className="tag tag-active" style={{fontSize:8}}>✓ LUNAS</span>}
+                {!t.paid&&<span className="tag tag-pending" style={{fontSize:8}}>⏳ BELUM</span>}
+              </div>
+              <div style={{fontSize:10,color:'var(--cyan)',fontFamily:'var(--fm)',borderTop:'1px solid var(--border)',paddingTop:8}}>{tr?.name||'—'}</div>
+              <button onClick={()=>deleteTeam(t.id,t.tournament_id)} className="btn btn-danger btn-sm" style={{marginTop:8,padding:'4px 10px',fontSize:9}}>✕ Hapus</button>
+            </div>
+          })}
+        </div>
+      }
+    </div>}
+  </div>
+}
+
 
 function Finance({tournaments,teams,lang}){
   const i=T[lang]||T.id
@@ -587,49 +810,134 @@ function Finance({tournaments,teams,lang}){
 
 function RevenuePage({tournaments,teams,toast,lang}){
   const i=T[lang]||T.id
-  const[showWd,setShowWd]=useState(false);const[wdAmt,setWdAmt]=useState('');const[wdH,setWdH]=useState([{id:'w1',date:'2026-05-28',amount:450000,status:'cair',method:'BCA 1234xxxx'}])
-  const rows=tournaments.map(t=>{const p=teams.filter(x=>x.tournament_id===t.id&&x.paid).length;const g=p*Number(t.entry);return{...t,comm:g*0.15,sp:t.status==='closed'?Number(t.prize)*0.08:0,pr:t.status!=='pending'?50000:0}})
-  const tC=rows.reduce((s,r)=>s+r.comm,0),grand=rows.reduce((s,r)=>s+r.comm+r.sp+r.pr,0),totalWd=wdH.reduce((s,w)=>s+w.amount,0),saldo=grand-totalWd
-  const doWd=()=>{const a=Number(wdAmt);if(!a||a<10000){toast('Min Rp10.000','error');return;}if(a>saldo){toast('Saldo tidak cukup!','error');return;}setWdH(p=>[{id:uid(),date:new Date().toISOString().slice(0,10),amount:a,status:'proses',method:'BCA'},...p]);toast(`${fmtRp(a)} sedang diproses ✓`,'success');setWdAmt('');setShowWd(false)}
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:18,flexWrap:'wrap',gap:11}}>
-      <div><h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700,color:'var(--cyan)'}}>{i.rev_title}</h1><p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)',letterSpacing:1}}>{i.rev_sub}</p></div>
-      <button className="btn btn-orange" onClick={()=>setShowWd(true)}>{i.withdraw_btn}</button>
+  const[showWd,setShowWd]=useState(false)
+  const[wdAmt,setWdAmt]=useState('')
+  const[wdAcc,setWdAcc]=useState('')
+  const[wdH,setWdH]=useState([
+    {id:'w1',date:'2026-05-28',amount:450000,status:'cair',method:'BCA ••••1234'},
+    {id:'w2',date:'2026-05-15',amount:250000,status:'cair',method:'OVO 0812••••'},
+  ])
+  const rows=tournaments.map(t=>{
+    const paidTeams=teams.filter(x=>x.tournament_id===t.id&&x.paid).length
+    const totalTeams=teams.filter(x=>x.tournament_id===t.id).length
+    const gross=paidTeams*Number(t.entry)
+    const comm=gross*0.15
+    const bonus=t.status==='closed'?Number(t.prize)*0.02:0
+    return{...t,paidTeams,totalTeams,gross,comm,bonus,total:comm+bonus}
+  })
+  const totalComm=rows.reduce((s,r)=>s+r.comm,0)
+  const totalBonus=rows.reduce((s,r)=>s+r.bonus,0)
+  const grand=totalComm+totalBonus
+  const totalWd=wdH.reduce((s,w)=>s+w.amount,0)
+  const saldo=grand-totalWd
+  const maxComm=Math.max(...rows.map(r=>r.total),1)
+
+  const doWithdraw=()=>{
+    const amt=Number(wdAmt)
+    if(!amt||amt>saldo||!wdAcc){toast('Cek jumlah & rekening!','error');return}
+    setWdH(h=>[{id:'w'+Date.now(),date:new Date().toISOString().split('T')[0],amount:amt,status:'proses',method:wdAcc},...h])
+    setWdAmt('');setWdAcc('');setShowWd(false)
+    toast('✓ Permintaan withdraw dikirim!','success')
+  }
+
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:900}}>
+    <div style={{marginBottom:20}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.rev_title}</h1>
+      <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{i.rev_sub}</p>
     </div>
-    <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:10,padding:20,marginBottom:16,position:'relative',overflow:'hidden'}}>
-      <div style={{position:'absolute',top:10,right:12,fontSize:9,fontFamily:'var(--fm)',color:'var(--cyan)',letterSpacing:1,display:'flex',alignItems:'center',gap:4}}><span className="live-dot"/>REALTIME</div>
-      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:5}}>{i.saldo}</div>
-      <div style={{fontFamily:'var(--fh)',fontSize:26,fontWeight:900,color:'var(--cyan)',marginBottom:3}}>{fmtRp(saldo)}</div>
-      <div style={{fontSize:11,color:'var(--muted)',fontFamily:'var(--fm)'}}>{i.income} <span style={{color:'var(--green)'}}>{fmtRp(grand)}</span> · {i.withdrawn} <span style={{color:'var(--orange)'}}>{fmtRp(totalWd)}</span></div>
-    </div>
-    <div className="g4" style={{marginBottom:16}}>
-      <div className="stat-card" style={{'--accent-color':'var(--cyan)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>🎫 {i.comm_lbl}</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',fontWeight:900}}>{fmtRp(tC)}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--orange)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>🏅 Sponsorship</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--orange)',fontWeight:900}}>{fmtRp(rows.reduce((s,r)=>s+r.sp,0))}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--green)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>⭐ Premium</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--green)',fontWeight:900}}>{fmtRp(rows.reduce((s,r)=>s+r.pr,0))}</div></div>
-      <div className="stat-card" style={{'--accent-color':'var(--yellow)'}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>📊 {i.tourn_title}</div><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--yellow)',fontWeight:900}}>{tournaments.length}</div></div>
-    </div>
-    <div className="card" style={{marginBottom:14}}>
-      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>{i.comm_per}</div>
-      {rows.length===0&&<div style={{color:'var(--muted)',fontSize:12,textAlign:'center',padding:'18px 0'}}>{i.no_tourn_yet}</div>}
-      {[...rows].sort((a,b)=>(b.comm+b.sp+b.pr)-(a.comm+a.sp+a.pr)).map((r,idx)=>{const total=r.comm+r.sp+r.pr;const mx=rows.reduce((m,x)=>Math.max(m,x.comm+x.sp+x.pr),1);return <div key={r.id} style={{marginBottom:11}}>
-        <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,flexWrap:'wrap',gap:3}}>
-          <div style={{display:'flex',gap:7,alignItems:'center'}}><span style={{fontFamily:'var(--fm)',fontSize:9,color:idx===0?'var(--yellow)':'var(--muted)',width:14}}>#{idx+1}</span><div style={{fontSize:13,fontWeight:600}}>{r.name}</div></div>
-          <div style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--cyan)'}}>{fmtRp(total)}</div>
+    {/* SALDO CARD */}
+    <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.1),rgba(0,255,136,0.06))',border:'1px solid rgba(0,229,255,0.25)',borderRadius:14,padding:'22px 24px',marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:14}}>
+      <div>
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2,marginBottom:6}}>{i.saldo}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:32,fontWeight:900,color:'var(--green)'}}>{fmtRp(Math.max(0,saldo))}</div>
+        <div style={{display:'flex',gap:16,marginTop:8}}>
+          <span style={{fontSize:11,color:'var(--muted)'}}>{i.income} <b style={{color:'var(--cyan)'}}>{fmtRp(grand)}</b></span>
+          <span style={{fontSize:11,color:'var(--muted)'}}>{i.withdrawn} <b style={{color:'var(--orange)'}}>{fmtRp(totalWd)}</b></span>
         </div>
-        <div className="pbar"><div className="pfill" style={{width:`${(total/mx)*100}%`,background:idx===0?'var(--yellow)':'var(--cyan)'}}/></div>
-      </div>})}
+      </div>
+      <button className="btn btn-green" onClick={()=>setShowWd(!showWd)} style={{minWidth:140,fontSize:11}}>
+        {i.withdraw_btn}
+      </button>
     </div>
-    {showWd&&<div className="overlay" onClick={e=>{if(e.target===e.currentTarget)setShowWd(false)}}>
-      <div className="modal" style={{maxWidth:360}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}><div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--orange)',letterSpacing:1}}>{i.withdraw_title}</div><button onClick={()=>setShowWd(false)} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:20}}>×</button></div>
-        <div style={{background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:6,padding:'11px 13px',marginBottom:13}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:3,letterSpacing:1}}>{i.saldo_lbl}</div><div style={{fontFamily:'var(--fh)',fontSize:19,color:'var(--cyan)',fontWeight:700}}>{fmtRp(saldo)}</div></div>
-        <div style={{marginBottom:11}}><label>{i.amount_lbl}</label><input type="number" value={wdAmt} onChange={e=>setWdAmt(e.target.value)} placeholder="Min Rp 10.000"/></div>
-        <div style={{marginBottom:16}}><label>{i.acc_lbl}</label><input value="BCA 1234xxxx" readOnly style={{color:'var(--muted)'}}/></div>
-        <div style={{display:'flex',gap:8}}><button className="btn btn-orange btn-full" onClick={doWd}>{i.btn_wd}</button><button className="btn btn-ghost" onClick={()=>setShowWd(false)}>{i.btn_cancel}</button></div>
+    {/* WITHDRAW MODAL */}
+    {showWd&&<div className="card" style={{marginBottom:16,borderColor:'rgba(0,255,136,0.3)',background:'rgba(0,255,136,0.02)'}}>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:1,marginBottom:14}}>{i.withdraw_title}</div>
+      <div className="g2" style={{marginBottom:12}}>
+        <div>
+          <label>{i.amount_lbl} (maks. {fmtRp(saldo)})</label>
+          <input type="number" value={wdAmt} onChange={e=>setWdAmt(e.target.value)} placeholder="Jumlah withdraw" max={saldo}/>
+        </div>
+        <div>
+          <label>{i.acc_lbl}</label>
+          <input value={wdAcc} onChange={e=>setWdAcc(e.target.value)} placeholder="BCA 1234567890"/>
+        </div>
+      </div>
+      {wdAmt&&Number(wdAmt)>0&&<div style={{padding:'8px 12px',background:'rgba(0,229,255,0.04)',borderRadius:6,marginBottom:12,fontSize:11,fontFamily:'var(--fm)',border:'1px solid rgba(0,229,255,0.1)'}}>
+        Withdraw: <b style={{color:'var(--cyan)'}}>{fmtRp(Number(wdAmt))}</b> · Sisa: <b style={{color:'var(--green)'}}>{fmtRp(saldo-Number(wdAmt))}</b>
+      </div>}
+      <div style={{display:'flex',gap:8}}>
+        <button className="btn btn-green" onClick={doWithdraw} disabled={!wdAmt||Number(wdAmt)>saldo||!wdAcc}>{i.btn_wd}</button>
+        <button className="btn btn-ghost" onClick={()=>setShowWd(false)}>{i.btn_cancel}</button>
       </div>
     </div>}
+    {/* STAT CARDS */}
+    <div className="g4" style={{marginBottom:16}}>
+      {[
+        {label:'Total Komisi',val:fmtRp(totalComm),icon:'📈',color:'var(--cyan)'},
+        {label:'Bonus Closed',val:fmtRp(totalBonus),icon:'🎁',color:'var(--green)'},
+        {label:'Total Dicairkan',val:fmtRp(totalWd),icon:'💸',color:'var(--orange)'},
+        {label:'Saldo Tersedia',val:fmtRp(Math.max(0,saldo)),icon:'💰',color:'var(--yellow)'},
+      ].map((s,idx)=><div key={idx} className="stat-card" style={{'--accent-color':s.color}}>
+        <div style={{fontSize:20,marginBottom:8}}>{s.icon}</div>
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:s.color,marginTop:4}}>{s.val}</div>
+      </div>)}
+    </div>
+    <div className="g2" style={{gap:14}}>
+      {/* KOMISI PER TURNAMEN */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>{i.comm_per}</div>
+        {rows.length===0
+          ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>{i.no_tourn_yet}</div>
+          :rows.map((r,idx)=>(
+            <div key={r.id} style={{marginBottom:12,paddingBottom:12,borderBottom:idx<rows.length-1?'1px solid var(--border)':'none'}}>
+              <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+                <div>
+                  <div style={{fontSize:12,fontWeight:600}}>{r.name}</div>
+                  <div style={{fontSize:10,color:'var(--muted)'}}>{r.paidTeams}/{r.totalTeams} tim lunas</div>
+                </div>
+                <div style={{textAlign:'right'}}>
+                  <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)'}}>{fmtRp(r.total)}</div>
+                  <span className={`tag tag-${r.status}`} style={{fontSize:8}}>{r.status}</span>
+                </div>
+              </div>
+              <div className="pbar">
+                <div className="pfill" style={{width:Math.round(r.total/maxComm*100)+'%',background:'linear-gradient(90deg,var(--cyan),var(--green))'}}/>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      {/* RIWAYAT WITHDRAW */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:14}}>RIWAYAT WITHDRAW</div>
+        {wdH.length===0
+          ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>Belum ada riwayat</div>
+          :wdH.map(w=>(
+            <div key={w.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+              <div>
+                <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,color:w.status==='cair'?'var(--green)':'var(--yellow)'}}>{fmtRp(w.amount)}</div>
+                <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>📅 {w.date} · {w.method}</div>
+              </div>
+              <span className={`tag ${w.status==='cair'?'tag-active':'tag-pending'}`} style={{fontSize:8}}>{w.status==='cair'?'✓ CAIR':'⏳ PROSES'}</span>
+            </div>
+          ))
+        }
+      </div>
+    </div>
   </div>
 }
+
 
 function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
@@ -814,6 +1122,7 @@ function Settings({user,lang,toast}){
   const saveBankFn=()=>{localStorage.setItem(BANK_KEY,JSON.stringify(bank));setBankSaved(true);setTimeout(()=>setBankSaved(false),2200);if(toast)toast('✓ Info bank tersimpan!','success')}
   const saveProfFn=()=>{saveProf(prof);setProfSaved(true);setTimeout(()=>setProfSaved(false),2200);window.dispatchEvent(new Event('profile-updated'));if(toast)toast('✓ Profil tersimpan!','success')}
   const emailName=user?.email?.split('@')[0]||'Organizer'
+  const memberSince=user?.created_at?new Date(user.created_at).toLocaleDateString('id-ID',{year:'numeric',month:'long',day:'numeric'}):'—'
   const BANKS=['BCA','BRI','BNI','Mandiri','BSI','DANA','OVO','GoPay','ShopeePay','SeaBank']
   const SEA=[
     {img:'https://flagcdn.com/w40/id.png',country:'Indonesia',status:'active',note:'Pasar utama'},
@@ -926,6 +1235,8 @@ export default function App(){
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
   if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
 
+  // Scroll to top on page change
+  useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
 
   return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}>
