@@ -670,7 +670,10 @@ function Settings({user,lang}){
 
 // APP ROOT — Fix hash routing untuk link peserta
 export default function App(){
-  const[user,setUser]=useState(null);const[loading,setLoading]=useState(true);const[page,setPage]=useState('dashboard');const[editT,setEditT]=useState(null);const[pubTid,setPubTid]=useState(null);const[toasts,setToasts]=useState([])
+  const[user,setUser]=useState(null);const[loading,setLoading]=useState(true);const[page,setPage]=useState('dashboard');const[editT,setEditT]=useState(null);const[toasts,setToasts]=useState([])
+  // Init pubTid LANGSUNG dari hash saat komponen pertama kali render
+  const initTid=()=>{const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/);return(m&&m[1])?decodeURIComponent(m[1]).trim():null}
+  const[pubTid,setPubTid]=useState(initTid)
   const[lang,setLangState]=useState(getLang())
   const[,forceUpdate]=useState(0)
   const setLangFn=l=>{setLangState(l);setLang(l)}
@@ -683,21 +686,13 @@ export default function App(){
     return()=>window.removeEventListener('profile-updated',handler)
   },[])
 
-  // FIXED HASH ROUTING — Tangkap #/daftar/{uuid} dengan benar
+  // Hash routing listener — untuk update jika hash berubah setelah mount
   useEffect(()=>{
     const parse=()=>{
-      const hash=window.location.hash
-      // Match #/daftar/ followed by a UUID (with hyphens) or any non-empty string
-      const m=hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/)
-      if(m&&m[1]){
-        const decoded=decodeURIComponent(m[1]).trim()
-        console.log('[ArenaGG] Public page tid:', decoded)
-        setPubTid(decoded)
-      } else {
-        setPubTid(null)
-      }
+      const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/)
+      if(m&&m[1])setPubTid(decodeURIComponent(m[1]).trim())
+      else setPubTid(null)
     }
-    parse()
     window.addEventListener('hashchange',parse)
     return()=>window.removeEventListener('hashchange',parse)
   },[])
@@ -719,7 +714,9 @@ export default function App(){
     window.history.pushState('',document.title,window.location.pathname+window.location.search)
   }
 
+  // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
   if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
+  // AUTH loading spinner
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
   if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
 
