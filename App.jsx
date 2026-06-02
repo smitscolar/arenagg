@@ -1432,6 +1432,38 @@ function AuthPage({onLogin,lang,setLangFn}){
   const[loading,setL]=useState(false)
   const[err,setErr]=useState('')
   const[showPass,setShowPass]=useState(false)
+  // Fungsi login peserta
+  const doLogin=async()=>{
+    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    setLoginErr('');setLoginL(true)
+    try{
+      const{data:teamData,error}=await supabase
+        .from('teams').select('*,tournaments(*)')
+        .ilike('name',loginName.trim())
+        .eq('contact',loginContact.trim())
+        .eq('tournament_id',tid.trim())
+        .single()
+      if(error||!teamData){
+        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginL(false);return
+      }
+      // Simpan ke localStorage dan redirect ke portal
+      const participant={
+        id:teamData.id,name:teamData.name,captain:teamData.captain,
+        contact:teamData.contact,members:teamData.members,
+        photo:teamData.photo,paid:teamData.paid,
+        tournamentId:teamData.tournament_id,
+        tournament:teamData.tournaments,
+        loginAt:Date.now()
+      }
+      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
+      // Redirect ke portal peserta
+      window.location.hash='#/peserta'
+      window.location.reload()
+    }catch(e){setLoginErr('Error: '+e.message)}
+    setLoginL(false)
+  }
+
   const submit=async()=>{
     setErr('');
     if(!email.includes('@')||!email.includes('.')){setErr('Format email tidak valid.');return}
@@ -1561,6 +1593,11 @@ function ShareModal({t,onClose,toast,onPreview}){
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
   const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:''});const[saving,setSaving]=useState(false)
+  // Login state untuk peserta
+  const[loginName,setLoginName]=useState('')
+  const[loginContact,setLoginContact]=useState('')
+  const[loginLoading,setLoginL]=useState(false)
+  const[loginErr,setLoginErr]=useState('')
   const[lang,setLangState]=useState(getLang())
   const i=T[lang]||T.id
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
@@ -1580,6 +1617,38 @@ function PublicPage({tid,onBack,toast}){
       setL(false)
     };load()
   },[tid])
+  // Fungsi login peserta
+  const doLogin=async()=>{
+    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    setLoginErr('');setLoginL(true)
+    try{
+      const{data:teamData,error}=await supabase
+        .from('teams').select('*,tournaments(*)')
+        .ilike('name',loginName.trim())
+        .eq('contact',loginContact.trim())
+        .eq('tournament_id',tid.trim())
+        .single()
+      if(error||!teamData){
+        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginL(false);return
+      }
+      // Simpan ke localStorage dan redirect ke portal
+      const participant={
+        id:teamData.id,name:teamData.name,captain:teamData.captain,
+        contact:teamData.contact,members:teamData.members,
+        photo:teamData.photo,paid:teamData.paid,
+        tournamentId:teamData.tournament_id,
+        tournament:teamData.tournaments,
+        loginAt:Date.now()
+      }
+      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
+      // Redirect ke portal peserta
+      window.location.hash='#/peserta'
+      window.location.reload()
+    }catch(e){setLoginErr('Error: '+e.message)}
+    setLoginL(false)
+  }
+
   const submit=async()=>{
     if(!form.name||!form.captain||!form.contact){toast('Isi semua field!','error');return}
     setSaving(true)
@@ -1629,7 +1698,41 @@ function PublicPage({tid,onBack,toast}){
         {t.status==='closed'
           ?<div style={{background:'rgba(74,74,106,0.1)',border:'1px solid var(--border)',borderRadius:8,padding:20,textAlign:'center',color:'var(--muted)'}}><div style={{fontSize:24,marginBottom:8}}>🔒</div><div style={{fontFamily:'var(--fh)',fontSize:11}}>{i.closed_msg}</div></div>
           :<button className="btn btn-cyan btn-full" style={{fontSize:13,padding:13,opacity:isFull?0.5:1}} onClick={()=>!isFull&&setStep('form')} disabled={isFull}>{isFull?i.full:i.reg_now}</button>}
+
+      {/* DIVIDER + LOGIN PESERTA */}
+      {t?.status!=='closed'&&<div style={{marginTop:10}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,margin:'8px 0'}}>
+          <div style={{flex:1,height:1,background:'var(--border)'}}/>
+          <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>SUDAH DAFTAR?</span>
+          <div style={{flex:1,height:1,background:'var(--border)'}}/>
+        </div>
+        <button className="btn btn-orange btn-full" style={{fontSize:13,padding:13}} onClick={()=>setStep('login')}>⚡ Login Portal Peserta</button>
       </div>}
+      </div>}
+      {/* LOGIN STEP */}
+      {step==='login'&&<div className="animate-in">
+        <button onClick={()=>setStep('detail')} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:12,marginBottom:14,fontFamily:'var(--fm)'}}>{i.back}</button>
+        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:'var(--orange)',marginBottom:4,letterSpacing:1}}>⚡ PORTAL PESERTA</div>
+        <div style={{fontSize:12,color:'var(--muted)',marginBottom:20}}>Masuk dengan data yang kamu gunakan saat mendaftar</div>
+
+        <div style={{marginBottom:12}}>
+          <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>⚔ NAMA TIM *</label>
+          <input value={loginName} onChange={e=>setLoginName(e.target.value)} placeholder="Nama tim saat mendaftar..." onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/>
+        </div>
+        <div style={{marginBottom:18}}>
+          <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📱 NO. HP *</label>
+          <input value={loginContact} onChange={e=>setLoginContact(e.target.value)} placeholder="08xxxxxxxxxx" type="tel" onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/>
+        </div>
+        {loginErr&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{loginErr}</span></div>}
+        <button className="btn btn-orange btn-full" onClick={doLogin} disabled={!loginName.trim()||!loginContact.trim()||loginLoading} style={{fontSize:12,padding:13}}>
+          {loginLoading?<><Spinner size={14} color="#fff"/> Mencari...</>:'⚡ Masuk ke Portal Peserta'}
+        </button>
+        <div style={{marginTop:14,padding:'10px 12px',background:'rgba(255,107,0,0.05)',borderRadius:7,border:'1px solid rgba(255,107,0,0.15)',fontSize:11,color:'var(--muted)'}}>
+          💡 Gunakan <b style={{color:'var(--text)'}}>Nama Tim</b> dan <b style={{color:'var(--text)'}}>No. HP</b> yang sama persis saat mendaftar
+        </div>
+        <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>Belum daftar? <span onClick={()=>setStep('form')} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>Daftar tim sekarang →</span></div>
+      </div>}
+
       {step==='form'&&<div className="animate-in">
         <button onClick={()=>setStep('detail')} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:12,marginBottom:14,fontFamily:'var(--fm)'}}>{i.back}</button>
         <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4,color:'var(--cyan)'}}>{i.reg_title}</div>
@@ -2006,6 +2109,38 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   const[saving,setSaving]=useState(false)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
   useEffect(()=>{setForm(editData?{...editData,description:editData.description||''}:empty)},[editData?.id])
+  // Fungsi login peserta
+  const doLogin=async()=>{
+    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    setLoginErr('');setLoginL(true)
+    try{
+      const{data:teamData,error}=await supabase
+        .from('teams').select('*,tournaments(*)')
+        .ilike('name',loginName.trim())
+        .eq('contact',loginContact.trim())
+        .eq('tournament_id',tid.trim())
+        .single()
+      if(error||!teamData){
+        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginL(false);return
+      }
+      // Simpan ke localStorage dan redirect ke portal
+      const participant={
+        id:teamData.id,name:teamData.name,captain:teamData.captain,
+        contact:teamData.contact,members:teamData.members,
+        photo:teamData.photo,paid:teamData.paid,
+        tournamentId:teamData.tournament_id,
+        tournament:teamData.tournaments,
+        loginAt:Date.now()
+      }
+      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
+      // Redirect ke portal peserta
+      window.location.hash='#/peserta'
+      window.location.reload()
+    }catch(e){setLoginErr('Error: '+e.message)}
+    setLoginL(false)
+  }
+
   const submit=async()=>{
     if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
     setSaving(true)
@@ -2101,6 +2236,38 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
   const filtered=(selT==='all'?teams:teams.filter(t=>t.tournament_id===selT))
     .filter(t=>!search||t.name.toLowerCase().includes(search.toLowerCase())||t.captain.toLowerCase().includes(search.toLowerCase()))
   const paidCount=filtered.filter(t=>t.paid).length
+  // Fungsi login peserta
+  const doLogin=async()=>{
+    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    setLoginErr('');setLoginL(true)
+    try{
+      const{data:teamData,error}=await supabase
+        .from('teams').select('*,tournaments(*)')
+        .ilike('name',loginName.trim())
+        .eq('contact',loginContact.trim())
+        .eq('tournament_id',tid.trim())
+        .single()
+      if(error||!teamData){
+        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginL(false);return
+      }
+      // Simpan ke localStorage dan redirect ke portal
+      const participant={
+        id:teamData.id,name:teamData.name,captain:teamData.captain,
+        contact:teamData.contact,members:teamData.members,
+        photo:teamData.photo,paid:teamData.paid,
+        tournamentId:teamData.tournament_id,
+        tournament:teamData.tournaments,
+        loginAt:Date.now()
+      }
+      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
+      // Redirect ke portal peserta
+      window.location.hash='#/peserta'
+      window.location.reload()
+    }catch(e){setLoginErr('Error: '+e.message)}
+    setLoginL(false)
+  }
+
   const submit=async()=>{
     if(!form.name||!form.captain||!form.tournament_id)return
     setSaving(true)
