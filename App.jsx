@@ -108,8 +108,7 @@ function useData(userId,toast){
 
 function ShareModal({t,onClose,toast,onPreview}){
   const origin=window.location.origin
-  const path=window.location.pathname.replace(/\/+$/,'')
-  const link=`${origin}${path}#/daftar/${t.id}`
+  const link=`${origin}/#/daftar/${t.id}`
   const wa=encodeURIComponent(`🎮 *${t.name}*\n📍 ${t.city}\n🏆 ${fmtRp(t.prize)}\n🎫 Entry: ${fmtRp(t.entry)}/tim\n\n👉 ${link}`)
   const copy=()=>{
     const fallback=()=>{const el=document.createElement('textarea');el.value=link;el.style.cssText='position:fixed;opacity:0';document.body.appendChild(el);el.select();try{document.execCommand('copy');toast('✓ Link disalin!','success')}catch(e){}document.body.removeChild(el)}
