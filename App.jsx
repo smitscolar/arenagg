@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -629,7 +629,7 @@ function PublicLivePage({tid,onBack,toast}){
     pairs.push({id:'m'+i2,a:tTeams[i2],b:tTeams[i2+1],scoreA:scores['m'+i2+'_a']||0,scoreB:scores['m'+i2+'_b']||0})
   }
 
-  if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={32} color="var(--cyan)"/></div></div>
+  if(loading)return <div style={{minHeight:'100vh',background:'#050508',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={32} color="var(--cyan)"/></div></div>
   if(!t)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}><div style={{textAlign:'center'}}><div style={{fontSize:48,marginBottom:12}}>📡</div><div style={{color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:2}}>TURNAMEN TIDAK DITEMUKAN</div><button className="btn btn-ghost" onClick={onBack} style={{marginTop:16}}>← Kembali</button></div></div>
 
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
@@ -1502,7 +1502,7 @@ function AuthPage({onLogin,lang,setLangFn}){
     }catch(e){setErr(e.message==='Invalid login credentials'?'Email atau password salah.':e.message||'Terjadi error, coba lagi.')}
     setL(false)
   }
-  return <div className="auth-bg" style={{position:'relative',overflow:'hidden'}}>
+  return <div className="auth-bg" style={{position:'relative',overflow:'hidden',background:'#050508',minHeight:'100vh'}}>
     {/* Animated background grid */}
     <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
     <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 50%,rgba(0,229,255,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
@@ -2732,6 +2732,30 @@ function Settings({user,lang,toast}){
 
 
 
+
+// ============================================================
+// ERROR BOUNDARY — catches React render errors (prevents black screen)
+// ============================================================
+class ErrorBoundary extends React.Component {
+  constructor(props){super(props);this.state={hasError:false,error:null}}
+  static getDerivedStateFromError(error){return{hasError:true,error}}
+  componentDidCatch(error,info){console.error('ArenaGG Error:',error,info)}
+  render(){
+    if(this.state.hasError){
+      return <div style={{minHeight:'100vh',background:'#050508',color:'#e8e8f0',display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:'system-ui,sans-serif'}}>
+        <div style={{textAlign:'center',maxWidth:500}}>
+          <div style={{fontSize:48,marginBottom:16}}>⚡</div>
+          <div style={{fontSize:20,fontWeight:700,color:'#00e5ff',marginBottom:8,letterSpacing:2}}>ARENAGG</div>
+          <div style={{fontSize:14,color:'#ff2d55',marginBottom:12}}>Terjadi kesalahan teknis</div>
+          <div style={{fontSize:11,color:'#4a4a6a',marginBottom:20,fontFamily:'monospace',background:'rgba(255,255,255,0.05)',padding:12,borderRadius:6,wordBreak:'break-all'}}>{String(this.state.error)}</div>
+          <button onClick={()=>window.location.reload()} style={{background:'#00e5ff',color:'#000',border:'none',padding:'10px 24px',borderRadius:6,cursor:'pointer',fontWeight:700,fontSize:13}}>🔄 Muat Ulang</button>
+        </div>
+      </div>
+    }
+    return this.props.children
+  }
+}
+
 export default function App(){
   const[user,setUser]=useState(null);const[loading,setLoading]=useState(true);const[page,setPage]=useState('dashboard');const[editT,setEditT]=useState(null);const[toasts,setToasts]=useState([])
   // Init pubTid LANGSUNG dari hash saat komponen pertama kali render
@@ -2800,7 +2824,7 @@ export default function App(){
   useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
 
-  return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}>
+  return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)'}}>
     <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
     <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0}}>
       <LiveBanner tournaments={tournaments}/>
