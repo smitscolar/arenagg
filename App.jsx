@@ -2917,6 +2917,30 @@ function RevenuePage({tournaments,teams,toast,lang}){
 }
 
 
+const MatchCard=({match,round,onWin})=>{
+  const wA=match.w===match.a?.id; const wB=match.w===match.b?.id
+  return <div style={{display:'flex',flexDirection:'column',gap:1}}>
+    {match.label&&<div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',letterSpacing:2,textAlign:'center',marginBottom:3,padding:'1px 6px',background:'rgba(255,107,0,0.1)',borderRadius:3,alignSelf:'center'}}>{match.label}</div>}
+    <div style={{background:'var(--panel)',border:`1px solid ${wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'6px 6px 0 0',padding:'7px 10px',minWidth:150,cursor:match.a?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
+      onClick={()=>match.a&&onWin&&onWin(match.a.id)}
+      onMouseEnter={e=>{if(match.a)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
+      onMouseLeave={e=>e.currentTarget.style.borderColor=wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}>
+      <span style={{fontSize:12,fontWeight:wA?700:500,color:wA?'var(--green)':!match.a?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.a?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
+      {wA&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
+    </div>
+    <div style={{background:'rgba(255,255,255,0.04)',padding:'2px 10px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+      <span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',letterSpacing:1}}>VS</span>
+    </div>
+    <div style={{background:'var(--panel)',border:`1px solid ${wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'0 0 6px 6px',padding:'7px 10px',minWidth:150,cursor:match.b?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
+      onClick={()=>match.b&&onWin&&onWin(match.b.id)}
+      onMouseEnter={e=>{if(match.b)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
+      onMouseLeave={e=>e.currentTarget.style.borderColor=wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}>
+      <span style={{fontSize:12,fontWeight:wB?700:500,color:wB?'var(--green)':!match.b?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.b?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
+      {wB&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
+    </div>
+  </div>
+}
+
 function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
   const[selT,setSelT]=useState(tournaments[0]?.id||'')
@@ -2942,28 +2966,6 @@ function BracketView({tournaments,teams,lang}){
   const r2=[]; for(let idx=0;idx<Math.floor(r1.length/2);idx++) r2.push({id:idx,a:null,b:null,w:bracket['sf'+idx],label:'SF'})
   const final=[{id:0,a:null,b:null,w:bracket['final'],label:'FINAL'}]
 
-  const MatchCard=({match,round,onWin})=>{
-    const wA=match.w===match.a?.id; const wB=match.w===match.b?.id
-    return <div style={{display:'flex',flexDirection:'column',gap:1}}>
-      {match.label&&<div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',letterSpacing:2,textAlign:'center',marginBottom:3,padding:'1px 6px',background:'rgba(255,107,0,0.1)',borderRadius:3,alignSelf:'center'}}>{match.label}</div>}
-      <div style={{background:'var(--panel)',border:`1px solid ${wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'6px 6px 0 0',padding:'7px 10px',minWidth:150,cursor:match.a?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
-        onClick={()=>match.a&&onWin&&onWin(match.a.id)}
-        onMouseEnter={e=>{if(match.a)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
-        onMouseLeave={e=>e.currentTarget.style.borderColor=wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}>
-        <span style={{fontSize:12,fontWeight:wA?700:500,color:wA?'var(--green)':!match.a?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.a?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
-        {wA&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
-      </div>
-      <div style={{background:'rgba(255,255,255,0.04)',padding:'2px 10px',display:'flex',alignItems:'center',justifyContent:'center'}}>
-        <span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',letterSpacing:1}}>VS</span>
-      </div>
-      <div style={{background:'var(--panel)',border:`1px solid ${wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'0 0 6px 6px',padding:'7px 10px',minWidth:150,cursor:match.b?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
-        onClick={()=>match.b&&onWin&&onWin(match.b.id)}
-        onMouseEnter={e=>{if(match.b)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
-        onMouseLeave={e=>e.currentTarget.style.borderColor=wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}>
-        <span style={{fontSize:12,fontWeight:wB?700:500,color:wB?'var(--green)':!match.b?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.b?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
-        {wB&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
-      </div>
-    </div>
   }
 
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1100}}>
