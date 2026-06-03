@@ -33,7 +33,10 @@ const setLang=l=>{try{localStorage.setItem('arenagg_lang',l)}catch(e){}}
 const getProf=()=>{try{return JSON.parse(localStorage.getItem('arenagg_profile')||'{}')}catch(e){return{}}}
 const saveProf=p=>{try{localStorage.setItem('arenagg_profile',JSON.stringify(p))}catch(e){}}
 const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Free Fire MAX','Valorant','Clash Royale','Clash of Clans','Dota 2','League of Legends','Honor of Kings','Genshin Impact','Street Fighter 6','Tekken 8','EA Sports FC','NBA 2K25','Pokémon Unite','Wild Rift','Arena of Valor','Chess','Other']
+const GAME_EMOJI={'Mobile Legends':'⚔','PUBG Mobile':'🔫','Free Fire':'🔥','Free Fire MAX':'🔥','Valorant':'🎯','Clash Royale':'⚡','Clash of Clans':'🏰','Dota 2':'🌀','League of Legends':'🏹','Honor of Kings':'👑','Genshin Impact':'🌸','Street Fighter 6':'🥊','Tekken 8':'🤜','EA Sports FC':'⚽','NBA 2K25':'🏀','Pokémon Unite':'🎮','Wild Rift':'🗡','Arena of Valor':'🛡','Chess':'♟','Other':'🎮'}
+const getGameEmoji=g=>GAME_EMOJI[g]||'🎮'
 const FORMATS=['Single Elimination','Double Elimination','Round Robin','Swiss','Group Stage + Knockout','Battle Royale','League','Custom']
+const SLOT_OPTIONS=[4,8,16,32,64,128]
 const fmtRp=n=>'Rp '+Number(n).toLocaleString('id-ID')
 const exportCSV=(rows,filename)=>{
   const headers=Object.keys(rows[0]||{})
@@ -1414,7 +1417,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
         {t&&<div className="card" style={{marginBottom:14}}>
           <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>🏆 INFO TURNAMEN</div>
           <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4}}>{t.name}</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>🎮 {t.game} · 📍 {t.city} · 📅 {t.date}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>{getGameEmoji(t.game)} {t.game} · 📍 {t.city} · 📅 {t.date}</div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
             {[
               {label:'Prize Pool',val:fmtRpLocal(t.prize),color:'var(--yellow)'},
@@ -1655,6 +1658,21 @@ function ParticipantDashboard({participant,onLogout,toast}){
   </div>
 }
 
+// ============================================================
+// BROWSER NOTIFICATION HELPER
+// ============================================================
+async function requestNotifPermission(){
+  if(!('Notification' in window)) return false
+  if(Notification.permission==='granted') return true
+  const perm = await Notification.requestPermission()
+  return perm==='granted'
+}
+function sendBrowserNotif(title, body, icon='⚔'){
+  if(Notification.permission==='granted'){
+    try{ new Notification(title, {body, icon:'/favicon.ico', badge:'/favicon.ico'}) }catch(e){}
+  }
+}
+
 // Main Participant Portal wrapper
 function ParticipantPortal({toast}){
   const[participant,setParticipant]=useState(()=>getParticipant())
@@ -1783,7 +1801,7 @@ function AuthPage({onLogin,lang,setLangFn}){
       <div style={{textAlign:'center',marginTop:12,marginBottom:4}}>
         <a href="/#/peserta" style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--orange)',letterSpacing:1,textDecoration:'none',padding:'5px 14px',border:'1px solid rgba(255,107,0,0.3)',borderRadius:20,background:'rgba(255,107,0,0.08)'}}>⚡ Portal Peserta →</a>
       </div>
-      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA</div>
+      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA · v2.5</div>
     </div>
   </div>
 }
@@ -1799,9 +1817,10 @@ function useData(userId,toast){
       .on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},load)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'teams'},(payload)=>{
         load()
-        // Notify organizer of new team registration
         const teamName = payload.new?.name || 'Tim baru'
         if(toast) toast(`⚔ Tim baru mendaftar: ${teamName}!`, 'success')
+        // Also send browser notification
+        sendBrowserNotif('⚔ Tim Baru Mendaftar!', `${teamName} baru saja mendaftar ke turnamenmu`)
       })
       .on('postgres_changes',{event:'UPDATE',schema:'public',table:'teams'},(payload)=>{
         load()
@@ -1971,8 +1990,14 @@ function PublicPage({tid,onBack,toast}){
         <div className="g2" style={{marginBottom:11}}>
           {[{icon:'🎫',label:i.entry,value:fmtRp(t.entry)+'/tim'},{icon:'📅',label:i.date,value:t.date},{icon:'⚙',label:i.format,value:t.format},{icon:'👥',label:i.slots_left,value:`${slotsLeft}/${t.slots}`,color:slotsLeft<=3?'var(--red)':'var(--green)'}].map(d=><div key={d.label} className="card" style={{padding:'10px 12px',display:'flex',gap:8,alignItems:'center'}}><span style={{fontSize:18}}>{d.icon}</span><div><div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--muted)'}}>{d.label}</div><div style={{fontSize:13,fontWeight:600,color:d.color||'var(--text)',marginTop:1}}>{d.value}</div></div></div>)}
         </div>
-        <div className="card" style={{marginBottom:11}}>
-          <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,fontSize:11}}><span style={{color:'var(--muted)'}}>{i.slot_filled}</span><span style={{fontFamily:'var(--fm)',color:fillPct>=90?'var(--red)':'var(--cyan)',fontSize:10}}>{t.registered||0}/{t.slots}</span></div>
+        <div className="card" style={{marginBottom:11,borderColor:fillPct>=90?'rgba(255,45,85,0.3)':fillPct>=70?'rgba(255,107,0,0.2)':'var(--border)'}}>
+          <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,fontSize:11}}>
+            <span style={{color:'var(--muted)'}}>{i.slot_filled}</span>
+            <div style={{display:'flex',alignItems:'center',gap:6}}>
+              <span style={{fontFamily:'var(--fm)',color:fillPct>=90?'var(--red)':fillPct>=70?'var(--orange)':'var(--cyan)',fontSize:10,fontWeight:700}}>{t.registered||0}/{t.slots}</span>
+              {fillPct>=90&&<span style={{fontSize:9,color:'var(--red)',fontFamily:'var(--fh)',letterSpacing:1,animation:'pulse 1s infinite'}}>HAMPIR PENUH!</span>}
+            </div>
+          </div>
           <div className="pbar" style={{height:5}}><div className="pfill" style={{width:`${fillPct}%`,background:fillPct>=90?'var(--red)':fillPct>=70?'var(--orange)':'var(--cyan)'}}/></div>
         </div>
         {t.description&&<div className="card" style={{marginBottom:11}}><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:5}}>{i.about}</div><div style={{fontSize:13,lineHeight:1.7}}>{t.description}</div></div>}
@@ -2152,6 +2177,9 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
     window.addEventListener('keydown',handler)
     return()=>window.removeEventListener('keydown',handler)
   },[])
+  // Count pending stuff for badges
+  const pendingPaymentsCount = 0 // Will be loaded per TeamsView
+
   return <div className="sidebar">
     <div style={{padding:'14px 13px 11px',borderBottom:'1px solid var(--border)'}}>
       <div style={{fontFamily:'var(--fh)',fontWeight:900,fontSize:14,color:'var(--cyan)',letterSpacing:2,animation:'glow-pulse 3s infinite'}}>⚔ ARENAGG</div>
@@ -2212,7 +2240,7 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   const prof=getProf()
   const name=prof.name||'Organizer'
   const now=new Date();const h=now.getHours()
-  const greeting=h<12?'Selamat Pagi ☀':h<17?'Selamat Siang 🌤':'Selamat Malam 🌙'
+  const greeting=h<12?'Selamat Pagi ☀':h<15?'Selamat Siang 🌤':h<18?'Selamat Sore 🌅':'Selamat Malam 🌙'
   const greetingEn=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'
   const totalTeams=teams.length
   const totalPlayers=teams.reduce((s,t)=>s+Number(t.members||0),0)
@@ -2225,6 +2253,12 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
     },[target])
     return v
   }
+
+  // Request notification permission on first load
+  React.useEffect(()=>{
+    const asked = localStorage.getItem('arenagg_notif_asked')
+    if(!asked){ requestNotifPermission().then(()=>localStorage.setItem('arenagg_notif_asked','1')) }
+  },[])
 
   if(loading)return <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',minHeight:'60vh'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={28} color="var(--cyan)"/><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:12,letterSpacing:2}}>MEMUAT DATA...</div></div></div>
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
