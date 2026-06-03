@@ -32,8 +32,8 @@ const saveTheme=t=>{try{localStorage.setItem('arenagg_theme',t);document.documen
 const setLang=l=>{try{localStorage.setItem('arenagg_lang',l)}catch(e){}}
 const getProf=()=>{try{return JSON.parse(localStorage.getItem('arenagg_profile')||'{}')}catch(e){return{}}}
 const saveProf=p=>{try{localStorage.setItem('arenagg_profile',JSON.stringify(p))}catch(e){}}
-const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Valorant','Clash Royale']
-const FORMATS=['Single Elimination','Double Elimination','Round Robin','Swiss']
+const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Free Fire MAX','Valorant','Clash Royale','Clash of Clans','Dota 2','League of Legends','Honor of Kings','Genshin Impact','Street Fighter 6','Tekken 8','EA Sports FC','NBA 2K25','Pokémon Unite','Wild Rift','Arena of Valor','Chess','Other']
+const FORMATS=['Single Elimination','Double Elimination','Round Robin','Swiss','Group Stage + Knockout','Battle Royale','League','Custom']
 const fmtRp=n=>'Rp '+Number(n).toLocaleString('id-ID')
 const exportCSV=(rows,filename)=>{
   const headers=Object.keys(rows[0]||{})
@@ -84,6 +84,17 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 .p-star{position:absolute;border-radius:50%;animation:twinkle-star linear infinite;}
 @keyframes twinkle-star{0%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0);}}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:70px;}}
 @media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
+.nav-item{position:relative;}
+.nav-item::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);transform:scaleY(0);transition:transform 0.2s ease;border-radius:0 2px 2px 0;}
+.nav-item.active::after{transform:scaleY(1);}
+@keyframes number-pop{0%{transform:scale(1.3);color:var(--green);}100%{transform:scale(1);}}
+.stat-card:hover .stat-val{animation:number-pop 0.3s ease;}
+@keyframes border-scan{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.gaming-card-active{background-size:200% 200%;animation:border-scan 3s ease infinite;}
+input:focus,select:focus,textarea:focus{transform:none;}
+.btn-cyan:not(:disabled):active,.btn-orange:not(:disabled):active{transform:scale(0.95) translateY(1px);}
+@keyframes slide-up-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.page-enter{animation:slide-up-in 0.3s cubic-bezier(0.22,1,0.36,1) both;}
 .skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:400px 100%;animation:shimmer 1.5s infinite;}
 @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 .tooltip{position:relative;}.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:4px 8px;border-radius:4px;font-family:var(--fm);font-size:9px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:100;}.tooltip:hover::after{opacity:1;}
@@ -550,6 +561,18 @@ function LiveMatchView({tournament,teams,toast,onBack}){
   const[activeTab,setActiveTab]=useState('score') // score | chat | info
   const[copied,setCopied]=useState(false)
   const chatEndRef = {current:null}
+  // Match timer
+  const[timerRunning,setTimerRunning]=useState(false)
+  const[timerSec,setTimerSec]=useState(0)
+  const[timerMatchId,setTimerMatchId]=useState(null)
+  React.useEffect(()=>{
+    if(!timerRunning)return
+    const iv=setInterval(()=>setTimerSec(s=>s+1),1000)
+    return()=>clearInterval(iv)
+  },[timerRunning])
+  const fmtTimer=s=>`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`
+  const startTimer=(matchId)=>{setTimerMatchId(matchId);setTimerSec(0);setTimerRunning(true)}
+  const stopTimer=()=>setTimerRunning(false)
 
   // Build match pairs from teams
   const tTeams = teams.filter(x=>x.tournament_id===t?.id)
@@ -636,9 +659,17 @@ function LiveMatchView({tournament,teams,toast,onBack}){
         :<div style={{display:'flex',flexDirection:'column',gap:10}}>
           {pairs.map((match,idx)=>(
             <div key={match.id} className="card" style={{padding:16,borderColor:match.scoreA>match.scoreB?'rgba(0,255,136,0.2)':match.scoreB>match.scoreA?'rgba(0,229,255,0.2)':'var(--border)'}}>
-              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
-                <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>MATCH {idx+1}</span>
-                {(match.scoreA>0||match.scoreB>0)&&<span className="tag tag-live" style={{fontSize:8,padding:'1px 6px'}}>● BERMAIN</span>}
+              <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10,justifyContent:'space-between'}}>
+                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                  <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>MATCH {idx+1}</span>
+                  {(match.scoreA>0||match.scoreB>0)&&<span className="tag tag-live" style={{fontSize:8,padding:'1px 6px'}}>● BERMAIN</span>}
+                </div>
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  {timerRunning&&timerMatchId===match.id&&<span style={{fontFamily:'var(--fm)',fontSize:12,color:'var(--red)',letterSpacing:2,fontWeight:700,animation:'pulse 1s infinite'}}>⏱ {fmtTimer(timerSec)}</span>}
+                  {timerRunning&&timerMatchId===match.id
+                    ?<button onClick={stopTimer} style={{background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:4,padding:'2px 8px',cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--red)'}}>■ Stop</button>
+                    :<button onClick={()=>startTimer(match.id)} style={{background:'rgba(0,229,255,0.08)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,padding:'2px 8px',cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>▶ Timer</button>}
+                </div>
               </div>
               <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:8,alignItems:'center'}}>
                 {/* TEAM A */}
@@ -651,13 +682,13 @@ function LiveMatchView({tournament,teams,toast,onBack}){
                   <div style={{display:'flex',alignItems:'center',gap:6}}>
                     <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
                       <button onClick={()=>updateScore(match.id,'a',match.scoreA+1)} style={{width:28,height:28,borderRadius:6,background:'rgba(0,255,136,0.1)',border:'1px solid rgba(0,255,136,0.2)',color:'var(--green)',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900}}>+</button>
-                      <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900,color:match.scoreA>match.scoreB?'var(--green)':'var(--text)',lineHeight:1,minWidth:40,textAlign:'center'}}>{match.scoreA}</div>
+                      <div style={{fontFamily:'var(--fh)',fontSize:36,fontWeight:900,color:match.scoreA>match.scoreB?'var(--green)':'var(--text)',lineHeight:1,minWidth:48,textAlign:'center',textShadow:match.scoreA>match.scoreB?'0 0 20px rgba(0,255,136,0.5)':'none',transition:'all 0.2s'}}>{match.scoreA}</div>
                       <button onClick={()=>updateScore(match.id,'a',match.scoreA-1)} style={{width:28,height:28,borderRadius:6,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.15)',color:'var(--red)',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
                     </div>
                     <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--muted)',fontWeight:700}}>VS</div>
                     <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
                       <button onClick={()=>updateScore(match.id,'b',match.scoreB+1)} style={{width:28,height:28,borderRadius:6,background:'rgba(0,255,136,0.1)',border:'1px solid rgba(0,255,136,0.2)',color:'var(--green)',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900}}>+</button>
-                      <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900,color:match.scoreB>match.scoreA?'var(--cyan)':'var(--text)',lineHeight:1,minWidth:40,textAlign:'center'}}>{match.scoreB}</div>
+                      <div style={{fontFamily:'var(--fh)',fontSize:36,fontWeight:900,color:match.scoreB>match.scoreA?'var(--cyan)':'var(--text)',lineHeight:1,minWidth:48,textAlign:'center',textShadow:match.scoreB>match.scoreA?'0 0 20px rgba(0,229,255,0.5)':'none',transition:'all 0.2s'}}>{match.scoreB}</div>
                       <button onClick={()=>updateScore(match.id,'b',match.scoreB-1)} style={{width:28,height:28,borderRadius:6,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.15)',color:'var(--red)',cursor:'pointer',fontSize:16,display:'flex',alignItems:'center',justifyContent:'center'}}>−</button>
                     </div>
                   </div>
@@ -1058,6 +1089,10 @@ function Leaderboard({tournaments,teams,lang}){
   const topCities=Object.entries(cityCount).sort((a,b)=>b[1]-a[1]).slice(0,5)
   
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
+  // Extra stats
+  const totalPrizeLb=tournaments.reduce((s,t)=>s+Number(t.prize),0)
+  const totalEntryCollected=teams.filter(t=>t.paid).reduce((s,tm)=>{const tour=tournaments.find(x=>x.id===tm.tournament_id);return s+Number(tour?.entry||0)},0)
+  const avgTeamsPerTournament=tournaments.length?Math.round(teams.length/tournaments.length):0
   
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:900}}>
     <div style={{marginBottom:20}}>
@@ -1067,7 +1102,7 @@ function Leaderboard({tournaments,teams,lang}){
     
     {/* OVERVIEW STATS */}
     <div className="g4" style={{marginBottom:20}}>
-      {[
+      [
         {icon:'🏆',label:'Total Turnamen',val:tournaments.length,color:'var(--cyan)'},
         {icon:'👥',label:'Total Tim',val:teams.length,color:'var(--green)'},
         {icon:'✅',label:'Tim Lunas',val:teams.filter(t=>t.paid).length,color:'var(--yellow)'},
@@ -1745,7 +1780,10 @@ function AuthPage({onLogin,lang,setLangFn}){
         {mode==='login'&&<div style={{textAlign:'center',marginTop:16,fontSize:11,color:'var(--muted)'}}>Belum punya akun? <span onClick={()=>setMode('register')} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>Daftar sekarang →</span></div>}
         {mode==='register'&&<div style={{textAlign:'center',marginTop:16,fontSize:11,color:'var(--muted)'}}>Sudah punya akun? <span onClick={()=>setMode('login')} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>Masuk →</span></div>}
       </div>
-      <div style={{textAlign:'center',marginTop:16,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA</div>
+      <div style={{textAlign:'center',marginTop:12,marginBottom:4}}>
+        <a href="/#/peserta" style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--orange)',letterSpacing:1,textDecoration:'none',padding:'5px 14px',border:'1px solid rgba(255,107,0,0.3)',borderRadius:20,background:'rgba(255,107,0,0.08)'}}>⚡ Portal Peserta →</a>
+      </div>
+      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA</div>
     </div>
   </div>
 }
@@ -1898,6 +1936,20 @@ function PublicPage({tid,onBack,toast}){
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={32} color="var(--cyan)"/></div></div>
   if(!t)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}><div style={{textAlign:'center'}}><div style={{fontSize:48,marginBottom:12,animation:'float 3s infinite'}}>😕</div><div style={{color:'var(--muted)',marginBottom:4,fontFamily:'var(--fm)',fontSize:11,letterSpacing:2}}>TURNAMEN TIDAK DITEMUKAN</div><div style={{color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',fontSize:9,marginBottom:24,wordBreak:'break-all',maxWidth:300}}>ID: {tid}</div><button className="btn btn-ghost" onClick={onBack}>{i.back}</button></div></div>
   const slotsLeft=t.slots-(t.registered||0);const fillPct=Math.round(((t.registered||0)/t.slots)*100);const isFull=slotsLeft<=0
+  // Countdown timer
+  const[countdown,setCountdown]=React.useState('')
+  React.useEffect(()=>{
+    if(!t.date)return
+    const update=()=>{
+      const now=new Date();const target=new Date(t.date)
+      const diff=target-now
+      if(diff<=0){setCountdown('Sudah dimulai!');return}
+      const d=Math.floor(diff/86400000);const h=Math.floor((diff%86400000)/3600000)
+      const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000)
+      setCountdown(d>0?`${d} hari ${h} jam lagi`:`${h}j ${m}m ${s}s lagi`)
+    }
+    update();const iv=setInterval(update,1000);return()=>clearInterval(iv)
+  },[t.date])
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
     <div style={{background:'rgba(10,10,18,0.95)',borderBottom:'1px solid var(--border)',padding:'10px 18px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)',boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
       <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:2,fontWeight:900}}>⚔ ARENAGG</div>
@@ -2091,10 +2143,10 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
   // Keyboard shortcuts
   useEffect(()=>{
     const handler=e=>{
-      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return
-      if(e.key==='n'||e.key==='N')setPage('create')
-      if(e.key==='d'||e.key==='D')setPage('dashboard')
-      if(e.key==='t'||e.key==='T')setPage('tournaments')
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT'||e.metaKey||e.ctrlKey)return
+      const k=e.key.toLowerCase()
+      const map={d:'dashboard',r:'revenue',t:'tournaments',n:'create',p:'teams',b:'bracket',l:'live',m:'leaderboard',f:'finance',s:'settings'}
+      if(map[k])setPage(map[k])
     }
     window.addEventListener('keydown',handler)
     return()=>window.removeEventListener('keydown',handler)
@@ -2109,7 +2161,7 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
       </div>}
     </div>
     <nav style={{flex:1,padding:'8px 7px',overflowY:'auto'}}>
-      {NAV_IDS.map((id,idx)=><button key={id} className={`nav-item ${page===id?'active':''}`} onClick={()=>setPage(id)}>
+      {NAV_IDS.map((id,idx)=><button key={id} className={`nav-item ${page===id?'active':''}`} onClick={()=>setPage(id)} title={`${i.nav[idx]} (${NAV_KEYS[idx]})`}>
         <span className="nav-icon">{NAV[idx].icon}</span>
         <span>{i.nav[idx]}</span>
         {id==='tournaments'&&(hasLive?<span style={{marginLeft:'auto',width:6,height:6,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>:<span style={{marginLeft:'auto',fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',background:'rgba(255,255,255,0.05)',padding:'1px 5px',borderRadius:8}}>{tournaments?.length||''}</span>)}
@@ -2139,7 +2191,7 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
 
 function BottomNav({page,setPage,lang,hasLive}){
   const i=T[lang]||T.id
-  const icons=['⚡','📈','🏆','＋','👥','📊','💰','⚙']
+  const icons=['⚡','📈','🏆','＋','👥','📊','🔴','🏅','💰','⚙']
   return <nav className="bottom-nav">
     {NAV_IDS.map((id,idx)=><button key={id} className={`bnav-item ${page===id?'active':''}`} onClick={()=>setPage(id)}>
       <span className="bnav-icon">{icons[idx]}{id==='tournaments'&&hasLive&&<span style={{width:4,height:4,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top'}}/>}</span>
@@ -2163,6 +2215,16 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   const greetingEn=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening'
   const totalTeams=teams.length
   const totalPlayers=teams.reduce((s,t)=>s+Number(t.members||0),0)
+  // Animated counter hook
+  const useCount=(target,dur=800)=>{
+    const[v,setV]=React.useState(0)
+    React.useEffect(()=>{
+      let start=0;const step=()=>{start+=Math.ceil((target-start)/8)||1;setV(Math.min(start,target));if(start<target)requestAnimationFrame(step)}
+      const t=setTimeout(step,100);return()=>clearTimeout(t)
+    },[target])
+    return v
+  }
+
   if(loading)return <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',minHeight:'60vh'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={28} color="var(--cyan)"/><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:12,letterSpacing:2}}>MEMUAT DATA...</div></div></div>
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
     {/* GREETING SECTION */}
@@ -2197,17 +2259,17 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
     {/* STAT CARDS 4-column */}
     <div className="g4" style={{marginBottom:18}}>
       {[
-        {icon:'🏆',label:i.nav[2],value:tournaments.length,color:'var(--cyan)',accent:'var(--cyan)',trend:tournaments.length>0?`+${tournaments.length}`:'0'},
-        {icon:'👥',label:i.nav[4],value:totalP,color:'var(--green)',accent:'var(--green)',trend:teams.length+' tim'},
-        {icon:'💰',label:i.nav[6],value:fmtRp(totalPrize),color:'var(--yellow)',accent:'var(--yellow)',trend:'Prize Pool'},
-        {icon:'📈',label:i.nav[1],value:fmtRp(totalRev),color:'var(--orange)',accent:'var(--orange)',trend:'Est. 15%'},
+        {icon:'🏆',label:i.nav[2],value:tournaments.length,dispVal:String(tournaments.length),color:'var(--cyan)',accent:'var(--cyan)',trend:tournaments.length>0?`+${tournaments.length} total`:'Buat sekarang'},
+        {icon:'👥',label:i.nav[4],value:totalP,dispVal:String(totalP),color:'var(--green)',accent:'var(--green)',trend:teams.length+' tim terdaftar'},
+        {icon:'💰',label:i.nav[6],value:totalPrize,dispVal:fmtRp(totalPrize),color:'var(--yellow)',accent:'var(--yellow)',trend:'Total prize pool'},
+        {icon:'📈',label:i.nav[1],value:Math.round(totalRev),dispVal:fmtRp(totalRev),color:'var(--orange)',accent:'var(--orange)',trend:'Komisi 15%'},
       ].map((s,idx)=><div key={idx} className="stat-card" style={{'--accent-color':s.accent,animationDelay:idx*0.08+'s'}}>
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10}}>
           <div style={{width:38,height:38,borderRadius:8,background:`linear-gradient(135deg,rgba(${s.color==='var(--cyan)'?'0,229,255':s.color==='var(--green)'?'0,255,136':s.color==='var(--yellow)'?'255,215,0':'255,107,0'},0.15),rgba(${s.color==='var(--cyan)'?'0,229,255':s.color==='var(--green)'?'0,255,136':s.color==='var(--yellow)'?'255,215,0':'255,107,0'},0.05))`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:18}}>{s.icon}</div>
           <span style={{fontSize:9,color:s.color,fontFamily:'var(--fm)',background:`rgba(${s.color==='var(--cyan)'?'0,229,255':s.color==='var(--green)'?'0,255,136':s.color==='var(--yellow)'?'255,215,0':'255,107,0'},0.1)`,padding:'2px 7px',borderRadius:10,border:`1px solid rgba(${s.color==='var(--cyan)'?'0,229,255':s.color==='var(--green)'?'0,255,136':s.color==='var(--yellow)'?'255,215,0':'255,107,0'},0.2)`}}>{s.trend}</span>
         </div>
         <div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--muted)',letterSpacing:1,textTransform:'uppercase',marginBottom:4}}>{s.label}</div>
-        <div style={{fontSize:20,fontFamily:'var(--fh)',fontWeight:900,color:s.color,lineHeight:1}}>{s.value}</div>
+        <div style={{fontSize:20,fontFamily:'var(--fh)',fontWeight:900,color:s.color,lineHeight:1,animation:'count-up 0.5s ease both'}}>{s.dispVal||s.value}</div>
       </div>)}
     </div>
     {/* MAIN 2-COL CONTENT */}
@@ -2348,6 +2410,7 @@ function TournamentList({tournaments,updateT,deleteT,setPage,setEditT,toast,onPr
 }
 
 function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
+  const[formChanged,setFormChanged]=React.useState(false)
   const i=T[lang]||T.id
   const empty={name:'',game:GAMES[0],prize:'',entry:'',slots:'16',format:FORMATS[0],date:'',city:'',description:''}
   const[form,setForm]=useState(editData?{...editData,description:editData.description||''}:empty)
@@ -2696,6 +2759,7 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
 
 
 function Finance({tournaments,teams,lang}){
+  const[expanded,setExpanded]=React.useState(null)
   const i=T[lang]||T.id
   const rows=tournaments.map(t=>{const p=teams.filter(x=>x.tournament_id===t.id&&x.paid).length;const g=p*Number(t.entry);return{...t,paid:p,gross:g,commission:g*0.15}})
   const tG=rows.reduce((s,r)=>s+r.gross,0),tC=rows.reduce((s,r)=>s+r.commission,0)
@@ -2748,7 +2812,8 @@ function RevenuePage({tournaments,teams,toast,lang}){
   const doWithdraw=()=>{
     const amt=Number(wdAmt)
     if(!amt||amt>saldo||!wdAcc){toast('Cek jumlah & rekening!','error');return}
-    setWdH(h=>[{id:'w'+Date.now(),date:new Date().toISOString().split('T')[0],amount:amt,status:'proses',method:wdAcc},...h])
+    const newWd={id:'w'+Date.now(),date:new Date().toISOString().split('T')[0],amount:amt,status:'proses',method:wdAcc}
+    setWdH(h=>{const updated=[newWd,...h];try{localStorage.setItem('arenagg_wd_history',JSON.stringify(updated))}catch(e){};return updated})
     setWdAmt('');setWdAcc('');setShowWd(false)
     toast('✓ Permintaan withdraw dikirim!','success')
   }
@@ -2855,43 +2920,124 @@ function RevenuePage({tournaments,teams,toast,lang}){
 function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
   const[selT,setSelT]=useState(tournaments[0]?.id||'')
-  const t=tournaments.find(x=>x.id===selT);const tTeams=teams.filter(x=>x.tournament_id===selT);const pairs=[]
-  for(let idx=0;idx<Math.min(tTeams.length,8);idx+=2){
-    const storedW = selT ? (()=>{try{const bk=JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}'); return bk['m'+idx]||null}catch(e){return null}})() : null
-    pairs.push({a:tTeams[idx],b:tTeams[idx+1],w:storedW})
+  const[tick,setTick]=useState(0)
+  const t=tournaments.find(x=>x.id===selT)
+  const tTeams=teams.filter(x=>x.tournament_id===selT)
+
+  const getBracket=()=>{try{return JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')}catch(e){return{}}}
+  const setWinner=(matchIdx,winId)=>{
+    try{
+      const bk=getBracket(); bk['m'+matchIdx]=winId
+      localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
+      setTick(n=>n+1)
+    }catch(e){}
   }
-  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
-      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
-      <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>Klik nama tim untuk set pemenang</span>
+  const resetBracket=()=>{
+    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(n=>n+1)}catch(e){}
+  }
+
+  const bracket=getBracket()
+  // Build rounds
+  const r1=[]; for(let idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
+  const r2=[]; for(let idx=0;idx<Math.floor(r1.length/2);idx++) r2.push({id:idx,a:null,b:null,w:bracket['sf'+idx],label:'SF'})
+  const final=[{id:0,a:null,b:null,w:bracket['final'],label:'FINAL'}]
+
+  const MatchCard=({match,round,onWin})=>{
+    const wA=match.w===match.a?.id; const wB=match.w===match.b?.id
+    return <div style={{display:'flex',flexDirection:'column',gap:1}}>
+      {match.label&&<div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',letterSpacing:2,textAlign:'center',marginBottom:3,padding:'1px 6px',background:'rgba(255,107,0,0.1)',borderRadius:3,alignSelf:'center'}}>{match.label}</div>}
+      <div style={{background:'var(--panel)',border:`1px solid ${wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'6px 6px 0 0',padding:'7px 10px',minWidth:150,cursor:match.a?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
+        onClick={()=>match.a&&onWin&&onWin(match.a.id)}
+        onMouseEnter={e=>{if(match.a)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
+        onMouseLeave={e=>e.currentTarget.style.borderColor=wA?'rgba(0,255,136,0.4)':wB?'rgba(74,74,106,0.3)':'var(--border)'}>
+        <span style={{fontSize:12,fontWeight:wA?700:500,color:wA?'var(--green)':!match.a?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.a?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
+        {wA&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
+      </div>
+      <div style={{background:'rgba(255,255,255,0.04)',padding:'2px 10px',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        <span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',letterSpacing:1}}>VS</span>
+      </div>
+      <div style={{background:'var(--panel)',border:`1px solid ${wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}`,borderRadius:'0 0 6px 6px',padding:'7px 10px',minWidth:150,cursor:match.b?'pointer':'default',transition:'all 0.2s',display:'flex',justifyContent:'space-between',alignItems:'center'}}
+        onClick={()=>match.b&&onWin&&onWin(match.b.id)}
+        onMouseEnter={e=>{if(match.b)e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
+        onMouseLeave={e=>e.currentTarget.style.borderColor=wB?'rgba(0,255,136,0.4)':wA?'rgba(74,74,106,0.3)':'var(--border)'}>
+        <span style={{fontSize:12,fontWeight:wB?700:500,color:wB?'var(--green)':!match.b?'var(--muted)':'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:110}}>{match.b?.name||<span style={{color:'var(--muted)',fontStyle:'italic',fontSize:10}}>TBD</span>}</span>
+        {wB&&<span style={{fontSize:11,marginLeft:4,flexShrink:0}}>🏆</span>}
+      </div>
     </div>
+  }
+
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1100}}>
+    <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+      <div>
+        <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
+        <p style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:2,letterSpacing:1}}>KLIK NAMA TIM UNTUK SET PEMENANG</p>
+      </div>
+      {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset Bracket</button>}
+    </div>
+    {/* Tournament tabs */}
     <div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
       {tournaments.map(x=><button key={x.id} onClick={()=>setSelT(x.id)} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:`1px solid ${selT===x.id?'var(--cyan)':'var(--border)'}`,transition:'all 0.15s',fontFamily:'var(--fb)'}}>{x.name}</button>)}
     </div>
-    {t&&<><div className="card" style={{marginBottom:14}}><div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:11}}><div><div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,color:'var(--cyan)'}}>{t.name}</div><div style={{fontSize:10,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>{t.game} · {t.format}</div></div><div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.prize)}</div></div></div>
-    {tTeams.length<2?<div className="card" style={{textAlign:'center',padding:36,color:'var(--muted)'}}><div style={{fontSize:28,marginBottom:9}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:10,letterSpacing:1}}>MIN. 2 TEAMS DIPERLUKAN</div></div>
-    :<div style={{display:'flex',gap:28,overflowX:'auto',paddingBottom:12,alignItems:'flex-start'}}>
-      <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
-        {pairs.map((p,idx)=>{
-          const setWinner=(winId)=>{
-            try{
-              const bk=JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')
-              bk['m'+idx]=winId; localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
-              setSelT(s=>s) // force re-render
-            }catch(e){}
-          }
-          return <div key={idx}><div style={{fontSize:8,fontFamily:'var(--fm)',color:'var(--muted)',marginBottom:3,letterSpacing:1}}>MATCH {idx+1}</div><div className="b-match">
-            <div className={`b-team ${p.w===p.a?.id?'winner':'loser'}`} style={{cursor:'pointer'}} onClick={()=>p.a&&setWinner(p.a.id)} title="Klik = set pemenang"><span>{p.a?.name||'BYE'}</span>{p.w===p.a?.id&&<span>🏆</span>}</div>
-            <div className={`b-team ${p.w===p.b?.id?'winner':'loser'}`} style={{cursor:'pointer'}} onClick={()=>p.b&&setWinner(p.b.id)} title="Klik = set pemenang"><span>{p.b?.name||'BYE'}</span>{p.w===p.b?.id&&<span>🏆</span>}</div>
-          </div></div>
-        })}
+    {t&&<>
+      {/* Header card */}
+      <div className="card" style={{marginBottom:16,background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))'}}>
+        <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:8,alignItems:'center'}}>
+          <div>
+            <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,color:'var(--cyan)'}}>{t.name}</div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>🎮 {t.game} · ⚙ {t.format} · 👥 {tTeams.length} Tim</div>
+          </div>
+          <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
+            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>PRIZE POOL</div><div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div></div>
+            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>WINNER</div>
+              {bracket['final']?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>🏆 {tTeams.find(x=>x.id===bracket['final'])?.name||'TBD'}</div>:<div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)'}}>TBD</div>}
+            </div>
+          </div>
+        </div>
       </div>
-      <div style={{display:'flex',flexDirection:'column',justifyContent:'center',flexShrink:0,paddingTop:55}}>
-        <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',marginBottom:4,letterSpacing:1}}>🏆 GRAND FINAL</div>
-        <div className="b-match" style={{border:'1px solid rgba(255,215,0,0.25)'}}><div className="b-team" style={{color:'var(--muted)'}}><span>TBD</span></div><div className="b-team" style={{color:'var(--muted)'}}><span>TBD</span></div></div>
-        <div style={{textAlign:'center',marginTop:7,fontSize:10,fontFamily:'var(--fh)',color:'var(--yellow)'}}>{fmtRp(t.prize)}</div>
-      </div>
-    </div>}</>}
+      {tTeams.length<2
+        ?<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MIN. 2 TIM DIPERLUKAN</div><div style={{fontSize:11,marginTop:8}}>Daftarkan tim di halaman Peserta terlebih dahulu</div></div>
+        :<div style={{overflowX:'auto',paddingBottom:16}}>
+          <div style={{display:'flex',gap:0,alignItems:'center',minWidth:r1.length>4?700:400}}>
+            {/* ROUND 1 */}
+            <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(0,229,255,0.08)',borderRadius:4}}>BABAK 1 ({r1.length} MATCH)</div>
+              {r1.map((m,idx)=><MatchCard key={idx} match={m} round={1} onWin={wid=>setWinner(idx,wid)}/>)}
+            </div>
+            {/* Connector */}
+            {r1.length>=2&&<div style={{width:28,flexShrink:0,alignSelf:'stretch',position:'relative',marginTop:22}}>
+              <svg width="28" height="100%" style={{position:'absolute',inset:0}} preserveAspectRatio="none">
+                <path d="M 0 25% L 14 25% L 14 75% L 0 75%" stroke="rgba(0,229,255,0.2)" strokeWidth="1" fill="none"/>
+                <path d="M 14 50% L 28 50%" stroke="rgba(0,229,255,0.3)" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </div>}
+            {/* SEMI FINAL */}
+            {r1.length>=2&&<div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0,justifyContent:'center'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,107,0,0.08)',borderRadius:4}}>SEMI FINAL</div>
+              {r2.length>0?r2.map((m,idx)=><MatchCard key={idx} match={{...m,label:'SF '+(idx+1)}} round={2} onWin={wid=>setWinner('sf'+idx,wid)}/>)
+                :<MatchCard match={{id:0,a:null,b:null,w:bracket['sf0'],label:'SEMI FINAL'}} round={2} onWin={wid=>setWinner('sf0',wid)}/>}
+            </div>}
+            {/* Connector to Final */}
+            <div style={{width:28,flexShrink:0,position:'relative',alignSelf:'stretch',marginTop:22}}>
+              <svg width="28" height="100%" style={{position:'absolute',inset:0}} preserveAspectRatio="none">
+                <path d="M 0 50% L 28 50%" stroke="rgba(255,215,0,0.3)" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </div>
+            {/* GRAND FINAL */}
+            <div style={{display:'flex',flexDirection:'column',gap:8,flexShrink:0,justifyContent:'center'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,215,0,0.1)',borderRadius:4,border:'1px solid rgba(255,215,0,0.2)'}}>🏆 GRAND FINAL</div>
+              <MatchCard match={{id:0,a:null,b:null,w:bracket['final'],label:null}} round={3} onWin={wid=>setWinner('final',wid)}/>
+              <div style={{textAlign:'center',marginTop:4,fontFamily:'var(--fh)',fontSize:12,color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.prize)}</div>
+            </div>
+          </div>
+          <div style={{marginTop:14,padding:'8px 12px',background:'rgba(255,255,255,0.03)',borderRadius:6,border:'1px solid var(--border)',display:'flex',gap:16,flexWrap:'wrap'}}>
+            <span style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'var(--muted)'}}><span style={{width:12,height:12,background:'rgba(0,255,136,0.2)',border:'1px solid rgba(0,255,136,0.4)',borderRadius:2,display:'inline-block'}}/> Pemenang</span>
+            <span style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'var(--muted)'}}><span style={{width:12,height:12,background:'rgba(0,229,255,0.1)',border:'1px solid var(--border)',borderRadius:2,display:'inline-block'}}/> Klik untuk set pemenang</span>
+            <span style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>* Data tersimpan otomatis di browser</span>
+          </div>
+        </div>
+      }
+    </>}
+    {!t&&tournaments.length===0&&<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>🏆</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>BELUM ADA TURNAMEN</div></div>}
   </div>
 }
 
@@ -2918,7 +3064,7 @@ function Settings({user,lang,toast}){
     {img:'https://flagcdn.com/w40/my.png',country:'Malaysia',status:'soon',note:'2027'},
     {img:'https://flagcdn.com/w40/cn.png',country:'China',status:'soon',note:'2028'},
   ]
-  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'sponsor',icon:'📺',label:'Iklan'},{id:'expansion',icon:'🌏',label:'Ekspansi'}]
+  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'sponsor',icon:'📺',label:'Iklan'},{id:'expansion',icon:'🌏',label:'Ekspansi'},{id:'danger',icon:'⚠',label:'Reset'}]
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:700}}>
     <div style={{marginBottom:20}}>
       <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.settings_title}</h1>
@@ -3018,6 +3164,35 @@ function Settings({user,lang,toast}){
     {/* SPONSOR TAB */}
     {tab==='sponsor'&&<div className="card"><AdManager toast={toast}/></div>}
 
+    {/* DANGER ZONE TAB */}
+    {tab==='danger'&&<div className="card" style={{borderColor:'rgba(255,45,85,0.3)',background:'rgba(255,45,85,0.02)'}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--red)',letterSpacing:2,marginBottom:16}}>⚠ ZONA BAHAYA</div>
+      <div style={{display:'flex',flexDirection:'column',gap:10}}>
+        {[
+          {label:'Reset Data Profil',desc:'Hapus nama & foto profil organizer',key:'arenagg_profile'},
+          {label:'Reset Info Pembayaran',desc:'Hapus data bank/rekening yang tersimpan',key:'arenagg_bank_info'},
+          {label:'Reset Semua Iklan Custom',desc:'Hapus iklan sponsor yang kamu tambahkan',key:'arenagg_custom_ads'},
+          {label:'Reset Bracket Data',desc:'Hapus semua data pemenang bracket',key:null},
+        ].map(item=>(
+          <div key={item.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 14px',background:'rgba(255,255,255,0.03)',borderRadius:7,border:'1px solid var(--border)'}}>
+            <div>
+              <div style={{fontSize:13,fontWeight:600}}>{item.label}</div>
+              <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>{item.desc}</div>
+            </div>
+            <button className="btn btn-danger btn-sm" onClick={()=>{
+              if(window.confirm&&window.confirm(`Reset "${item.label}"? Ini tidak bisa dibatalkan.`)){
+                if(item.key){try{localStorage.removeItem(item.key)}catch(e){}}
+                else{try{Object.keys(localStorage).filter(k=>k.startsWith('arenagg_bracket_')).forEach(k=>localStorage.removeItem(k))}catch(e){}}
+                if(toast)toast('✓ Data direset','success')
+              }
+            }} style={{fontSize:9,flexShrink:0}}>Reset</button>
+          </div>
+        ))}
+        <div style={{padding:'10px 14px',background:'rgba(255,45,85,0.06)',borderRadius:7,border:'1px solid rgba(255,45,85,0.15)',fontSize:11,color:'var(--muted)'}}>
+          💡 Data turnamen & tim tersimpan di Supabase dan tidak terpengaruh. Ini hanya reset data lokal di browser ini.
+        </div>
+      </div>
+    </div>}
     {/* EXPANSION TAB */}
     {tab==='expansion'&&<div className="card">
       <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:16}}>{i.expansion}</div>
