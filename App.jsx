@@ -1926,6 +1926,184 @@ function useData(userId,toast){
   return{tournaments,teams,loading,reload:load,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}
 }
 
+
+// ============================================================
+// POSTER GENERATOR — Canvas-based tournament share card
+// ============================================================
+const GAME_COLORS={
+  'Mobile Legends':['#00bfff','#0044aa'],
+  'PUBG Mobile':['#f5a623','#c47a00'],
+  'Free Fire':['#ff4500','#8b0000'],
+  'Free Fire MAX':['#ff4500','#8b0000'],
+  'Valorant':['#ff4655','#800000'],
+  'Clash Royale':['#a855f7','#4c1d95'],
+  'Clash of Clans':['#4ade80','#14532d'],
+  'Dota 2':['#ef4444','#7f1d1d'],
+  'League of Legends':['#c8a84b','#5a3e00'],
+  'Honor of Kings':['#ffd700','#7a4f00'],
+  'Genshin Impact':['#60a5fa','#1e3a5f'],
+  'Wild Rift':['#00bcd4','#006064'],
+  'Arena of Valor':['#ff9800','#e65100'],
+  'Chess':['#a0a0a0','#303030'],
+}
+const getGameColors=g=>GAME_COLORS[g]||['#00e5ff','#003344']
+
+async function generatePosterCanvas(t){
+  const W=1080,H=1080
+  const canvas=document.createElement('canvas')
+  canvas.width=W;canvas.height=H
+  const ctx=canvas.getContext('2d')
+  const [c1,c2]=getGameColors(t.game)
+  const emoji=getGameEmoji(t.game)
+
+  // --- BG gradient
+  const bg=ctx.createLinearGradient(0,0,W,H)
+  bg.addColorStop(0,'#050508')
+  bg.addColorStop(0.5,'#0a0a18')
+  bg.addColorStop(1,'#050508')
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+
+  // --- Radial glow top-left
+  const glow=ctx.createRadialGradient(200,200,0,200,200,520)
+  glow.addColorStop(0,c1+'33')
+  glow.addColorStop(1,'transparent')
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H)
+
+  // --- Radial glow bottom-right
+  const glow2=ctx.createRadialGradient(900,900,0,900,900,400)
+  glow2.addColorStop(0,c2+'22')
+  glow2.addColorStop(1,'transparent')
+  ctx.fillStyle=glow2;ctx.fillRect(0,0,W,H)
+
+  // --- Top accent bar
+  const bar=ctx.createLinearGradient(0,0,W,0)
+  bar.addColorStop(0,'transparent')
+  bar.addColorStop(0.3,c1)
+  bar.addColorStop(0.7,c2)
+  bar.addColorStop(1,'transparent')
+  ctx.fillStyle=bar;ctx.fillRect(0,0,W,5)
+
+  // --- Bottom accent bar
+  ctx.fillStyle=bar;ctx.fillRect(0,H-5,W,5)
+
+  // --- Corner brackets
+  const drawBracket=(x,y,sx,sy)=>{
+    ctx.strokeStyle=c1+'88';ctx.lineWidth=3;ctx.lineCap='round'
+    ctx.beginPath();ctx.moveTo(x,y+sy*50);ctx.lineTo(x,y);ctx.lineTo(x+sx*50,y);ctx.stroke()
+  }
+  drawBracket(40,40,1,1);drawBracket(W-40,40,-1,1)
+  drawBracket(40,H-40,1,-1);drawBracket(W-40,H-40,-1,-1)
+
+  // --- ARENAGG logo top
+  ctx.font='bold 28px "Orbitron",system-ui,sans-serif'
+  ctx.fillStyle=c1;ctx.textAlign='center'
+  ctx.fillText('⚔ ARENAGG',W/2,80)
+
+  // --- Horizontal divider
+  const div=ctx.createLinearGradient(0,0,W,0)
+  div.addColorStop(0,'transparent');div.addColorStop(0.5,c1+'66');div.addColorStop(1,'transparent')
+  ctx.fillStyle=div;ctx.fillRect(100,100,W-200,1)
+
+  // --- Game emoji big
+  ctx.font='120px serif'
+  ctx.textAlign='center'
+  ctx.fillText(emoji,W/2,260)
+
+  // --- Game name
+  ctx.font='bold 32px "Orbitron",system-ui,sans-serif'
+  ctx.fillStyle=c1+'cc'
+  ctx.letterSpacing='4px'
+  ctx.fillText(t.game.toUpperCase(),W/2,310)
+
+  // --- TOURNAMENT NAME (wrapped)
+  const name=t.name.toUpperCase()
+  ctx.font='bold 68px "Orbitron",system-ui,sans-serif'
+  ctx.fillStyle='#ffffff'
+  ctx.shadowColor=c1;ctx.shadowBlur=30
+  // Wrap if too long
+  const maxW=W-120
+  let fontSize=68
+  ctx.font=`bold ${fontSize}px "Orbitron",system-ui,sans-serif`
+  while(ctx.measureText(name).width>maxW&&fontSize>28){fontSize-=4;ctx.font=`bold ${fontSize}px "Orbitron",system-ui,sans-serif`}
+  // Multi-line split
+  const words=name.split(' ')
+  const lines=[];let line=''
+  for(const w of words){
+    const test=line?line+' '+w:w
+    if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=w}
+    else line=test
+  }
+  if(line)lines.push(line)
+  const lineH=fontSize*1.2
+  const totalH=lines.length*lineH
+  let ty=400-totalH/2+lineH/2
+  for(const l of lines){ctx.fillText(l,W/2,ty);ty+=lineH}
+  ctx.shadowBlur=0
+
+  // --- Divider center
+  ctx.fillStyle=div;ctx.fillRect(100,480,W-200,1)
+
+  // --- Info box
+  const boxY=510,boxH=300,boxX=80,boxW=W-160
+  ctx.fillStyle='rgba(255,255,255,0.03)'
+  ctx.strokeStyle=c1+'44';ctx.lineWidth=1
+  roundRect(ctx,boxX,boxY,boxW,boxH,16)
+  ctx.fill();ctx.stroke()
+
+  // Info items
+  const infoItems=[
+    {icon:'🏆',label:'PRIZE POOL',val:'Rp '+Number(t.prize).toLocaleString('id-ID'),color:'#ffd700'},
+    {icon:'🎫',label:'ENTRY FEE',val:'Rp '+Number(t.entry).toLocaleString('id-ID')+' /tim',color:'#e8e8f0'},
+    {icon:'👥',label:'SLOT',val:`${t.registered||0} / ${t.slots} TIM`,color:'#00ff88'},
+    {icon:'📅',label:'TANGGAL',val:t.date+(t.time?' · '+t.time+' WIB':''),color:'#e8e8f0'},
+    {icon:'📍',label:'KOTA',val:(t.city||'').toUpperCase(),color:'#e8e8f0'},
+    {icon:'⚙',label:'FORMAT',val:(t.format||'').toUpperCase(),color:'#b0b0c8'},
+  ]
+  const cols=2,itemW=boxW/cols,itemH=boxH/3
+  infoItems.forEach((item,idx)=>{
+    const col=idx%cols,row=Math.floor(idx/cols)
+    const ix=boxX+col*itemW+24,iy=boxY+row*itemH+32
+    ctx.font='22px serif';ctx.textAlign='left';ctx.fillStyle='#ffffff'
+    ctx.fillText(item.icon,ix,iy)
+    ctx.font='bold 11px "Orbitron",system-ui,sans-serif'
+    ctx.fillStyle='#666688';ctx.letterSpacing='2px'
+    ctx.fillText(item.label,ix+36,iy-6)
+    ctx.font='bold 20px "Rajdhani",system-ui,sans-serif'
+    ctx.fillStyle=item.color;ctx.letterSpacing='0px'
+    ctx.fillText(item.val,ix+36,iy+14)
+  })
+
+  // --- Bottom CTA
+  const ctaY=850
+  ctx.font='bold 18px "Rajdhani",system-ui,sans-serif'
+  ctx.fillStyle='#e8e8f0cc';ctx.textAlign='center'
+  ctx.fillText('DAFTARKAN TIM KAMU SEKARANG!',W/2,ctaY)
+
+  // QR placeholder / link
+  ctx.font='14px "Share Tech Mono",monospace'
+  ctx.fillStyle=c1+'99'
+  const shortLink=`arenagg-dyuv.vercel.app/#/daftar/${t.id}`
+  ctx.fillText(shortLink,W/2,ctaY+34)
+
+  // --- Footer
+  ctx.fillStyle=div;ctx.fillRect(100,920,W-200,1)
+  ctx.font='bold 22px "Orbitron",system-ui,sans-serif'
+  ctx.fillStyle=c1+'88';ctx.textAlign='center'
+  ctx.fillText('⚔ ARENAGG — PLATFORM ESPORTS INDONESIA',W/2,960)
+
+  return canvas
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath()
+  ctx.moveTo(x+r,y)
+  ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r)
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r)
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r)
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r)
+  ctx.closePath()
+}
+
 function ShareModal({t,onClose,toast,onPreview}){
   const origin=window.location.origin
   const link=`${origin}/#/daftar/${t.id}`
@@ -1935,12 +2113,44 @@ function ShareModal({t,onClose,toast,onPreview}){
     if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>toast('✓ Link disalin!','success')).catch(fallback)
     else fallback()
   }
+  const[posterUrl,setPosterUrl]=useState(null)
+  const[genPoster,setGenPoster]=useState(false)
+  const makePoster=async()=>{
+    setGenPoster(true)
+    try{
+      const canvas=await generatePosterCanvas(t)
+      setPosterUrl(canvas.toDataURL('image/png'))
+    }catch(e){toast('Gagal generate poster: '+e.message,'error')}
+    setGenPoster(false)
+  }
+  const downloadPoster=()=>{
+    if(!posterUrl)return
+    const a=document.createElement('a')
+    a.href=posterUrl
+    a.download=`ArenaGG_${t.name.replace(/[^a-z0-9]/gi,'_')}_poster.png`
+    document.body.appendChild(a);a.click();document.body.removeChild(a)
+    toast('✓ Poster didownload!','success')
+  }
+  const sharePosterWA=()=>{
+    if(!posterUrl)return
+    const waText=encodeURIComponent(`🎮 *${t.name}*\n📍 ${t.city} · ${t.date}${t.time?' · '+t.time+' WIB':''}\n🏆 Prize: ${fmtRp(t.prize)}\n🎫 Entry: ${fmtRp(t.entry)}/tim\n👥 ${t.slots} Slot Tersedia\n\n🔗 Daftar sekarang:\n${link}`)
+    window.open(`https://wa.me/?text=${waText}`,'_blank')
+  }
+  const [activeTab,setActiveTabS]=useState('share')
   return <div className="overlay" onClick={e=>{if(e.target===e.currentTarget)onClose()}}>
-    <div className="modal">
+    <div className="modal" style={{maxWidth:520}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:1}}>🔗 BAGIKAN TURNAMEN</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:1}}>📤 BAGIKAN TURNAMEN</div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:20,lineHeight:1}}>×</button>
       </div>
+      {/* Tab switcher */}
+      <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:8,border:'1px solid var(--border)',marginBottom:14}}>
+        {[{id:'share',label:'🔗 Share Link'},{id:'poster',label:'🖼 Poster IG/WA'}].map(tab=>(
+          <button key={tab.id} onClick={()=>setActiveTabS(tab.id)} style={{flex:1,padding:'7px 10px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,transition:'all 0.2s',background:activeTab===tab.id?'var(--cyan)':'transparent',color:activeTab===tab.id?'#000':'var(--muted)',fontWeight:700}}>{tab.label}</button>
+        ))}
+      </div>
+
+      {activeTab==='share'&&<>
       <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))',border:'1px solid rgba(0,229,255,0.15)',borderRadius:8,padding:'11px 13px',marginBottom:14}}>
         <div style={{fontWeight:700,fontSize:15,marginBottom:3}}>{t.name}</div>
         <div style={{fontSize:11,color:'var(--muted)'}}>{t.game} · {t.city}</div>
@@ -1960,7 +2170,41 @@ function ShareModal({t,onClose,toast,onPreview}){
         <a href={`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t.name)}`} target="_blank" rel="noreferrer" style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'#229ED9',borderRadius:5,color:'white',textDecoration:'none',fontWeight:700,fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>✈ Telegram</a>
         <button onClick={copy} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:9,background:'var(--panel)',borderRadius:5,border:'1px solid var(--border)',color:'var(--text)',cursor:'pointer',fontWeight:700,fontFamily:'var(--fh)',fontSize:9}}>🔗 Copy</button>
       </div>
-              <button style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,flex:1,padding:'9px 10px',background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:5,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1,color:'var(--red)',transition:'var(--trans)'}} onClick={()=>{const link=window.location.origin+'/#/live/'+tid;if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>toast('✓ Link live disalin!','success')).catch(()=>{})}}>🔴 Link Live</button>
+      <button style={{display:'flex',alignItems:'center',justifyContent:'center',gap:5,flex:1,width:'100%',marginTop:8,padding:'9px 10px',background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:5,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1,color:'var(--red)',transition:'var(--trans)'}} onClick={()=>{const liveLink=window.location.origin+'/#/live/'+t.id;if(navigator.clipboard)navigator.clipboard.writeText(liveLink).then(()=>toast('✓ Link live disalin!','success')).catch(()=>{})}}>🔴 Copy Link Live</button>
+      </>}
+
+      {activeTab==='poster'&&<>
+        <div style={{fontSize:11,color:'var(--muted)',marginBottom:12,fontFamily:'var(--fm)',letterSpacing:0.5}}>
+          Generate poster 1080×1080px siap share ke Instagram & WhatsApp Story.
+        </div>
+        {!posterUrl&&<div style={{textAlign:'center',padding:'24px 0'}}>
+          <div style={{fontSize:60,marginBottom:12}}>{getGameEmoji(t.game)}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:4}}>{t.name}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:20}}>{t.game} · {t.city} · {fmtRp(t.prize)}</div>
+          <button className="btn btn-cyan btn-full" onClick={makePoster} disabled={genPoster} style={{fontSize:11,padding:'12px 20px'}}>
+            {genPoster?<><Spinner size={14} color="#000"/> Generating poster...</>:<>🎨 Generate Poster</>}
+          </button>
+        </div>}
+        {posterUrl&&<>
+          <div style={{borderRadius:10,overflow:'hidden',marginBottom:12,border:'1px solid rgba(0,229,255,0.2)'}}>
+            <img src={posterUrl} style={{width:'100%',display:'block'}} alt="Poster"/>
+          </div>
+          <div style={{display:'flex',gap:7,marginBottom:8}}>
+            <button className="btn btn-cyan" onClick={downloadPoster} style={{flex:1,justifyContent:'center',fontSize:10}}>
+              ⬇ Download PNG
+            </button>
+            <button onClick={sharePosterWA} style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',gap:5,padding:'9px 10px',background:'#25D366',borderRadius:7,color:'white',border:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:10,fontWeight:700,letterSpacing:1}}>
+              📱 Share WA
+            </button>
+          </div>
+          <button className="btn btn-ghost btn-full" onClick={()=>{setPosterUrl(null)}} style={{fontSize:9}}>
+            🔄 Regenerate
+          </button>
+          <div style={{marginTop:10,padding:'8px 10px',background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:6,fontSize:10,color:'var(--yellow)',textAlign:'center'}}>
+            💡 Tip: Download dulu lalu upload manual ke IG Story / WA Status untuk kualitas terbaik
+          </div>
+        </>}
+      </>}
     </div>
   </div>
 }
