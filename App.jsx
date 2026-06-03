@@ -839,7 +839,8 @@ function LiveMatchView({tournament,teams,toast,onBack}){
             {label:'Game',val:t.game},
             {label:'Format',val:t.format},
             {label:'Kota',val:t.city},
-            {label:'Tanggal',val:t.date},
+            {label:'Tanggal',val:t.date+(t.time?' · ⏰ '+t.time+' WIB':'')},
+            {label:'Jam Mulai',val:t.time?t.time+' WIB':'—'},
             {label:'Prize Pool',val:`Rp ${Number(t.prize).toLocaleString('id-ID')}`},
             {label:'Entry Fee',val:`Rp ${Number(t.entry).toLocaleString('id-ID')}/tim`},
             {label:'Slot',val:`${t.registered||0}/${t.slots} Tim`},
@@ -971,7 +972,7 @@ function PublicLivePage({tid,onBack,toast}){
       <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:14,padding:'20px 18px',marginBottom:16,textAlign:'center'}}>
         <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:3,marginBottom:6}}>🎮 {t.game} · {t.format}</div>
         <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,marginBottom:6}}>{t.name}</div>
-        <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>📍 {t.city} · 📅 {t.date}</div>
+        <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>📍 {t.city} · 📅 {t.date}{t.time&&<span style={{color:'var(--cyan)'}}> · ⏰ {t.time} WIB</span>}</div>
         <div style={{fontFamily:'var(--fh)',fontSize:28,color:'var(--yellow)',fontWeight:900}}>Rp {Number(t.prize).toLocaleString('id-ID')}</div>
         <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:3}}>PRIZE POOL</div>
       </div>
@@ -1096,7 +1097,7 @@ function LivePage({tournaments,teams,toast,lang}){
                 <LiveStatusBadge status="live" size="sm"/>
                 <span style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900}}>{t.name}</span>
               </div>
-              <div style={{fontSize:11,color:'var(--muted)'}}>🎮 {t.game} · 📍 {t.city} · 👥 {t.registered||0}/{t.slots} Tim · 🏆 Rp {Number(t.prize).toLocaleString('id-ID')}</div>
+              <div style={{fontSize:11,color:'var(--muted)'}}>{getGameEmoji(t.game)} {t.game} · 📍 {t.city}{t.time?' · ⏰ '+t.time+' WIB':''} · 👥 {t.registered||0}/{t.slots} Tim · 🏆 Rp {Number(t.prize).toLocaleString('id-ID')}</div>
             </div>
             <button className="btn btn-danger" style={{flexShrink:0,animation:'pulse 2s infinite'}}>⚡ Lihat Live</button>
           </div>
@@ -1495,7 +1496,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
         {t&&<div className="card" style={{marginBottom:14}}>
           <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>🏆 INFO TURNAMEN</div>
           <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4}}>{t.name}</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>{getGameEmoji(t.game)} {t.game} · 📍 {t.city} · 📅 {t.date}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>{getGameEmoji(t.game)} {t.game} · 📍 {t.city} · 📅 {t.date}{t.time&&<span style={{color:'var(--cyan)'}}> · ⏰ {t.time} WIB</span>}</div>
           <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
             {[
               {label:'Prize Pool',val:fmtRpLocal(t.prize),color:'var(--yellow)'},
@@ -2061,12 +2062,12 @@ function PublicPage({tid,onBack,toast}){
         <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.06))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:12,padding:'22px 18px',marginBottom:12,textAlign:'center'}}>
           <span className={`tag tag-${t.status}`} style={{marginBottom:10,display:'inline-block'}}>{t.status}</span>
           <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,marginBottom:5}}>{t.name}</div>
-          <div style={{fontSize:12,color:'var(--muted)',marginBottom:10}}>🎮 {t.game} · 📍 {t.city}</div>
+          <div style={{fontSize:12,color:'var(--muted)',marginBottom:10}}>🎮 {t.game} · 📍 {t.city}{t.time&&<span> · ⏰ {t.time} WIB</span>}</div>
           <div style={{fontFamily:'var(--fh)',fontSize:24,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div>
           <div style={{fontSize:10,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>{i.prize_pool}</div>
         </div>
         <div className="g2" style={{marginBottom:11}}>
-          {[{icon:'🎫',label:i.entry,value:fmtRp(t.entry)+'/tim'},{icon:'📅',label:i.date,value:t.date},{icon:'⚙',label:i.format,value:t.format},{icon:'👥',label:i.slots_left,value:`${slotsLeft}/${t.slots}`,color:slotsLeft<=3?'var(--red)':'var(--green)'}].map(d=><div key={d.label} className="card" style={{padding:'10px 12px',display:'flex',gap:8,alignItems:'center'}}><span style={{fontSize:18}}>{d.icon}</span><div><div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--muted)'}}>{d.label}</div><div style={{fontSize:13,fontWeight:600,color:d.color||'var(--text)',marginTop:1}}>{d.value}</div></div></div>)}
+          {[{icon:'🎫',label:i.entry,value:fmtRp(t.entry)+'/tim'},{icon:'📅',label:i.date,value:t.date+(t.time?' · '+t.time+' WIB':'')},{icon:'⚙',label:i.format,value:t.format},{icon:'👥',label:i.slots_left,value:`${slotsLeft}/${t.slots}`,color:slotsLeft<=3?'var(--red)':'var(--green)'}].map(d=><div key={d.label} className="card" style={{padding:'10px 12px',display:'flex',gap:8,alignItems:'center'}}><span style={{fontSize:18}}>{d.icon}</span><div><div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--muted)'}}>{d.label}</div><div style={{fontSize:13,fontWeight:600,color:d.color||'var(--text)',marginTop:1}}>{d.value}</div></div></div>)}
         </div>
         <div className="card" style={{marginBottom:11,borderColor:fillPct>=90?'rgba(255,45,85,0.3)':fillPct>=70?'rgba(255,107,0,0.2)':'var(--border)'}}>
           <div style={{display:'flex',justifyContent:'space-between',marginBottom:4,fontSize:11}}>
@@ -2525,7 +2526,7 @@ function TournamentList({tournaments,updateT,deleteT,setPage,setEditT,toast,onPr
 function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   const[formChanged,setFormChanged]=React.useState(false)
   const i=T[lang]||T.id
-  const empty={name:'',game:GAMES[0],prize:'',entry:'',slots:'16',format:FORMATS[0],date:'',city:'',description:''}
+  const empty={name:'',game:GAMES[0],prize:'',entry:'',slots:'16',format:FORMATS[0],date:'',time:'',city:'',description:''}
   const[form,setForm]=useState(editData?{...editData,description:editData.description||''}:empty)
   const[saving,setSaving]=useState(false)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
@@ -2565,7 +2566,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   const submit=async()=>{
     if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
     setSaving(true)
-    const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,city:form.city,description:form.description}
+    const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,time:form.time||"",city:form.city,description:form.description}
     if(editData) await updateT(editData.id,data)
     else await addT({...data,registered:0,status:'pending'})
     toast(editData?'✓ Turnamen diupdate!':'✓ Turnamen dibuat!','success')
@@ -2588,9 +2589,37 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
           <div><label>{i.game}</label><select value={form.game} onChange={set('game')}>{GAMES.map(g=><option key={g}>{g}</option>)}</select></div>
           <div><label>{i.format}</label><select value={form.format} onChange={set('format')}>{FORMATS.map(f=><option key={f}>{f}</option>)}</select></div>
         </div>
-        <div className="g2" style={{marginBottom:12}}>
+        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 160px',gap:12,marginBottom:12}}>
           <div><label>📍 {i.city}</label><input value={form.city} onChange={set('city')} placeholder="Jakarta"/></div>
           <div><label>📅 {i.date}</label><input type="date" value={form.date} onChange={set('date')}/></div>
+          <div>
+            <label>⏰ Jam Mulai</label>
+            <div style={{position:'relative'}}>
+              <input
+                type="time"
+                value={form.time}
+                onChange={set('time')}
+                style={{paddingLeft:10,paddingRight:8,width:'100%',
+                  background:form.time?'rgba(0,229,255,0.08)':'rgba(255,255,255,0.04)',
+                  border:form.time?'1px solid rgba(0,229,255,0.4)':'1px solid var(--border)',
+                  transition:'all 0.2s'
+                }}
+              />
+              {!form.time&&<div style={{position:'absolute',top:'50%',left:10,transform:'translateY(-50%)',pointerEvents:'none',fontSize:11,color:'var(--muted)',fontFamily:'var(--fm)'}}>00:00</div>}
+            </div>
+            {/* Quick time buttons */}
+            <div style={{display:'flex',gap:3,marginTop:5,flexWrap:'wrap'}}>
+              {['08:00','10:00','13:00','15:00','19:00','20:00'].map(t=>(
+                <button key={t} type="button"
+                  onClick={()=>setForm(f=>({...f,time:t}))}
+                  style={{padding:'2px 5px',fontSize:8,border:`1px solid ${form.time===t?'var(--cyan)':'var(--border)'}`,
+                    borderRadius:3,cursor:'pointer',fontFamily:'var(--fm)',letterSpacing:0.5,
+                    background:form.time===t?'rgba(0,229,255,0.15)':'rgba(255,255,255,0.03)',
+                    color:form.time===t?'var(--cyan)':'var(--muted)',transition:'all 0.15s'
+                  }}>{t}</button>
+              ))}
+            </div>
+          </div>
         </div>
         <hr className="div"/>
         <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:14}}>PRIZE & BIAYA</div>
@@ -2615,7 +2644,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
           <div style={{textAlign:'center',marginBottom:14}}>
             <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:6}}>🎮 {form.game||'Game'}</div>
             <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,marginBottom:4,lineHeight:1.2}}>{form.name||'Nama Turnamen'}</div>
-            <div style={{fontSize:11,color:'var(--muted)',marginBottom:10}}>📍 {form.city||'Kota'} · 📅 {form.date||'Tanggal'}</div>
+            <div style={{fontSize:11,color:'var(--muted)',marginBottom:10}}>📍 {form.city||'Kota'} · 📅 {form.date||'Tanggal'}{form.time&&<span style={{color:'var(--cyan)'}}> · ⏰ {form.time} WIB</span>}</div>
             <div style={{fontFamily:'var(--fh)',fontSize:22,color:'var(--yellow)',fontWeight:900}}>{form.prize?fmtRp(Number(form.prize)):'Rp 0'}</div>
             <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:2}}>PRIZE POOL</div>
           </div>
