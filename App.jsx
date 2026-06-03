@@ -51,7 +51,7 @@ const uid=()=>Math.random().toString(36).slice(2,18)
 const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','live','leaderboard','finance','settings']
 const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','l':'live','m':'leaderboard','f':'finance','s':'settings'}
 
-const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050508;color:#e8e8f0;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',system-ui,sans-serif;--fb:'Rajdhani',system-ui,sans-serif;--fm:'Share Tech Mono',ui-monospace,monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan),0 0 60px rgba(0,229,255,0.3);}50%{text-shadow:0 0 6px var(--cyan),0 0 15px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050508;color:#e8e8f0;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',system-ui,sans-serif;--fb:'Rajdhani',system-ui,sans-serif;--fm:'Share Tech Mono',ui-monospace,monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.25s cubic-bezier(0.4,0,0.2,1);--trans-fast:all 0.15s ease;--trans-slow:all 0.4s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan),0 0 60px rgba(0,229,255,0.3);}50%{text-shadow:0 0 6px var(--cyan),0 0 15px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 @keyframes twinkle{0%,100%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}}
 @keyframes drift{0%{transform:translateY(0) translateX(0) rotate(0deg);}33%{transform:translateY(-20px) translateX(10px) rotate(120deg);}66%{transform:translateY(-10px) translateX(-8px) rotate(240deg);}100%{transform:translateY(0) translateX(0) rotate(360deg);}}
 @keyframes energy-pulse{0%,100%{box-shadow:0 0 10px rgba(0,229,255,0.3),0 0 30px rgba(0,229,255,0.1);}50%{box-shadow:0 0 20px rgba(0,229,255,0.6),0 0 60px rgba(0,229,255,0.2),0 0 100px rgba(0,229,255,0.05);}}
@@ -71,7 +71,7 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 .animate-in>*:nth-child(3){animation-delay:0.08s}
 .animate-in>*:nth-child(4){animation-delay:0.12s}
 .animate-in>*:nth-child(5){animation-delay:0.16s}
-.animate-in>*:nth-child(6){animation-delay:0.20s}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.animate-in>*:nth-child(6){animation-delay:0.20s}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-1px);}.card{transition:border-color 0.25s ease,box-shadow 0.25s ease,transform 0.25s ease;}
 .card-glass{background:rgba(19,19,31,0.6);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.12);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}
 [data-theme="light"] .card-glass{background:rgba(255,255,255,0.7);border-color:rgba(0,119,170,0.15);}
 .card-glass:hover{border-color:rgba(0,229,255,0.25);box-shadow:var(--shadow);}
@@ -86,7 +86,7 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 @keyframes particle-drift{0%{transform:translateY(100vh) translateX(0);opacity:0;}10%{opacity:0.8;}90%{opacity:0.3;}100%{transform:translateY(-100px) translateX(100px);opacity:0;}}
 .p-star{position:absolute;border-radius:50%;animation:twinkle-star linear infinite;}
 @keyframes twinkle-star{0%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0);}}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:68px;}.card{padding:14px;}.card-glass{padding:14px;}.modal{padding:18px;border-radius:10px;}.stat-card{padding:14px;}.stat-card:hover{transform:none;}.btn{padding:10px 14px;font-size:10px;min-height:42px;}.btn-sm{padding:8px 12px;font-size:9px;min-height:36px;}input,select,textarea{font-size:16px !important;padding:12px 14px;}label{font-size:11px;margin-bottom:6px;}.g2{grid-template-columns:1fr;}.g3{grid-template-columns:1fr;}.g4{grid-template-columns:1fr 1fr;}.bnav-item{font-size:7px;padding:6px 2px;}.bnav-icon{font-size:18px;}.b-match{width:130px;}.b-team{font-size:10px;padding:6px 8px;}.tag{font-size:8px;}.chip{font-size:8px;}}
-@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}.page-content-sm{padding:12px 12px !important;}}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
+@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}.page-content-sm{padding:12px 12px !important;}}.skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:0.5px;}.badge-cyan{background:rgba(0,229,255,0.12);color:var(--cyan);border:1px solid rgba(0,229,255,0.25);}.badge-green{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.badge-red{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}.badge-yellow{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.badge-orange{background:rgba(255,107,0,0.1);color:var(--orange);border:1px solid rgba(255,107,0,0.2);}.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:10px;font-family:var(--fm);letter-spacing:1px;}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}.section-title{fontFamily:var(--fh);font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;}.progress-ring{transform:rotate(-90deg);}@keyframes count-up{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}.count-anim{animation:count-up 0.4s cubic-bezier(0.34,1.56,0.64,1);}@keyframes slide-up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}.slide-up{animation:slide-up 0.3s ease both;}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
 .nav-item{position:relative;}
 .nav-item::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);transform:scaleY(0);transition:transform 0.2s ease;border-radius:0 2px 2px 0;}
 .nav-item.active::after{transform:scaleY(1);}
@@ -1855,12 +1855,30 @@ const MatchCard=({match,round,onWin})=>{
   </div>
 }
 
+function buildDoubleElim(teams){
+  // Winners bracket + Losers bracket structure
+  const wb=[]; const lb=[]; const sz=Math.min(teams.length,16)
+  for(let i=0;i<sz;i+=2) wb.push({id:'wb_r1_'+i/2,a:teams[i],b:teams[i+1],w:null,l:null,round:1,bracket:'W'})
+  return{wb,lb}
+}
+
+function buildRoundRobin(teams){
+  const matches=[]
+  for(let i=0;i<teams.length;i++)
+    for(let j=i+1;j<teams.length;j++)
+      matches.push({id:'rr_'+i+'_'+j,a:teams[i],b:teams[j],scoreA:0,scoreB:0})
+  return matches
+}
+
 function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
   const[selT,setSelT]=useState(tournaments[0]?.id||'')
   const[tick,setTick]=useState(0)
+  const[viewMode,setViewMode]=useState('bracket') // bracket | schedule | results
   const t=tournaments.find(x=>x.id===selT)
   const tTeams=teams.filter(x=>x.tournament_id===selT)
+  const isDoubleElim=t&&t.format==='Double Elimination'
+  const isRoundRobin=t&&(t.format==='Round Robin'||t.format==='Swiss'||t.format==='League')
 
   const getBracket=()=>{try{return JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')}catch(e){return{}}}
   const setWinner=(matchIdx,winId)=>{
@@ -1868,17 +1886,56 @@ function BracketView({tournaments,teams,lang}){
       const bk=getBracket(); bk['m'+matchIdx]=winId
       localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
       setTick(n=>n+1)
+      addNotif('🏅 Pemenang match '+matchIdx+' ditetapkan','success','bracket')
     }catch(e){}
   }
   const resetBracket=()=>{
-    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(n=>n+1)}catch(e){}
+    if(!window.confirm('Reset seluruh bracket? Data match akan hilang.'))return
+    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(n=>n+1);addNotif('↺ Bracket direset','info','bracket')}catch(e){}
   }
-
   const bracket=getBracket()
-  // Build rounds
+
+  // Build rounds (single elim)
   const r1=[]; for(let idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
   const r2=[]; for(let idx=0;idx<Math.floor(r1.length/2);idx++) r2.push({id:idx,a:null,b:null,w:bracket['sf'+idx],label:'SF'})
   const final=[{id:0,a:null,b:null,w:bracket['final'],label:'FINAL'}]
+
+  // Round Robin standings
+  const rrMatches=selT?JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]'):[]
+  const rrStandings=tTeams.map(tm=>{
+    let w=0,l=0,pts=0,gf=0,ga=0
+    rrMatches.forEach(m=>{
+      if(m.a?.id===tm.id){gf+=m.sA||0;ga+=m.sB||0;if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
+      if(m.b?.id===tm.id){gf+=m.sB||0;ga+=m.sA||0;if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
+    })
+    return{...tm,w,l,pts,gf,ga,gd:gf-ga}
+  }).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf)
+
+  const setRRResult=(matchId,winId,sA,sB)=>{
+    const ms=JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]')
+    const idx=ms.findIndex(m=>m.id===matchId)
+    const upd={...ms[idx],w:winId,sA,sB}
+    if(idx>=0)ms[idx]=upd; else ms.push(upd)
+    localStorage.setItem('arenagg_rr_'+selT,JSON.stringify(ms))
+    setTick(n=>n+1)
+  }
+
+  // Initialize RR matches
+  useState(()=>{
+    if(isRoundRobin&&tTeams.length>=2){
+      const existing=localStorage.getItem('arenagg_rr_'+selT)
+      if(!existing){
+        const ms=[]
+        for(let a=0;a<tTeams.length;a++)
+          for(let b=a+1;b<tTeams.length;b++)
+            ms.push({id:'rr_'+a+'_'+b,a:tTeams[a],b:tTeams[b],w:null,sA:0,sB:0})
+        localStorage.setItem('arenagg_rr_'+selT,JSON.stringify(ms))
+        setTick(n=>n+1)
+      }
+    }
+  })
+
+  const winner=bracket['final']?tTeams.find(x=>x.id===bracket['final']):null
 
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1100}}>
     <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
@@ -1886,12 +1943,23 @@ function BracketView({tournaments,teams,lang}){
         <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
         <p style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:2,letterSpacing:1}}>KLIK NAMA TIM UNTUK SET PEMENANG</p>
       </div>
-      {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset Bracket</button>}
+      <div style={{display:'flex',gap:8}}>
+        {!isRoundRobin&&<button onClick={()=>setViewMode(v=>v==='bracket'?'schedule':'bracket')} className="btn btn-dark btn-sm">{viewMode==='bracket'?'📋 Jadwal':'📊 Bracket'}</button>}
+        {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset</button>}
+      </div>
     </div>
+
     {/* Tournament tabs */}
     <div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
-      {tournaments.map(x=><button key={x.id} onClick={()=>setSelT(x.id)} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:`1px solid ${selT===x.id?'var(--cyan)':'var(--border)'}`,transition:'all 0.15s',fontFamily:'var(--fb)'}}>{x.name}</button>)}
+      {tournaments.map(x=>(
+        <button key={x.id} onClick={()=>{setSelT(x.id);setViewMode('bracket')}} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:'1px solid '+(selT===x.id?'var(--cyan)':'var(--border)'),transition:'all 0.15s',fontFamily:'var(--fb)'}}>
+          {x.name}
+          <span style={{marginLeft:6,fontSize:9,opacity:0.7}}>{x.format==='Double Elimination'?'🔁':x.format==='Round Robin'?'⚽':x.format==='Swiss'?'🔄':x.format==='League'?'🏆':''}
+          </span>
+        </button>
+      ))}
     </div>
+
     {t&&<>
       {/* Header card */}
       <div className="card" style={{marginBottom:16,background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))'}}>
@@ -1899,63 +1967,139 @@ function BracketView({tournaments,teams,lang}){
           <div>
             <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,color:'var(--cyan)'}}>{t.name}</div>
             <div style={{fontSize:10,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>🎮 {t.game} · ⚙ {t.format} · 👥 {tTeams.length} Tim</div>
+            <div style={{marginTop:6,display:'flex',gap:6,flexWrap:'wrap'}}>
+              <span className={'badge badge-'+(t.status==='live'?'red':t.status==='active'?'green':'yellow')}>{t.status?.toUpperCase()}</span>
+              <span className="badge badge-cyan">{t.format}</span>
+            </div>
           </div>
           <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
             <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>PRIZE POOL</div><div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div></div>
-            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>WINNER</div>
-              {bracket['final']?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>🏆 {tTeams.find(x=>x.id===bracket['final'])?.name||'TBD'}</div>:<div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)'}}>TBD</div>}
+            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>CHAMPION</div>
+              {winner?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>🏆 {winner.name}</div>
+              :isRoundRobin&&rrStandings[0]?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)',fontWeight:700}}>🥇 {rrStandings[0].name}</div>
+              :<div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)'}}>TBD</div>}
             </div>
           </div>
         </div>
       </div>
+
       {tTeams.length<2
         ?<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MIN. 2 TIM DIPERLUKAN</div><div style={{fontSize:11,marginTop:8}}>Daftarkan tim di halaman Peserta terlebih dahulu</div></div>
+
+        :isRoundRobin?<div>
+          {/* ROUND ROBIN / LEAGUE TABLE */}
+          <div className="card" style={{marginBottom:14,overflowX:'auto'}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>📊 KLASEMEN {t.format.toUpperCase()}</div>
+            <table style={{width:'100%',borderCollapse:'collapse',minWidth:400}}>
+              <thead><tr style={{borderBottom:'2px solid var(--border)'}}>
+                {['#','Tim','M','W','L','PTS','GF','GA','GD'].map(h=><th key={h} style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,padding:'6px 8px',textAlign:h==='Tim'?'left':'center'}}>{h}</th>)}
+              </tr></thead>
+              <tbody>
+                {rrStandings.map((tm,idx)=>(
+                  <tr key={tm.id} style={{borderBottom:'1px solid rgba(255,255,255,0.04)',background:idx===0?'rgba(0,255,136,0.04)':idx===1?'rgba(0,229,255,0.03)':'transparent'}}>
+                    <td style={{padding:'8px',fontFamily:'var(--fh)',fontSize:12,textAlign:'center',color:idx===0?'var(--yellow)':idx===1?'var(--cyan)':'var(--muted)'}}>{['🥇','🥈','🥉'][idx]||idx+1}</td>
+                    <td style={{padding:'8px',fontSize:12,fontWeight:600}}>{tm.name}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:'var(--muted)'}}>{tm.w+tm.l}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:'var(--green)',fontWeight:700}}>{tm.w}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:'var(--red)'}}>{tm.l}</td>
+                    <td style={{padding:'8px',fontFamily:'var(--fh)',fontSize:13,textAlign:'center',color:'var(--yellow)',fontWeight:900}}>{tm.pts}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center'}}>{tm.gf}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center'}}>{tm.ga}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:tm.gd>0?'var(--green)':tm.gd<0?'var(--red)':'var(--muted)',fontWeight:600}}>{tm.gd>0?'+':''}{tm.gd}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* RR MATCHES */}
+          <div className="card">
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>📅 JADWAL PERTANDINGAN</div>
+            {rrMatches.map((m,mIdx)=>(
+              <RRMatchRow key={m.id} match={m} onResult={(w,sA,sB)=>setRRResult(m.id,w,sA,sB)}/>
+            ))}
+          </div>
+        </div>
+
         :<div style={{overflowX:'auto',paddingBottom:16}}>
+          {/* SINGLE / DOUBLE ELIM BRACKET */}
+          {isDoubleElim&&<div style={{marginBottom:8,padding:'6px 10px',background:'rgba(138,43,226,0.1)',border:'1px solid rgba(138,43,226,0.3)',borderRadius:6,fontSize:10,color:'#b87fff',fontFamily:'var(--fm)'}}>🔁 Double Elimination: Tim yang kalah masuk Losers Bracket, masih bisa menang!</div>}
           <div style={{display:'flex',gap:0,alignItems:'center',minWidth:r1.length>4?700:400}}>
             {/* ROUND 1 */}
             <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
               <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(0,229,255,0.08)',borderRadius:4}}>BABAK 1 ({r1.length} MATCH)</div>
               {r1.map((m,idx)=><MatchCard key={idx} match={m} round={1} onWin={wid=>setWinner(idx,wid)}/>)}
             </div>
-            {/* Connector */}
-            {r1.length>=2&&<div style={{width:28,flexShrink:0,alignSelf:'stretch',position:'relative',marginTop:22}}>
-              <svg width="28" height="100%" style={{position:'absolute',inset:0}} preserveAspectRatio="none">
-                <path d="M 0 25% L 14 25% L 14 75% L 0 75%" stroke="rgba(0,229,255,0.2)" strokeWidth="1" fill="none"/>
-                <path d="M 14 50% L 28 50%" stroke="rgba(0,229,255,0.3)" strokeWidth="1.5" fill="none"/>
-              </svg>
-            </div>}
-            {/* SEMI FINAL */}
-            {r1.length>=2&&<div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0,justifyContent:'center'}}>
-              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,107,0,0.08)',borderRadius:4}}>SEMI FINAL</div>
-              {r2.length>0?r2.map((m,idx)=><MatchCard key={idx} match={{...m,label:'SF '+(idx+1)}} round={2} onWin={wid=>setWinner('sf'+idx,wid)}/>)
-                :<MatchCard match={{id:0,a:null,b:null,w:bracket['sf0'],label:'SEMI FINAL'}} round={2} onWin={wid=>setWinner('sf0',wid)}/>}
-            </div>}
-            {/* Connector to Final */}
-            <div style={{width:28,flexShrink:0,position:'relative',alignSelf:'stretch',marginTop:22}}>
-              <svg width="28" height="100%" style={{position:'absolute',inset:0}} preserveAspectRatio="none">
-                <path d="M 0 50% L 28 50%" stroke="rgba(255,215,0,0.3)" strokeWidth="1.5" fill="none"/>
-              </svg>
+            {/* Connector arrow */}
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:r1.length*90,flexShrink:0}}>
+              <div style={{width:40,borderTop:'1px dashed rgba(0,229,255,0.2)',position:'relative'}}>
+                <div style={{position:'absolute',right:-6,top:-4,color:'rgba(0,229,255,0.4)',fontSize:10}}>▶</div>
+              </div>
             </div>
-            {/* GRAND FINAL */}
-            <div style={{display:'flex',flexDirection:'column',gap:8,flexShrink:0,justifyContent:'center'}}>
-              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,215,0,0.1)',borderRadius:4,border:'1px solid rgba(255,215,0,0.2)'}}>🏆 GRAND FINAL</div>
-              <MatchCard match={{id:0,a:null,b:null,w:bracket['final'],label:null}} round={3} onWin={wid=>setWinner('final',wid)}/>
-              <div style={{textAlign:'center',marginTop:4,fontFamily:'var(--fh)',fontSize:12,color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.prize)}</div>
+            {/* SEMIFINAL */}
+            {r2.length>0&&<>
+              <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0,alignSelf:'center'}}>
+                <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,107,0,0.08)',borderRadius:4}}>SEMI FINAL</div>
+                {r2.map((m,idx)=>{
+                  const prevW1=bracket['m'+(idx*2)]?tTeams.find(x=>x.id===bracket['m'+(idx*2)]):null
+                  const prevW2=bracket['m'+(idx*2+1)]?tTeams.find(x=>x.id===bracket['m'+(idx*2+1)]):null
+                  return <MatchCard key={idx} match={{...m,a:prevW1,b:prevW2,w:bracket['sf'+idx]}} round={2} onWin={wid=>{{const bk=getBracket();bk['sf'+idx]=wid;localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk));setTick(n=>n+1)}}}/>
+                })}
+              </div>
+              <div style={{width:40,borderTop:'1px dashed rgba(255,107,0,0.2)',flexShrink:0,position:'relative'}}>
+                <div style={{position:'absolute',right:-6,top:-4,color:'rgba(255,107,0,0.4)',fontSize:10}}>▶</div>
+              </div>
+            </>}
+            {/* FINAL */}
+            <div style={{display:'flex',flexDirection:'column',flexShrink:0,alignSelf:'center'}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,215,0,0.08)',borderRadius:4}}>⚡ GRAND FINAL</div>
+              {(()=>{
+                const fA=r2.length>0?tTeams.find(x=>x.id===bracket['sf0']):tTeams.find(x=>x.id===bracket['m0'])
+                const fB=r2.length>0?tTeams.find(x=>x.id===bracket['sf1']):tTeams.find(x=>x.id===bracket['m1'])
+                return <MatchCard match={{...final[0],a:fA||null,b:fB||null,w:bracket['final']}} round={3} onWin={wid=>{{const bk=getBracket();bk['final']=wid;localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk));setTick(n=>n+1);addNotif('🏆 Juara turnamen ditetapkan!','tournament','bracket')}}}/>
+              })()}
+              {bracket['final']&&<div style={{marginTop:12,padding:'8px 14px',background:'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,107,0,0.08))',border:'1px solid rgba(255,215,0,0.4)',borderRadius:8,textAlign:'center',animation:'glow-pulse 2s infinite'}}>
+                <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:4}}>🏆 CHAMPION</div>
+                <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:'var(--yellow)'}}>{tTeams.find(x=>x.id===bracket['final'])?.name||'TBD'}</div>
+              </div>}
             </div>
           </div>
-          <div style={{marginTop:14,padding:'8px 12px',background:'rgba(255,255,255,0.03)',borderRadius:6,border:'1px solid var(--border)',display:'flex',gap:16,flexWrap:'wrap'}}>
-            <span style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'var(--muted)'}}><span style={{width:12,height:12,background:'rgba(0,255,136,0.2)',border:'1px solid rgba(0,255,136,0.4)',borderRadius:2,display:'inline-block'}}/> Pemenang</span>
-            <span style={{display:'flex',alignItems:'center',gap:5,fontSize:10,color:'var(--muted)'}}><span style={{width:12,height:12,background:'rgba(0,229,255,0.1)',border:'1px solid var(--border)',borderRadius:2,display:'inline-block'}}/> Klik untuk set pemenang</span>
-            <span style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>* Data tersimpan otomatis di browser</span>
-          </div>
+          {/* Double Elim info */}
+          {isDoubleElim&&<div style={{marginTop:16,padding:'10px 14px',background:'rgba(138,43,226,0.06)',border:'1px solid rgba(138,43,226,0.2)',borderRadius:8,fontSize:10,color:'#b87fff'}}>
+            <strong>Losers Bracket:</strong> Tim yang kalah di Winners Bracket tetap lanjut di Losers Bracket. Pemenang Losers Bracket akan bertemu Winner Bracket champion di Grand Final.
+          </div>}
         </div>
       }
     </>}
-    {!t&&tournaments.length===0&&<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>🏆</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>BELUM ADA TURNAMEN</div></div>}
+    {!t&&tournaments.length===0&&<div className="card" style={{textAlign:'center',padding:40}}>
+      <div style={{fontSize:40,marginBottom:12}}>🏟</div>
+      <div style={{color:'var(--muted)',fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>BELUM ADA TURNAMEN</div>
+    </div>}
   </div>
 }
 
-// SETTINGS — dengan foto profil organizer & Ekspansi SEA berbendera
+function RRMatchRow({match,onResult}){
+  const[sA,setSA]=useState(String(match.sA||0))
+  const[sB,setSB]=useState(String(match.sB||0))
+  const[editing,setEditing]=useState(false)
+  return <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{match.a?.name||'TBD'}</div>
+    {editing
+      ?<div style={{display:'flex',alignItems:'center',gap:4}}>
+        <input value={sA} onChange={e=>setSA(e.target.value)} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
+        <span style={{color:'var(--muted)'}}>:</span>
+        <input value={sB} onChange={e=>setSB(e.target.value)} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
+        <button onClick={()=>{const a=parseInt(sA)||0,b=parseInt(sB)||0;onResult(a>b?match.a?.id:b>a?match.b?.id:null,a,b);setEditing(false)}} style={{padding:'3px 8px',background:'var(--cyan)',border:'none',borderRadius:4,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,color:'#000',fontWeight:700}}>✓</button>
+      </div>
+      :<div style={{display:'flex',alignItems:'center',gap:6}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,minWidth:60,textAlign:'center',color:match.w===match.a?.id?'var(--green)':match.w===match.b?.id?'var(--red)':'var(--muted)'}}>{match.sA||0} : {match.sB||0}</div>
+        <button onClick={()=>setEditing(true)} style={{padding:'2px 7px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>✏</button>
+      </div>
+    }
+    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right'}}>{match.b?.name||'TBD'}</div>
+    {match.w&&<span className={'badge badge-'+(match.w===match.a?.id?'green':'red')} style={{flexShrink:0}}>W: {match.w===match.a?.id?match.a?.name:match.b?.name}</span>}
+  </div>
+}
+
 function Settings({user,lang,toast}){
   const i=T[lang]||T.id
   const BANK_KEY='arenagg_bank_info'
@@ -1978,7 +2122,7 @@ function Settings({user,lang,toast}){
     {img:'https://flagcdn.com/w40/my.png',country:'Malaysia',status:'soon',note:'2027'},
     {img:'https://flagcdn.com/w40/cn.png',country:'China',status:'soon',note:'2028'},
   ]
-  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'account',icon:'⚙',label:'Akun'},{id:'sponsor',icon:'📺',label:'Iklan'},{id:'expansion',icon:'🌏',label:'Ekspansi'},{id:'danger',icon:'⚠',label:'Reset'}]
+  const TABS=[{id:'profile',icon:'👤',label:'Profil'},{id:'payment',icon:'💳',label:'Pembayaran'},{id:'tools',icon:'🔧',label:'Tools'},{id:'account',icon:'⚙',label:'Akun'},{id:'sponsor',icon:'📺',label:'Iklan'},{id:'expansion',icon:'🌏',label:'Ekspansi'},{id:'danger',icon:'⚠',label:'Reset'}]
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:700}}>
     <div style={{marginBottom:20}}>
       <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.settings_title}</h1>
@@ -2079,6 +2223,78 @@ function Settings({user,lang,toast}){
     {tab==='sponsor'&&<div className="card"><AdManager toast={toast}/></div>}
 
     {/* DANGER ZONE TAB */}
+
+    {/* TOOLS TAB */}
+    {tab==='tools'&&<div>
+      <div className="card" style={{marginBottom:14}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:16}}>🔧 ORGANIZER TOOLS</div>
+        <div className="g2" style={{marginBottom:16}}>
+          {[
+            {icon:'📋',title:'Template Turnamen',desc:'Simpan format turnamen favoritmu sebagai template',action:'template'},
+            {icon:'⏰',title:'Jadwal Otomatis',desc:'Generate jadwal match berdasarkan slot & format',action:'schedule'},
+            {icon:'📣',title:'Broadcast Pesan',desc:'Kirim pengumuman ke semua peserta via WhatsApp',action:'broadcast'},
+            {icon:'📊',title:'Analitik Cepat',desc:'Lihat statistik turnamen dalam satu klik',action:'analytics'},
+          ].map((tool,idx)=>(
+            <div key={idx} className="card" style={{cursor:'pointer',transition:'var(--trans)'}}
+              onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}
+              onMouseLeave={e=>e.currentTarget.style.borderColor='var(--border)'}
+              onClick={()=>toast('🔧 '+tool.title+' — coming soon!','info')}>
+              <div style={{fontSize:28,marginBottom:8}}>{tool.icon}</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,marginBottom:4}}>{tool.title}</div>
+              <div style={{fontSize:10,color:'var(--muted)',lineHeight:1.5}}>{tool.desc}</div>
+              <div style={{marginTop:8}}><span className="badge badge-cyan">SEGERA</span></div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SLOT MANAGEMENT */}
+      <div className="card" style={{marginBottom:14}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>👥 MANAJEMEN SLOT DEFAULT</div>
+        <div style={{fontSize:11,color:'var(--muted)',marginBottom:12,lineHeight:1.6}}>
+          Atur preferensi default untuk pembuatan turnamen baru.
+        </div>
+        {[
+          {label:'Slot Default',key:'default_slots',opts:['4','8','16','32','64'],desc:'Jumlah peserta default'},
+          {label:'Format Default',key:'default_format',opts:['Single Elimination','Double Elimination','Round Robin','Swiss'],desc:'Format bracket default'},
+          {label:'Komisi Default (%)',key:'default_comm',opts:['10','15','20','25'],desc:'Komisi yang diambil platform'},
+        ].map((pref,idx)=>{
+          const val=localStorage.getItem('arenagg_pref_'+pref.key)||pref.opts[1]
+          return(
+            <div key={idx} style={{marginBottom:14}}>
+              <label>{pref.label}</label>
+              <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:4}}>
+                {pref.opts.map(opt=>(
+                  <button key={opt} onClick={()=>{localStorage.setItem('arenagg_pref_'+pref.key,opt);toast('✓ Preferensi disimpan','success')}}
+                    style={{padding:'5px 12px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:600,
+                      background:val===opt?'var(--cyan)':'rgba(255,255,255,0.04)',
+                      color:val===opt?'#000':'var(--text)',
+                      border:'1px solid '+(val===opt?'var(--cyan)':'var(--border)'),
+                      transition:'all 0.15s',fontFamily:'var(--fh)'}}>
+                    {opt}
+                  </button>
+                ))}
+              </div>
+              <div style={{fontSize:9,color:'var(--muted)',marginTop:4,fontFamily:'var(--fm)'}}>{pref.desc}</div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* KEYBOARD SHORTCUTS */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--green)',letterSpacing:1,marginBottom:12}}>⌨ KEYBOARD SHORTCUTS</div>
+        <div className="g2">
+          {[['D','Dashboard'],['R','Komisi'],['T','Turnamen'],['N','Buat Baru'],['P','Peserta'],['B','Bracket'],['L','Live'],['M','Ranking'],['F','Keuangan'],['S','Setting']].map(([key,label])=>(
+            <div key={key} style={{display:'flex',alignItems:'center',gap:8,padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+              <kbd style={{fontFamily:'var(--fm)',fontSize:10,fontWeight:700,background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:4,padding:'2px 7px',color:'var(--cyan)',minWidth:24,textAlign:'center'}}>{key}</kbd>
+              <span style={{fontSize:11,color:'var(--text)'}}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>}
+
     {tab==='danger'&&<div className="card" style={{borderColor:'rgba(255,45,85,0.3)',background:'rgba(255,45,85,0.02)'}}>
       <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--red)',letterSpacing:2,marginBottom:16}}>⚠ ZONA BAHAYA</div>
       <div style={{display:'flex',flexDirection:'column',gap:10}}>
