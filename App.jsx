@@ -340,6 +340,34 @@ const SCORES_KEY = 'arenagg_scores'
 function getScores(){try{return JSON.parse(localStorage.getItem(SCORES_KEY)||'{}')}catch(e){return{}}}
 function saveScores(s){try{localStorage.setItem(SCORES_KEY,JSON.stringify(s))}catch(e){}}
 
+// Supabase score sync (fire & forget)
+async function syncScoresToSupabase(tournamentId, scores){
+  try{
+    const entries = Object.entries(scores)
+    if(!entries.length) return
+    const rows = entries.map(([match_key, score]) => ({tournament_id:tournamentId,match_key,score}))
+    await supabase.from('match_scores').upsert(rows, {onConflict:'tournament_id,match_key'})
+  }catch(e){}
+}
+async function loadScoresFromSupabase(tournamentId){
+  try{
+    const {data} = await supabase.from('match_scores').select('match_key,score').eq('tournament_id',tournamentId)
+    if(data?.length){ const s={}; data.forEach(r=>{s[r.match_key]=r.score}); return s }
+  }catch(e){}
+  return null
+}
+// Payment submission to Supabase
+async function submitPaymentSupa(teamId, tournamentId, payload){
+  try{
+    const {error} = await supabase.from('payment_submissions').insert({
+      team_id:teamId, tournament_id:tournamentId,
+      method:payload.method, proof:payload.proof, note:payload.note||'',
+      amount:payload.amount, status:'pending'
+    })
+    return !error
+  }catch(e){ return false }
+}
+
 // Live status badge component
 function LiveStatusBadge({status,size='sm'}){
   if(status==='live') return <span style={{display:'inline-flex',alignItems:'center',gap:4,padding:size==='lg'?'4px 10px':'2px 7px',background:'rgba(255,45,85,0.15)',border:'1px solid rgba(255,45,85,0.4)',borderRadius:4,fontFamily:'var(--fh)',fontSize:size==='lg'?11:9,color:'var(--red)',fontWeight:900,letterSpacing:1,animation:'flicker 2s infinite'}}><span style={{width:6,height:6,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block'}}/>LIVE</span>
@@ -353,6 +381,25 @@ function LiveStatusBadge({status,size='sm'}){
 function LiveMatchView({tournament,teams,toast,onBack}){
   const t = tournament
   const[scores,setScores]=useState(()=>{const s=getScores();return s[t?.id]||{}})
+  // Load fresh scores from Supabase on mount
+  useEffect(()=>{
+    if(!t?.id) return
+    loadScoresFromSupabase(t.id).then(s=>{
+      if(s && Object.keys(s).length>0){
+        setScores(s)
+        const all=getScores(); all[t.id]=s; saveScores(all)
+      }
+    })
+    // Realtime subscription for score updates
+    const ch = supabase.channel('scores-'+t.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'match_scores',filter:`tournament_id=eq.${t.id}`},
+        async()=>{
+          const fresh=await loadScoresFromSupabase(t.id)
+          if(fresh) setScores({...fresh})
+        }
+      ).subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[t?.id])
   const[chatMsg,setChatMsg]=useState('')
   const[chatHistory,setChatHistory]=useState(()=>getChatHistory(t?.id||''))
   const[chatName,setChatName]=useState(()=>{try{return localStorage.getItem('arenagg_chat_name')||''}catch(e){return''}})
@@ -368,13 +415,14 @@ function LiveMatchView({tournament,teams,toast,onBack}){
     pairs.push({id:'m'+i,a:tTeams[i],b:tTeams[i+1],scoreA:scores['m'+i+'_a']||0,scoreB:scores['m'+i+'_b']||0})
   }
 
-  // Persist scores
+  // Persist scores to localStorage + Supabase
   const updateScore=(matchId,side,val)=>{
     const newS={...scores,[`${matchId}_${side}`]:Math.max(0,val)}
     setScores(newS)
     const all=getScores()
     all[t.id]=newS
     saveScores(all)
+    syncScoresToSupabase(t.id, newS) // sync to Supabase
     // Broadcast to other tabs/windows
     try{window.dispatchEvent(new StorageEvent('storage',{key:SCORES_KEY}))}catch(e){}
   }
@@ -590,19 +638,26 @@ function PublicLivePage({tid,onBack,toast}){
           supabase.from('teams').select('*').eq('tournament_id',tid.trim()).order('created_at')
         ])
         if(td){setT(td);setTeams(tms||[])}
-        // Load scores from localStorage
-        const s=getScores()
-        if(s[tid.trim()])setScores(s[tid.trim()])
+        // Load scores: try Supabase first, fallback to localStorage
+        const supScores = await loadScoresFromSupabase(tid.trim())
+        if(supScores && Object.keys(supScores).length > 0){
+          setScores(supScores)
+          // Also update localStorage cache
+          const all=getScores(); all[tid.trim()]=supScores; saveScores(all)
+        } else {
+          const s=getScores(); if(s[tid.trim()])setScores(s[tid.trim()])
+        }
         // Load chat
         setChatHistory(getChatHistory(tid.trim()))
       }catch(e){console.error(e)}
       setL(false)
     }
     load()
-    // Poll every 5s for live updates
+    // Poll every 5s for live updates (from Supabase if available, else localStorage)
     const poll=setInterval(async()=>{
-      const s=getScores()
-      if(s[tid])setScores({...s[tid]})
+      const supScores = await loadScoresFromSupabase(tid.trim())
+      if(supScores && Object.keys(supScores).length>0){ setScores({...supScores}) }
+      else { const s=getScores(); if(s[tid])setScores({...s[tid]}) }
       setChatHistory([...getChatHistory(tid)])
     },5000)
     // Also listen for storage events (instant sync same browser)
@@ -1078,31 +1133,30 @@ function ParticipantDashboard({participant,onLogout,toast}){
   const[submitting,setSubmitting]=useState(false)
   const entryFee=Number(participant.tournament?.entry||0)
 
-  // Submit bukti bayar
-  const submitPayment=()=>{
+  // Submit bukti bayar (ke Supabase + localStorage backup)
+  const submitPayment=async()=>{
     if(!payProof.trim()){toast('Isi nomor bukti transfer / referensi pembayaran','error');return}
     setSubmitting(true)
-    const rec={
-      id:'pay_'+Date.now(),
-      amount:entryFee,
-      method:payMethod,
-      proof:payProof,
-      note:payNote,
-      submittedAt:new Date().toLocaleString('id-ID'),
-      status:'pending' // organizer belum konfirmasi
-    }
+    const payload={amount:entryFee,method:payMethod,proof:payProof,note:payNote}
+    // Try Supabase first
+    const ok = await submitPaymentSupa(participant.id, participant.tournamentId, payload)
+    // Also save locally as backup
+    const rec={id:'pay_'+Date.now(),amount:entryFee,method:payMethod,proof:payProof,note:payNote,submittedAt:new Date().toLocaleString('id-ID'),status:'pending',syncedToSupabase:ok}
     const updated={...wallet,payments:[...(wallet.payments||[]),rec],lastSubmit:Date.now()}
     setWallet(updated);saveWallet(updated)
     setPayProof('');setPayNote('')
-    toast('✓ Bukti bayar terkirim! Tunggu konfirmasi organizer.','success')
+    toast(ok?'✓ Bukti bayar terkirim ke sistem! Tunggu konfirmasi organizer.':'✓ Bukti bayar tersimpan! Hubungi organizer untuk konfirmasi.','success')
     setSubmitting(false)
   }
 
-  // Poll for updates every 5s
+  // Poll for updates every 5s (scores from Supabase, chat from localStorage)
   useEffect(()=>{
-    const poll=setInterval(()=>{
+    const poll=setInterval(async()=>{
       setChatHistory([...getChatHistory(participant.tournamentId||'')])
-      const s=getScores();if(s[participant.tournamentId])setScores({...s[participant.tournamentId]})
+      // Try Supabase for scores
+      const supScores = await loadScoresFromSupabase(participant.tournamentId||'')
+      if(supScores && Object.keys(supScores).length>0) setScores({...supScores})
+      else{ const s=getScores();if(s[participant.tournamentId])setScores({...s[participant.tournamentId]}) }
     },5000)
     return()=>clearInterval(poll)
   },[])
@@ -1558,7 +1612,30 @@ function useData(userId,toast){
   const[tournaments,setT]=useState([]);const[teams,setTeams]=useState([]);const[loading,setL]=useState(true)
   const load=useCallback(async()=>{if(!userId){setL(false);return;}setL(true);try{const[{data:ts},{data:tms}]=await Promise.all([supabase.from('tournaments').select('*').eq('organizer_id',userId).order('created_at',{ascending:false}),supabase.from('teams').select('*,tournaments!inner(organizer_id)').eq('tournaments.organizer_id',userId)]);setT(ts||[]);setTeams((tms||[]).map(({tournaments:_,...rest})=>rest));}catch(e){toast('Error: '+e.message,'error')}setL(false)},[userId])
   useEffect(()=>{load()},[load])
-  useEffect(()=>{if(!userId)return;const ch=supabase.channel('db').on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},load).on('postgres_changes',{event:'*',schema:'public',table:'teams'},load).subscribe();return()=>supabase.removeChannel(ch)},[userId,load])
+  useEffect(()=>{
+    if(!userId)return
+    const ch=supabase.channel('db-changes')
+      .on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},load)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'teams'},(payload)=>{
+        load()
+        // Notify organizer of new team registration
+        const teamName = payload.new?.name || 'Tim baru'
+        if(toast) toast(`⚔ Tim baru mendaftar: ${teamName}!`, 'success')
+      })
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'teams'},(payload)=>{
+        load()
+        // Notify if paid status changed
+        if(payload.new?.paid && !payload.old?.paid){
+          const teamName = payload.new?.name || 'Tim'
+          if(toast) toast(`✅ ${teamName} sudah dikonfirmasi lunas!`, 'success')
+        }
+      })
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'payment_submissions'},()=>{
+        if(toast) toast('💳 Ada bukti bayar masuk! Cek tab Peserta.', 'info')
+      })
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[userId,load])
   const addT=async d=>{const{error}=await supabase.from('tournaments').insert({...d,organizer_id:userId});if(error){toast('Error: '+error.message,'error');return;}await load()}
   const updateT=async(id,d)=>{const{error}=await supabase.from('tournaments').update(d).eq('id',id).eq('organizer_id',userId);if(error){toast('Error: '+error.message,'error');return;}await load()}
   const deleteT=async id=>{await supabase.from('tournaments').delete().eq('id',id).eq('organizer_id',userId);await load()}
@@ -1929,10 +2006,10 @@ function BottomNav({page,setPage,lang,hasLive}){
 }
 
 // DASHBOARD ELEGAN & PROFESIONAL
-function Dashboard({tournaments,teams,setPage,loading,lang}){
+function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   const i=T[lang]||T.id
   const totalPrize=tournaments.reduce((s,t)=>s+Number(t.prize),0)
-  const totalRev=tournaments.reduce((s,t)=>s+(Number(t.entry)*Number(t.registered||0)*0.15),0)
+  const totalRev=tournaments.reduce((s,t)=>s+(Number(t.entry)*teams.filter(x=>x.tournament_id===t.id&&x.paid).length*0.15),0)
   const totalP=teams.reduce((s,t)=>s+t.members,0)
   const liveT=tournaments.filter(t=>t.status==='live')
   const activeT=tournaments.filter(t=>t.status==='active')
@@ -2250,7 +2327,47 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
 }
 
 
-function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
+function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast}){
+  const[pendingPayments,setPendingPayments]=React.useState([])
+  const[showPayments,setShowPayments]=React.useState(false)
+  
+  // Load pending payment submissions from Supabase
+  React.useEffect(()=>{
+    if(!tournaments.length) return
+    const load=async()=>{
+      try{
+        const {data}=await supabase.from('payment_submissions')
+          .select('*,teams(name,captain,contact,tournament_id)')
+          .eq('status','pending')
+          .order('submitted_at',{ascending:false})
+        if(data){
+          // Only show payments for our tournaments
+          const ourTids=new Set(tournaments.map(t=>t.id))
+          setPendingPayments(data.filter(p=>ourTids.has(p.tournament_id)))
+        }
+      }catch(e){}
+    }
+    load()
+    // Refresh every 30s
+    const interval=setInterval(load,30000)
+    return()=>clearInterval(interval)
+  },[tournaments])
+
+  const confirmPayment=async(paymentId,teamId)=>{
+    try{
+      await supabase.from('payment_submissions').update({status:'confirmed'}).eq('id',paymentId)
+      await updateTeam(teamId,{paid:true})
+      setPendingPayments(p=>p.filter(x=>x.id!==paymentId))
+      if(toast)toast('✓ Pembayaran dikonfirmasi! Tim ditandai lunas.','success')
+    }catch(e){ if(toast)toast('Error konfirmasi: '+e.message,'error') }
+  }
+  const rejectPayment=async(paymentId)=>{
+    try{
+      await supabase.from('payment_submissions').update({status:'rejected'}).eq('id',paymentId)
+      setPendingPayments(p=>p.filter(x=>x.id!==paymentId))
+      if(toast)toast('Bukti bayar ditolak.','info')
+    }catch(e){}
+  }
   const i=T[lang]||T.id
   const[selT,setSelT]=useState('all')
   const[showAdd,setShowAdd]=useState(false)
@@ -2301,6 +2418,35 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang}){
     setForm({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''})
   }
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
+    {/* PENDING PAYMENT NOTIFICATIONS */}
+    {pendingPayments.length>0&&<div style={{background:'linear-gradient(135deg,rgba(255,215,0,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(255,215,0,0.3)',borderRadius:10,padding:'14px 16px',marginBottom:16}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:showPayments?12:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <span style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1}}>💳 BUKTI BAYAR MASUK</span>
+          <span style={{background:'var(--red)',color:'#fff',borderRadius:'50%',width:18,height:18,display:'inline-flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--fh)',fontSize:9,fontWeight:900,animation:'pulse 1.5s infinite'}}>{pendingPayments.length}</span>
+        </div>
+        <button onClick={()=>setShowPayments(s=>!s)} className="btn btn-ghost btn-sm" style={{fontSize:9}}>{showPayments?'Sembunyikan ▲':'Lihat Semua ▼'}</button>
+      </div>
+      {showPayments&&<div style={{display:'flex',flexDirection:'column',gap:8}}>
+        {pendingPayments.map(p=>(
+          <div key={p.id} style={{background:'rgba(255,255,255,0.04)',borderRadius:8,padding:'10px 12px',border:'1px solid rgba(255,215,0,0.15)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:6}}>
+              <div>
+                <div style={{fontWeight:700,fontSize:13}}>{p.teams?.name||'—'} <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>· {p.teams?.captain}</span></div>
+                <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>💳 {p.method} · Ref: <b style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{p.proof}</b></div>
+                {p.note&&<div style={{fontSize:10,color:'var(--muted)'}}>📝 {p.note}</div>}
+                <div style={{fontSize:9,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>📅 {new Date(p.submitted_at).toLocaleString('id-ID')}</div>
+              </div>
+              <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--yellow)',fontWeight:700,flexShrink:0}}>Rp {Number(p.amount).toLocaleString('id-ID')}</div>
+            </div>
+            <div style={{display:'flex',gap:6}}>
+              <button className="btn btn-green btn-sm" onClick={()=>confirmPayment(p.id,p.team_id)} style={{fontSize:9}}>✓ Konfirmasi Lunas</button>
+              <button className="btn btn-danger btn-sm" onClick={()=>rejectPayment(p.id)} style={{fontSize:9}}>✕ Tolak</button>
+            </div>
+          </div>
+        ))}
+      </div>}
+    </div>}
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16,flexWrap:'wrap',gap:10}}>
       <div>
         <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>{i.teams_title}</h1>
@@ -2567,9 +2713,15 @@ function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
   const[selT,setSelT]=useState(tournaments[0]?.id||'')
   const t=tournaments.find(x=>x.id===selT);const tTeams=teams.filter(x=>x.tournament_id===selT);const pairs=[]
-  for(let idx=0;idx<Math.min(tTeams.length,8);idx+=2)pairs.push({a:tTeams[idx],b:tTeams[idx+1],w:Math.random()>0.5?tTeams[idx]?.id:tTeams[idx+1]?.id})
+  for(let idx=0;idx<Math.min(tTeams.length,8);idx+=2){
+    const storedW = selT ? (()=>{try{const bk=JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}'); return bk['m'+idx]||null}catch(e){return null}})() : null
+    pairs.push({a:tTeams[idx],b:tTeams[idx+1],w:storedW})
+  }
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
-    <div style={{marginBottom:16}}><h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1></div>
+    <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
+      <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>Klik nama tim untuk set pemenang</span>
+    </div>
     <div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
       {tournaments.map(x=><button key={x.id} onClick={()=>setSelT(x.id)} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:`1px solid ${selT===x.id?'var(--cyan)':'var(--border)'}`,transition:'all 0.15s',fontFamily:'var(--fb)'}}>{x.name}</button>)}
     </div>
@@ -2577,7 +2729,19 @@ function BracketView({tournaments,teams,lang}){
     {tTeams.length<2?<div className="card" style={{textAlign:'center',padding:36,color:'var(--muted)'}}><div style={{fontSize:28,marginBottom:9}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:10,letterSpacing:1}}>MIN. 2 TEAMS DIPERLUKAN</div></div>
     :<div style={{display:'flex',gap:28,overflowX:'auto',paddingBottom:12,alignItems:'flex-start'}}>
       <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
-        {pairs.map((p,idx)=><div key={idx}><div style={{fontSize:8,fontFamily:'var(--fm)',color:'var(--muted)',marginBottom:3,letterSpacing:1}}>MATCH {idx+1}</div><div className="b-match"><div className={`b-team ${p.w===p.a?.id?'winner':'loser'}`}><span>{p.a?.name||'BYE'}</span>{p.w===p.a?.id&&<span>🏆</span>}</div><div className={`b-team ${p.w===p.b?.id?'winner':'loser'}`}><span>{p.b?.name||'BYE'}</span>{p.w===p.b?.id&&<span>🏆</span>}</div></div></div>)}
+        {pairs.map((p,idx)=>{
+          const setWinner=(winId)=>{
+            try{
+              const bk=JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')
+              bk['m'+idx]=winId; localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
+              setSelT(s=>s) // force re-render
+            }catch(e){}
+          }
+          return <div key={idx}><div style={{fontSize:8,fontFamily:'var(--fm)',color:'var(--muted)',marginBottom:3,letterSpacing:1}}>MATCH {idx+1}</div><div className="b-match">
+            <div className={`b-team ${p.w===p.a?.id?'winner':'loser'}`} style={{cursor:'pointer'}} onClick={()=>p.a&&setWinner(p.a.id)} title="Klik = set pemenang"><span>{p.a?.name||'BYE'}</span>{p.w===p.a?.id&&<span>🏆</span>}</div>
+            <div className={`b-team ${p.w===p.b?.id?'winner':'loser'}`} style={{cursor:'pointer'}} onClick={()=>p.b&&setWinner(p.b.id)} title="Klik = set pemenang"><span>{p.b?.name||'BYE'}</span>{p.w===p.b?.id&&<span>🏆</span>}</div>
+          </div></div>
+        })}
       </div>
       <div style={{display:'flex',flexDirection:'column',justifyContent:'center',flexShrink:0,paddingTop:55}}>
         <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',marginBottom:4,letterSpacing:1}}>🏆 GRAND FINAL</div>
@@ -2835,7 +2999,7 @@ export default function App(){
         {page==='revenue'&&<div className='animate-in'><RevenuePage {...sharedProps}/></div>}
         {page==='tournaments'&&<div className='animate-in'><TournamentList {...sharedProps}/></div>}
         {page==='create'&&<div className='animate-in'><CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/></div>}
-        {page==='teams'&&<div className='animate-in'><TeamsView {...sharedProps}/></div>}
+        {page==='teams'&&<div className='animate-in'><TeamsView {...sharedProps} toast={toast}/></div>}
         {page==='bracket'&&<div className='animate-in'><BracketView {...sharedProps}/></div>}
         {page==='live'&&<div className='animate-in'><LivePage {...sharedProps} toast={toast}/></div>}
         {page==='leaderboard'&&<div className='animate-in'><Leaderboard {...sharedProps}/></div>}
