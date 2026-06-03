@@ -1099,13 +1099,13 @@ function ParticipantDashboard({participant,onLogout,toast}){
   }
 
   // Poll for updates every 5s
-  useState(()=>{
+  useEffect(()=>{
     const poll=setInterval(()=>{
       setChatHistory([...getChatHistory(participant.tournamentId||'')])
       const s=getScores();if(s[participant.tournamentId])setScores({...s[participant.tournamentId]})
     },5000)
     return()=>clearInterval(poll)
-  })
+  },[])
 
   const sendChat=()=>{
     if(!chatMsg.trim())return
