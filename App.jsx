@@ -2811,6 +2811,9 @@ export default function App(){
     window.history.pushState('',document.title,window.location.pathname+window.location.search)
   }
 
+  // Scroll to top when page changes (must be before early returns!)
+  useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
+
   // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
   // PORTAL PESERTA — accessible at /#/peserta without login
   if(pubPeserta)return <><ParticipantPortal toast={toast}/><Toasts list={toasts}/></>
@@ -2821,7 +2824,6 @@ export default function App(){
   if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
 
   // Scroll to top on page change
-  useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
 
   return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
