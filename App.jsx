@@ -145,12 +145,90 @@ function LiveBanner({tournaments}){
 
 
 // ============================================================
-// AD BANNER SYSTEM — Game ads with real logos + epic animations
+// AD BANNER SYSTEM — Game ads with animated SVG art + epic animations
 // ============================================================
+
+// Animated inline SVG logos — 100% reliable, no CORS, rich art
+const SVG_LOGOS = {
+  ml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="mlg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0a3a8c"/><stop offset="100%" stop-color="#00c8ff"/></linearGradient>
+      <linearGradient id="mlg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ffaa00"/></linearGradient>
+      <filter id="mlglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="100" height="100" rx="16" fill="#020d2e"/>
+    <circle cx="50" cy="50" r="42" fill="none" stroke="url(#mlg1)" stroke-width="2" opacity="0.6"/>
+    <polygon points="50,12 88,34 88,66 50,88 12,66 12,34" fill="url(#mlg1)" opacity="0.15"/>
+    <polygon points="50,12 88,34 88,66 50,88 12,66 12,34" fill="none" stroke="url(#mlg2)" stroke-width="1.5"/>
+    <path d="M30,55 L45,35 L50,42 L55,35 L70,55 L62,55 L58,47 L50,58 L42,47 L38,55 Z" fill="url(#mlg2)" filter="url(#mlglow)"/>
+    <text x="50" y="80" text-anchor="middle" fill="#ffd700" font-size="8" font-family="Arial Black,sans-serif" letter-spacing="2" opacity="0.9">MOBILE LEGENDS</text>
+  </svg>`,
+
+  pubg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="pg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c85000"/></linearGradient>
+      <filter id="pglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="100" height="100" rx="8" fill="#0d0800"/>
+    <rect x="6" y="6" width="88" height="88" rx="6" fill="none" stroke="#f5a623" stroke-width="1.5" opacity="0.5"/>
+    <circle cx="50" cy="38" r="16" fill="none" stroke="url(#pg1)" stroke-width="3" filter="url(#pglow)"/>
+    <circle cx="50" cy="38" r="8" fill="#f5a623" opacity="0.3"/>
+    <circle cx="50" cy="38" r="3" fill="#f5a623"/>
+    <rect x="46" y="52" width="8" height="18" rx="3" fill="url(#pg1)"/>
+    <rect x="36" y="56" width="28" height="4" rx="2" fill="url(#pg1)"/>
+    <text x="50" y="83" text-anchor="middle" fill="#f5a623" font-size="11" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="3">PUBG</text>
+    <text x="50" y="93" text-anchor="middle" fill="#888" font-size="7" font-family="Arial,sans-serif" letter-spacing="2">MOBILE</text>
+  </svg>`,
+
+  ff: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="ffg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff2200"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient>
+      <filter id="ffglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="100" height="100" fill="#100000"/>
+    <polygon points="50,5 95,27 95,73 50,95 5,73 5,27" fill="none" stroke="url(#ffg1)" stroke-width="2"/>
+    <polygon points="50,18 82,34 82,66 50,82 18,66 18,34" fill="#ff220011"/>
+    <text x="50" y="52" text-anchor="middle" fill="url(#ffg1)" font-size="32" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#ffglow)">FF</text>
+    <text x="50" y="68" text-anchor="middle" fill="#ffcc00" font-size="9" font-family="Arial Black,sans-serif" letter-spacing="2">FREE FIRE</text>
+    <rect x="30" y="72" width="40" height="2" fill="url(#ffg1)" rx="1"/>
+    <text x="50" y="86" text-anchor="middle" fill="#ff6600" font-size="8" font-family="Arial,sans-serif" letter-spacing="2">MAX</text>
+  </svg>`,
+
+  val: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="vg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4655"/><stop offset="100%" stop-color="#ff0018"/></linearGradient>
+      <filter id="vglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="100" height="100" fill="#050000"/>
+    <path d="M50,8 L92,28 L92,55 L50,92 L8,55 L8,28 Z" fill="none" stroke="#ff4655" stroke-width="1.5" opacity="0.7"/>
+    <path d="M50,22 L50,78 L22,52 Z" fill="url(#vg1)" opacity="0.9" filter="url(#vglow)"/>
+    <path d="M50,22 L78,52 L50,78 Z" fill="#ff465533" opacity="0.6"/>
+    <rect x="10" y="62" width="35" height="2" fill="#ff4655" rx="1"/>
+    <rect x="55" y="62" width="35" height="2" fill="#00e5ff" rx="1"/>
+    <text x="50" y="92" text-anchor="middle" fill="#ff4655" font-size="9" font-family="Arial Black,sans-serif" letter-spacing="2">VALORANT</text>
+  </svg>`,
+
+  cr: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="crg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+      <filter id="crglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="100" height="100" rx="18" fill="#06000e"/>
+    <rect x="5" y="5" width="90" height="90" rx="14" fill="none" stroke="url(#crg1)" stroke-width="2"/>
+    <polygon points="50,12 60,35 85,35 65,52 72,76 50,62 28,76 35,52 15,35 40,35" fill="url(#crg1)" opacity="0.2"/>
+    <polygon points="50,12 60,35 85,35 65,52 72,76 50,62 28,76 35,52 15,35 40,35" fill="none" stroke="#fbbf24" stroke-width="1.5" filter="url(#crglow)"/>
+    <text x="50" y="57" text-anchor="middle" fill="#fbbf24" font-size="18" font-family="serif">♛</text>
+    <text x="50" y="85" text-anchor="middle" fill="#c084fc" font-size="8" font-family="Arial Black,sans-serif" letter-spacing="1">CLASH ROYALE</text>
+  </svg>`,
+}
+
+// Convert SVG to data URL
+const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+
 const DEFAULT_ADS = [
   {
     id:'ml',game:'Mobile Legends: Bang Bang',
-    logo:'https://upload.wikimedia.org/wikipedia/en/9/9f/Mobile_Legends_Bang_Bang.png',
+    logo: svgToUrl(SVG_LOGOS.ml),
     tagline:'Jadilah Legenda Sejati di Arena!',
     sub:'5v5 MOBA · Terpopuler Asia · 1 Milyar+ Download',
     cta:'Main Sekarang',
@@ -161,7 +239,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'pubg',game:'PUBG Mobile',
-    logo:'https://upload.wikimedia.org/wikipedia/en/3/3b/PUBG_Mobile_Cover_Art.png',
+    logo: svgToUrl(SVG_LOGOS.pubg),
     tagline:'100 Players. 1 Winner. Are You Ready?',
     sub:'Battle Royale #1 di Dunia · Gratis',
     cta:'Drop In Now',
@@ -172,7 +250,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'ff',game:'Free Fire MAX',
-    logo:'https://upload.wikimedia.org/wikipedia/en/b/b1/Garena_Free_Fire_Logo.png',
+    logo: svgToUrl(SVG_LOGOS.ff),
     tagline:'Survive. Eliminate. Be The Last!',
     sub:'48 Pemain · 10 Menit · 1 Juara · Gratis',
     cta:'Main Gratis',
@@ -183,7 +261,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'val',game:'Valorant',
-    logo:'https://upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg',
+    logo: svgToUrl(SVG_LOGOS.val),
     tagline:'Lock In. Execute. Dominate.',
     sub:'5v5 Tactical Shooter · PC · Gratis',
     cta:'Play Free',
@@ -194,7 +272,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'cr',game:'Clash Royale',
-    logo:'https://upload.wikimedia.org/wikipedia/en/d/d1/Clash_Royale_key_art.jpg',
+    logo: svgToUrl(SVG_LOGOS.cr),
     tagline:'Battle Players Around the World!',
     sub:'Real-time PvP Card Strategy · Supercell',
     cta:'Play Now',
