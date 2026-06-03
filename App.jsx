@@ -1102,7 +1102,7 @@ function Leaderboard({tournaments,teams,lang}){
     
     {/* OVERVIEW STATS */}
     <div className="g4" style={{marginBottom:20}}>
-      [
+      {[
         {icon:'🏆',label:'Total Turnamen',val:tournaments.length,color:'var(--cyan)'},
         {icon:'👥',label:'Total Tim',val:teams.length,color:'var(--green)'},
         {icon:'✅',label:'Tim Lunas',val:teams.filter(t=>t.paid).length,color:'var(--yellow)'},
@@ -2965,8 +2965,6 @@ function BracketView({tournaments,teams,lang}){
   const r1=[]; for(let idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
   const r2=[]; for(let idx=0;idx<Math.floor(r1.length/2);idx++) r2.push({id:idx,a:null,b:null,w:bracket['sf'+idx],label:'SF'})
   const final=[{id:0,a:null,b:null,w:bracket['final'],label:'FINAL'}]
-
-  }
 
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1100}}>
     <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
