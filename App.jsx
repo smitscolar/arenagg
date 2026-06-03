@@ -2140,6 +2140,7 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
   const name=prof.name||user?.user_metadata?.organizer_name||user?.email?.split('@')[0]||'Organizer'
   const photo=prof.photo||null
   const NAV=[{icon:'⚡'},{icon:'📈'},{icon:'🏆'},{icon:'＋'},{icon:'👥'},{icon:'📊'},{icon:'🔴'},{icon:'🏅'},{icon:'💰'},{icon:'⚙'}]
+  const NAV_KEYS=['D','R','T','N','P','B','L','M','F','S']
   // Keyboard shortcuts
   useEffect(()=>{
     const handler=e=>{
