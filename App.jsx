@@ -131,107 +131,250 @@ function LiveBanner({tournaments}){
 
 
 // ============================================================
-// AD BANNER SYSTEM — auto-rotate game ads + sponsor slots
+// AD BANNER SYSTEM — Game ads with real logos + epic animations
 // ============================================================
 const DEFAULT_ADS = [
-  {id:'ml',game:'Mobile Legends: Bang Bang',emoji:'⚔',tagline:'Jadilah Legenda Sejati di Arena!',cta:'Main Sekarang',color:'#1a6fd4',accent:'#ffd700',bg:'linear-gradient(135deg,#020d2e 0%,#0a2a6e 50%,#050e35 100%)',url:'https://mobilelegends.com',description:'5v5 MOBA terpopuler di Asia'},
-  {id:'pubg',game:'PUBG Mobile',emoji:'🔫',tagline:'100 Players. 1 Winner. Are You Ready?',cta:'Drop In Now',color:'#f5a623',accent:'#ff6b00',bg:'linear-gradient(135deg,#0d0800 0%,#2a1500 50%,#120900 100%)',url:'https://pubgmobile.com',description:'Battle Royale #1 di Dunia'},
-  {id:'ff',game:'Free Fire MAX',emoji:'🔥',tagline:'Battle Royale Paling Seru di Mobile!',cta:'Main Gratis',color:'#ff6b35',accent:'#ffcc00',bg:'linear-gradient(135deg,#150200 0%,#4a0a00 50%,#1a0300 100%)',url:'https://garena.com/freefire',description:'48 Pemain · 10 Menit · 1 Juara'},
-  {id:'val',game:'Valorant',emoji:'🎯',tagline:'Lock In. Execute. Dominate.',cta:'Play Free',color:'#ff4655',accent:'#00e5ff',bg:'linear-gradient(135deg,#080000 0%,#1a0000 50%,#050505 100%)',url:'https://playvalorant.com',description:'5v5 Tactical Shooter · Gratis'},
-  {id:'cr',game:'Clash Royale',emoji:'⚡',tagline:'Battle Players Around the World!',cta:'Play Now',color:'#a855f7',accent:'#fbbf24',bg:'linear-gradient(135deg,#0a0015 0%,#1e0938 50%,#080010 100%)',url:'https://clashroyale.com',description:'Real-time PvP Card Strategy'},
+  {
+    id:'ml',game:'Mobile Legends: Bang Bang',
+    logo:'https://upload.wikimedia.org/wikipedia/en/9/9f/Mobile_Legends_Bang_Bang.png',
+    tagline:'Jadilah Legenda Sejati di Arena!',
+    sub:'5v5 MOBA · Terpopuler Asia · 1 Milyar+ Download',
+    cta:'Main Sekarang',
+    color:'#1a6fd4',accent:'#ffd700',
+    bg:'linear-gradient(135deg,#010818 0%,#061845 40%,#0a2060 70%,#030f2e 100%)',
+    particles:['#ffd700','#00aaff','#ffffff'],
+    url:'https://mobilelegends.com'
+  },
+  {
+    id:'pubg',game:'PUBG Mobile',
+    logo:'https://upload.wikimedia.org/wikipedia/en/3/3b/PUBG_Mobile_Cover_Art.png',
+    tagline:'100 Players. 1 Winner. Are You Ready?',
+    sub:'Battle Royale #1 di Dunia · Gratis',
+    cta:'Drop In Now',
+    color:'#f5a623',accent:'#ff6b00',
+    bg:'linear-gradient(135deg,#0a0500 0%,#1f0e00 40%,#2a1400 70%,#0d0700 100%)',
+    particles:['#ff6b00','#ffd700','#ff4400'],
+    url:'https://pubgmobile.com'
+  },
+  {
+    id:'ff',game:'Free Fire MAX',
+    logo:'https://upload.wikimedia.org/wikipedia/en/b/b1/Garena_Free_Fire_Logo.png',
+    tagline:'Survive. Eliminate. Be The Last!',
+    sub:'48 Pemain · 10 Menit · 1 Juara · Gratis',
+    cta:'Main Gratis',
+    color:'#ff4400',accent:'#ffcc00',
+    bg:'linear-gradient(135deg,#0e0000 0%,#2a0000 40%,#3d0500 70%,#120000 100%)',
+    particles:['#ff4400','#ffcc00','#ff8800'],
+    url:'https://garena.com/freefire'
+  },
+  {
+    id:'val',game:'Valorant',
+    logo:'https://upload.wikimedia.org/wikipedia/commons/f/fc/Valorant_logo_-_pink_color_version.svg',
+    tagline:'Lock In. Execute. Dominate.',
+    sub:'5v5 Tactical Shooter · PC · Gratis',
+    cta:'Play Free',
+    color:'#ff4655',accent:'#00e5ff',
+    bg:'linear-gradient(135deg,#050000 0%,#160004 40%,#1a0005 70%,#080000 100%)',
+    particles:['#ff4655','#00e5ff','#ffffff'],
+    url:'https://playvalorant.com'
+  },
+  {
+    id:'cr',game:'Clash Royale',
+    logo:'https://upload.wikimedia.org/wikipedia/en/d/d1/Clash_Royale_key_art.jpg',
+    tagline:'Battle Players Around the World!',
+    sub:'Real-time PvP Card Strategy · Supercell',
+    cta:'Play Now',
+    color:'#a855f7',accent:'#fbbf24',
+    bg:'linear-gradient(135deg,#06000e 0%,#12003a 40%,#1a0050 70%,#080015 100%)',
+    particles:['#a855f7','#fbbf24','#e879f9'],
+    url:'https://clashroyale.com'
+  },
 ]
 
 const AD_STORAGE_KEY = 'arenagg_custom_ads'
-
 function getCustomAds(){try{return JSON.parse(localStorage.getItem(AD_STORAGE_KEY)||'[]')}catch(e){return[]}}
 function saveCustomAds(ads){try{localStorage.setItem(AD_STORAGE_KEY,JSON.stringify(ads))}catch(e){}}
+
+// Floating particles for ad banner
+function AdParticles({colors=[]}) {
+  const pts = Array.from({length:8},(_,i)=>({
+    id:i,
+    color:colors[i%colors.length]||'#fff',
+    size: 2+Math.random()*3,
+    x: 5+Math.random()*90,
+    dur: 3+Math.random()*4,
+    delay: Math.random()*4,
+    drift: -20+Math.random()*40,
+  }))
+  return <div style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden'}}>
+    {pts.map(p=>(
+      <div key={p.id} style={{
+        position:'absolute',
+        left:p.x+'%',
+        bottom:'-10px',
+        width:p.size+'px',
+        height:p.size+'px',
+        borderRadius:'50%',
+        background:p.color,
+        opacity:0.7,
+        boxShadow:`0 0 ${p.size*2}px ${p.color}`,
+        animation:`ad-float-up ${p.dur}s ${p.delay}s ease-in infinite`,
+      }}/>
+    ))}
+  </div>
+}
+
+// Inject ad-specific keyframes once
+const AD_KEYFRAMES = `
+@keyframes ad-float-up{0%{transform:translateY(0) translateX(0);opacity:0.8}50%{opacity:0.5}100%{transform:translateY(-120px) translateX(var(--dx,20px));opacity:0}}
+@keyframes ad-slide-in{from{opacity:0;transform:translateX(32px) scale(0.97)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes ad-logo-pop{0%{transform:scale(0.8) rotate(-4deg);opacity:0}60%{transform:scale(1.08) rotate(1deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes ad-glow-pulse{0%,100%{box-shadow:0 0 20px var(--ad-glow,#ffd700),0 0 40px var(--ad-glow,#ffd700)33}50%{box-shadow:0 0 35px var(--ad-glow,#ffd700),0 0 70px var(--ad-glow,#ffd700)55,0 0 100px var(--ad-glow,#ffd700)22}}
+@keyframes ad-shimmer{0%{left:-100%}100%{left:200%}}
+@keyframes ad-ticker-in{from{transform:translateX(-16px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes ad-cta-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+`
+if(!document.getElementById('ad-keyframes')){const s=document.createElement('style');s.id='ad-keyframes';s.textContent=AD_KEYFRAMES;document.head.appendChild(s)}
 
 function AdBanner({compact=false}){
   const customAds = getCustomAds()
   const allAds = [...DEFAULT_ADS, ...customAds.filter(a=>a.active)]
   const[current,setCurrent]=useState(0)
+  const[prev,setPrev]=useState(null)
   const[paused,setPaused]=useState(false)
-  const[entered,setEntered]=useState(false)
-  
+  const[animKey,setAnimKey]=useState(0)
+  const[logoErr,setLogoErr]=useState({})
+
   useEffect(()=>{
     if(paused||allAds.length<=1)return
-    const t=setInterval(()=>setCurrent(c=>(c+1)%allAds.length),4000)
+    const t=setInterval(()=>{
+      setCurrent(c=>{
+        setPrev(c)
+        setAnimKey(k=>k+1)
+        return(c+1)%allAds.length
+      })
+    },4500)
     return()=>clearInterval(t)
   },[paused,allAds.length])
-  
+
+  const goTo=(i)=>{setPrev(current);setCurrent(i);setAnimKey(k=>k+1)}
+
   const ad = allAds[current]
   if(!ad)return null
-  
-  const isCustom = ad.isCustom
-  
+  const isCustom=ad.isCustom
+
+  // ── COMPACT MODE (top ticker bar) ──────────────────────────
   if(compact){
-    // Compact horizontal ticker for LiveBanner area
-    return <div style={{background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',borderBottom:'1px solid rgba(255,255,255,0.06)',padding:'7px 20px',display:'flex',alignItems:'center',gap:12,overflow:'hidden',position:'relative'}}>
-      <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.02) 50%,transparent 100%)',animation:'scan-line 3s linear infinite',pointerEvents:'none'}}/>
-      <span style={{fontFamily:'var(--fh)',fontSize:8,color:'rgba(255,255,255,0.4)',letterSpacing:2,flexShrink:0,padding:'2px 6px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:3}}>AD</span>
-      <span style={{fontSize:14,flexShrink:0}}>🎮</span>
-      <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:1,fontWeight:700,flexShrink:0}}>{ad.game}</span>
-      <span style={{fontSize:11,color:'rgba(255,255,255,0.7)',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.tagline}</span>
-      <a href={ad.url||'#'} target="_blank" rel="noreferrer" style={{flexShrink:0,padding:'4px 12px',background:ad.accent||'#ffd700',color:'#000',borderRadius:4,fontFamily:'var(--fh)',fontSize:8,fontWeight:700,letterSpacing:1,textDecoration:'none',whiteSpace:'nowrap'}}>{ad.cta}</a>
+    return <div style={{background:ad.bg||'#0d1b4b',borderBottom:'1px solid rgba(255,255,255,0.07)',padding:'6px 20px',display:'flex',alignItems:'center',gap:10,overflow:'hidden',position:'relative',minHeight:34}}>
+      {/* shimmer sweep */}
+      <div style={{position:'absolute',top:0,width:'40%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent)',animation:'ad-shimmer 3s linear infinite',pointerEvents:'none'}}/>
+      {/* AD badge */}
+      <span style={{fontFamily:'var(--fh)',fontSize:7,color:'rgba(255,255,255,0.35)',letterSpacing:2,padding:'1px 5px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:2,flexShrink:0}}>AD</span>
+      {/* Logo or emoji */}
+      <div style={{width:20,height:20,borderRadius:4,overflow:'hidden',flexShrink:0,background:'rgba(255,255,255,0.08)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+        {ad.logo&&!logoErr[ad.id]
+          ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+          :<span style={{fontSize:12}}>{ad.emoji||'🎮'}</span>
+        }
+      </div>
+      {/* Game name */}
+      <span key={'n'+animKey} style={{fontFamily:'var(--fh)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1,fontWeight:700,flexShrink:0,animation:'ad-ticker-in 0.35s ease both'}}>{ad.game}</span>
+      <span style={{fontSize:10,color:'rgba(255,255,255,0.6)',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.tagline}</span>
+      <a href={ad.url||'#'} target="_blank" rel="noreferrer"
+        style={{flexShrink:0,padding:'3px 11px',background:ad.accent||'#ffd700',color:'#000',borderRadius:3,fontFamily:'var(--fh)',fontSize:8,fontWeight:900,letterSpacing:1,textDecoration:'none',animation:'ad-cta-pulse 2.5s ease infinite'}}>
+        {ad.cta}
+      </a>
+      {/* Progress dots */}
       <div style={{display:'flex',gap:3,flexShrink:0}}>
-        {allAds.map((_,i)=><div key={i} onClick={()=>setCurrent(i)} style={{width:i===current?16:5,height:5,borderRadius:3,background:i===current?ad.accent||'#fff':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.3s'}}/>)}
+        {allAds.map((_,i)=><div key={i} onClick={()=>goTo(i)}
+          style={{width:i===current?14:5,height:4,borderRadius:2,background:i===current?ad.accent||'#fff':'rgba(255,255,255,0.18)',cursor:'pointer',transition:'all 0.4s ease'}}/>)}
       </div>
     </div>
   }
-  
-  // Full banner card
+
+  // ── FULL BANNER ─────────────────────────────────────────────
   return <div
     onMouseEnter={()=>setPaused(true)}
     onMouseLeave={()=>setPaused(false)}
     style={{
       background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',
       borderRadius:14,
-      border:`2px solid ${ad.accent||'rgba(255,215,0,0.3)'}50`,
-      padding:'18px 22px',
+      border:`1.5px solid ${ad.accent||'#ffd700'}44`,
+      padding:'0',
       marginBottom:18,
-      boxShadow:`0 8px 32px rgba(0,0,0,0.5), 0 0 40px ${ad.accent||'rgba(255,215,0,0.1)'}20`,
-      display:'flex',
-      alignItems:'center',
-      gap:16,
+      boxShadow:`0 8px 40px rgba(0,0,0,0.6), 0 0 60px ${ad.accent||'#ffd700'}15`,
       position:'relative',
       overflow:'hidden',
-      transition:'transform 0.2s,box-shadow 0.2s',
       cursor:'pointer',
+      minHeight:90,
+      '--ad-glow':ad.accent||'#ffd700',
     }}
     onClick={()=>ad.url&&window.open(ad.url,'_blank','noopener')}
   >
-    {/* Animated background shine */}
-    <div style={{position:'absolute',top:0,left:'-100%',width:'60%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent)',animation:'scan-line 4s linear infinite',pointerEvents:'none'}}/>
-    
-    {/* AD Badge */}
-    <div style={{position:'absolute',top:8,right:8,display:'flex',alignItems:'center',gap:4}}>
-      {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',letterSpacing:1,padding:'2px 5px',border:`1px solid ${ad.accent||'#ffd700'}40`,borderRadius:3}}>SPONSOR</span>}
-      <span style={{fontFamily:'var(--fh)',fontSize:7,color:'rgba(255,255,255,0.3)',letterSpacing:1,padding:'2px 5px',border:'1px solid rgba(255,255,255,0.1)',borderRadius:3}}>AD</span>
+    {/* Floating particles */}
+    <AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/>
+
+    {/* Shimmer sweep */}
+    <div style={{position:'absolute',top:0,width:'35%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 4s linear infinite',pointerEvents:'none',zIndex:1}}/>
+
+    {/* Top accent line */}
+    <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'},transparent)`,opacity:0.8}}/>
+
+    {/* Main content */}
+    <div key={animKey} style={{display:'flex',alignItems:'center',gap:16,padding:'14px 18px 18px',animation:'ad-slide-in 0.45s cubic-bezier(0.22,1,0.36,1) both',position:'relative',zIndex:2}}>
+
+      {/* Game Logo */}
+      <div style={{
+        width:66,height:66,borderRadius:14,overflow:'hidden',flexShrink:0,
+        background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,${ad.accent||'#ffd700'}22)`,
+        border:`1.5px solid ${ad.accent||'#ffd700'}44`,
+        display:'flex',alignItems:'center',justifyContent:'center',
+        animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both',
+        animationDelay:'0.05s',
+        boxShadow:`0 0 22px ${ad.color||'#1a6fd4'}55`,
+      }}>
+        {ad.logo&&!logoErr[ad.id]
+          ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game}
+              onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+          :<span style={{fontSize:30}}>{ad.emoji||'🎮'}</span>
+        }
+      </div>
+
+      {/* Text content */}
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:4}}>
+          <span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',letterSpacing:2,opacity:0.8}}>🎮 GAME AD</span>
+          {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}18`,padding:'1px 5px',borderRadius:2,border:`1px solid ${ad.accent||'#ffd700'}33`}}>SPONSOR</span>}
+        </div>
+        <div style={{fontFamily:'var(--fm)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1.5,marginBottom:3,fontWeight:700}}>{ad.game.toUpperCase()}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2,textShadow:`0 0 20px ${ad.accent||'#ffd700'}44`}}>{ad.tagline}</div>
+        <div style={{fontSize:10,color:'rgba(255,255,255,0.55)'}}>{ad.sub||ad.description}</div>
+      </div>
+
+      {/* CTA */}
+      <div style={{flexShrink:0,display:'flex',flexDirection:'column',alignItems:'center',gap:8}}>
+        <div style={{
+          padding:'10px 18px',
+          background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'})`,
+          color:'#000',borderRadius:8,
+          fontFamily:'var(--fh)',fontSize:9,fontWeight:900,letterSpacing:1.5,
+          boxShadow:`0 4px 18px ${ad.accent||'#ffd700'}55`,
+          whiteSpace:'nowrap',
+          animation:'ad-cta-pulse 2s ease infinite',
+          animationDelay:'1s',
+        }}>{ad.cta}</div>
+        {/* Dots */}
+        <div style={{display:'flex',gap:4}}>
+          {allAds.map((_,i)=>(
+            <div key={i} onClick={e=>{e.stopPropagation();goTo(i)}}
+              style={{width:i===current?14:5,height:5,borderRadius:3,background:i===current?ad.accent||'#ffd700':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',boxShadow:i===current?`0 0 8px ${ad.accent||'#ffd700'}`:'none'}}/>
+          ))}
+        </div>
+      </div>
     </div>
-    
-    {/* Game Icon */}
-    <div style={{width:52,height:52,borderRadius:12,background:`linear-gradient(135deg,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'}30)`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:26,flexShrink:0,border:`1px solid ${ad.accent||'#ffd700'}30`,boxShadow:`0 0 20px ${ad.color||'#1a6fd4'}40`}}>
-      {ad.emoji||'🎮'}
-    </div>
-    
-    {/* Content */}
-    <div style={{flex:1,minWidth:0}}>
-      <div style={{fontFamily:'var(--fm)',fontSize:9,color:ad.accent||'#ffd700',letterSpacing:2,marginBottom:3,opacity:0.8}}>🎮 {ad.game}</div>
-      <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2}}>{ad.tagline}</div>
-      {ad.description&&<div style={{fontSize:11,color:'rgba(255,255,255,0.6)',marginBottom:6,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.description}</div>}
-    </div>
-    
-    {/* CTA Button */}
-    <div style={{flexShrink:0}}>
-      <div style={{padding:'8px 16px',background:ad.accent||'#ffd700',color:'#000',borderRadius:7,fontFamily:'var(--fh)',fontSize:9,fontWeight:900,letterSpacing:1.5,boxShadow:`0 4px 12px ${ad.accent||'#ffd700'}40`,whiteSpace:'nowrap'}}>{ad.cta}</div>
-    </div>
-    
-    {/* Dots nav */}
-    <div style={{position:'absolute',bottom:7,left:'50%',transform:'translateX(-50%)',display:'flex',gap:4}}>
-      {allAds.map((_,i)=>(
-        <div key={i} onClick={e=>{e.stopPropagation();setCurrent(i)}} style={{width:i===current?14:5,height:5,borderRadius:3,background:i===current?ad.accent||'#fff':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.35s cubic-bezier(0.4,0,0.2,1)'}}/>
-      ))}
-    </div>
+
+    {/* Bottom glow line */}
+    <div style={{position:'absolute',bottom:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'},transparent)`,opacity:0.4}}/>
   </div>
 }
 
