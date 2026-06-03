@@ -2777,46 +2777,25 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   const[saving,setSaving]=useState(false)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
   useEffect(()=>{setForm(editData?{...editData,description:editData.description||''}:empty)},[editData?.id])
-  // Fungsi login peserta
-  const doLogin=async()=>{
-    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
-    setLoginErr('');setLoginL(true)
-    try{
-      const{data:teamData,error}=await supabase
-        .from('teams').select('*,tournaments(*)')
-        .ilike('name',loginName.trim())
-        .eq('contact',loginContact.trim())
-        .eq('tournament_id',tid.trim())
-        .single()
-      if(error||!teamData){
-        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
-        setLoginL(false);return
-      }
-      // Simpan ke localStorage dan redirect ke portal
-      const participant={
-        id:teamData.id,name:teamData.name,captain:teamData.captain,
-        contact:teamData.contact,members:teamData.members,
-        photo:teamData.photo,paid:teamData.paid,
-        tournamentId:teamData.tournament_id,
-        tournament:teamData.tournaments,
-        loginAt:Date.now()
-      }
-      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
-      // Redirect ke portal peserta
-      window.location.hash='#/peserta'
-      window.location.reload()
-    }catch(e){setLoginErr('Error: '+e.message)}
-    setLoginL(false)
-  }
 
   const submit=async()=>{
     if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
     setSaving(true)
-    const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,time:form.time||"",city:form.city,description:form.description}
-    if(editData) await updateT(editData.id,data)
-    else await addT({...data,registered:0,status:'pending'})
-    toast(editData?'✓ Turnamen diupdate!':'✓ Turnamen dibuat!','success')
-    setForm(empty);setEditT(null);setSaving(false)
+    try{
+      const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,time:form.time||"",city:form.city,description:form.description}
+      if(editData){
+        await updateT(editData.id,data)
+        toast('✓ Turnamen diupdate!','success')
+      } else {
+        await addT({...data,registered:0,status:'pending'})
+        toast('✓ Turnamen dibuat! Cek tab Turnamen.','success')
+      }
+      setForm(empty);setEditT(null)
+    }catch(e){
+      toast('Error: '+e.message,'error')
+      console.error('Submit error:',e)
+    }
+    setSaving(false)
   }
   const estTotal=Number(form.entry||0)*Number(form.slots||0)
   const estComm=estTotal*0.15
@@ -3694,7 +3673,7 @@ export default function App(){
   if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
 
   // Scroll to top on page change
-  const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
+  const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`#/daftar/${id}`},lang}
 
   return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
     <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
