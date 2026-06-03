@@ -2824,7 +2824,7 @@ export default function App(){
   useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`/daftar/${id}`},lang}
 
-  return <ErrorBoundary><div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
+  return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
     <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
     <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0}}>
       <LiveBanner tournaments={tournaments}/>
@@ -2844,5 +2844,5 @@ export default function App(){
     <BottomNav page={page} setPage={setPage} lang={lang} hasLive={hasLive}/>
     <button onClick={()=>document.querySelector('main')?.scrollTo({top:0,behavior:'smooth'})} style={{position:'fixed',bottom:80,right:16,width:36,height:36,borderRadius:'50%',background:'rgba(0,229,255,0.15)',border:'1px solid rgba(0,229,255,0.3)',color:'var(--cyan)',fontSize:16,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:90,backdropFilter:'blur(4px)',transition:'var(--trans)'}} title="Back to top" onMouseEnter={e=>e.currentTarget.style.background='rgba(0,229,255,0.25)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(0,229,255,0.15)'}>↑</button>
     <Toasts list={toasts}/>
-  </div></ErrorBoundary>
+  </div>
 }
