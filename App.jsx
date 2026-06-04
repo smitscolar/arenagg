@@ -271,15 +271,72 @@ function Toasts({list}){
 }
 
 function LangSelector({lang,setLangFn}){
-  return <div style={{display:'flex',flexWrap:'wrap',gap:5}}>
-    {LANG_OPTIONS.map(l=>(
-      <button key={l.code} className={`lang-btn${lang===l.code?' active':''}`} onClick={()=>setLangFn(l.code)} title={l.name}>
-        <img src={l.img} className="lang-flag" alt={l.label} onError={e=>{e.target.style.display='none'}}/>
-        <span className="lang-code">{l.label}</span>
-      </button>
-    ))}
+  const[open,setOpen]=React.useState(false)
+  const ref=React.useRef()
+  React.useEffect(()=>{
+    const fn=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+    document.addEventListener('mousedown',fn)
+    return()=>document.removeEventListener('mousedown',fn)
+  },[])
+  const cur=LANG_OPTIONS.find(l=>l.code===lang)||LANG_OPTIONS[0]
+  return <div style={{position:'relative'}} ref={ref}>
+    <button onClick={()=>setOpen(o=>!o)} title="Pilih Bahasa" style={{display:'flex',alignItems:'center',gap:5,background:'rgba(255,255,255,0.06)',border:'1px solid var(--border)',borderRadius:7,padding:'5px 10px',cursor:'pointer',color:'var(--text)',fontFamily:'var(--fm)',fontSize:11,letterSpacing:1}}>
+      <span style={{fontSize:16}}>🌐</span>
+      <span style={{fontWeight:700}}>{cur.label}</span>
+      <span style={{fontSize:9,opacity:0.6}}>{open?'▲':'▼'}</span>
+    </button>
+    {open&&<div style={{position:'absolute',top:'calc(100% + 4px)',right:0,background:'var(--panel)',border:'1px solid var(--border)',borderRadius:9,boxShadow:'0 8px 32px rgba(0,0,0,0.5)',zIndex:999,minWidth:150,overflow:'hidden'}}>
+      {LANG_OPTIONS.map(l=>(
+        <button key={l.code} onClick={()=>{setLangFn(l.code);setOpen(false)}} style={{width:'100%',display:'flex',alignItems:'center',gap:9,padding:'9px 13px',background:lang===l.code?'rgba(0,229,255,0.08)':'transparent',border:'none',cursor:'pointer',color:lang===l.code?'var(--cyan)':'var(--text)',fontFamily:'var(--fm)',fontSize:12,textAlign:'left'}}>
+          <img src={l.img} width={20} height={14} style={{borderRadius:2,objectFit:'cover'}} alt={l.label} onError={e=>{e.target.style.display='none'}}/>
+          <span style={{flex:1}}>{l.name}</span>
+          {lang===l.code&&<span style={{color:'var(--cyan)',fontSize:12}}>✓</span>}
+        </button>
+      ))}
+    </div>}
   </div>
 }
+// SEA Expansion indicator component
+const SEA_MARKETS=[
+  {code:'id',flag:'https://flagcdn.com/w40/id.png',name:'Indonesia',label:'ID',status:'active',sub:'Pasar utama'},
+  {code:'ph',flag:'https://flagcdn.com/w40/ph.png',name:'Philippines',label:'PH',status:'soon',sub:'Q3 2026'},
+  {code:'vn',flag:'https://flagcdn.com/w40/vn.png',name:'Vietnam',label:'VN',status:'soon',sub:'Q4 2026'},
+  {code:'th',flag:'https://flagcdn.com/w40/th.png',name:'Thailand',label:'TH',status:'soon',sub:'2027'},
+  {code:'my',flag:'https://flagcdn.com/w40/my.png',name:'Malaysia',label:'MY',status:'soon',sub:'2027'},
+  {code:'cn',flag:'https://flagcdn.com/w40/cn.png',name:'China',label:'CN',status:'soon',sub:'2028'},
+]
+function SeaExpansionBtn(){
+  const[open,setOpen]=React.useState(false)
+  const ref=React.useRef()
+  React.useEffect(()=>{
+    const fn=e=>{if(ref.current&&!ref.current.contains(e.target))setOpen(false)}
+    document.addEventListener('mousedown',fn)
+    return()=>document.removeEventListener('mousedown',fn)
+  },[])
+  return <div style={{position:'relative'}} ref={ref}>
+    <button onClick={()=>setOpen(o=>!o)} title="Ekspansi SEA" style={{display:'flex',alignItems:'center',gap:4,background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:7,padding:'4px 8px',cursor:'pointer'}}>
+      {SEA_MARKETS.slice(0,3).map(m=>(
+        <img key={m.code} src={m.flag} width={18} height={13} style={{borderRadius:2,objectFit:'cover'}} alt={m.label} onError={e=>{e.target.style.display='none'}}/>
+      ))}
+      <span style={{fontSize:9,color:'var(--cyan)',fontFamily:'var(--fm)',letterSpacing:1,marginLeft:2}}>SEA</span>
+      <span style={{fontSize:9,color:'var(--cyan)',opacity:0.6}}>{open?'▲':'▼'}</span>
+    </button>
+    {open&&<div style={{position:'absolute',top:'calc(100% + 4px)',right:0,background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,boxShadow:'0 8px 32px rgba(0,0,0,0.5)',zIndex:999,minWidth:200,overflow:'hidden',padding:'8px 0'}}>
+      <div style={{padding:'6px 14px 10px',borderBottom:'1px solid var(--border)',fontFamily:'var(--fh)',fontSize:9,color:'var(--cyan)',letterSpacing:2}}>EKSPANSI SEA</div>
+      {SEA_MARKETS.map(m=>(
+        <div key={m.code} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 14px',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+          <img src={m.flag} width={22} height={16} style={{borderRadius:2,objectFit:'cover'}} alt={m.label} onError={e=>{e.target.style.display='none'}}/>
+          <div style={{flex:1}}>
+            <div style={{fontSize:12,color:m.status==='active'?'var(--text)':'var(--muted)',fontFamily:'var(--fm)',fontWeight:m.status==='active'?600:400}}>{m.name}</div>
+            <div style={{fontSize:9,color:'var(--muted)'}}>{m.sub}</div>
+          </div>
+          <span style={{fontSize:9,padding:'2px 7px',borderRadius:10,background:m.status==='active'?'rgba(0,255,136,0.1)':'rgba(255,255,255,0.06)',color:m.status==='active'?'var(--green)':'var(--muted)',fontFamily:'var(--fm)',letterSpacing:1}}>{m.status==='active'?'✓ AKTIF':'SEGERA'}</span>
+        </div>
+      ))}
+    </div>}
+  </div>
+}
+
 
 function LiveBanner({tournaments}){
   const liveT=(tournaments||[]).filter(t=>t.status==='live')
@@ -1104,6 +1161,8 @@ function PublicLivePage({tid,onBack,toast}){
         <span style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700}}>{t.name}</span>
       </div>
       <div style={{display:'flex',alignItems:'center',gap:8}}>
+        <SeaExpansionBtn/>
+        <SeaExpansionBtn/>
         <LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/>
         <button onClick={()=>{window.location.hash='#/peserta'}} style={{background:'rgba(255,107,0,0.1)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:5,padding:'5px 11px',color:'var(--orange)',cursor:'pointer',fontSize:9,fontFamily:'var(--fh)',letterSpacing:1,fontWeight:700}}>⚡ Portal Peserta</button>
         <button onClick={onBack} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'4px 10px',color:'var(--muted)',cursor:'pointer',fontSize:10,fontFamily:'var(--fm)'}}>{i.back}</button>
@@ -1515,7 +1574,7 @@ function ParticipantAuth({onLogin,toast}){
     setL(false)
   }
 
-  return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20,backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)'}}>
+  return <div style={{minHeight:'100vh',background:'#050508',backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',display:'flex',alignItems:'center',justifyContent:'center',padding:20,backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)'}}>
     <div style={{width:'100%',maxWidth:400}}>
       {/* LOGO */}
       <div style={{textAlign:'center',marginBottom:28}}>
