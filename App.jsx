@@ -1952,6 +1952,120 @@ function StreamTab({participant,tournamentId}){
 }
 
 
+// FloatingChat untuk ParticipantDashboard (peserta)
+function ParticipantFloatingChat({participant}){
+  const[open,setOpen]=React.useState(false)
+  const[msg,setMsg]=React.useState('')
+  const[messages,setMessages]=React.useState([])
+  const[unread,setUnread]=React.useState(0)
+  const[sending,setSending]=React.useState(false)
+  const chatEndRef=React.useRef(null)
+  const inputRef=React.useRef(null)
+  const tid=participant.tournamentId
+
+  React.useEffect(()=>{
+    if(!tid)return
+    fetchChatFromSupabase(tid).then(msgs=>{
+      if(msgs&&msgs.length>0){setMessages(msgs);saveChatHistory(tid,msgs)}
+      else setMessages(getChatHistory(tid))
+    })
+    const ch=supabase.channel('pfc-'+tid)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
+        const m=payload.new
+        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
+        setMessages(h=>{
+          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+          return[...h,newMsg]
+        })
+        if(!open)setUnread(u=>u+1)
+      })
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[tid])
+
+  React.useEffect(()=>{if(open){setUnread(0);setTimeout(()=>inputRef.current?.focus(),200)}},[open])
+  React.useEffect(()=>{if(open&&chatEndRef.current)chatEndRef.current.scrollIntoView({behavior:'smooth'})},[messages,open])
+
+  const sendMsg=async()=>{
+    if(!msg.trim()||!tid||sending)return
+    const newMsg={id:Date.now(),name:participant.name,text:msg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false}
+    setSending(true);setMsg('')
+    setMessages(h=>[...h,newMsg])
+    await sendChatToSupabase(tid,newMsg,false)
+    setSending(false)
+  }
+
+  return<>
+    <button onClick={()=>setOpen(o=>!o)} style={{
+      position:'fixed',bottom:open?'calc(380px + 16px)':80,right:16,
+      width:48,height:48,borderRadius:'50%',
+      background:open?'var(--border)':'linear-gradient(135deg,var(--orange),#ff6600)',
+      border:'none',cursor:'pointer',zIndex:9999,
+      display:'flex',alignItems:'center',justifyContent:'center',
+      boxShadow:open?'0 2px 8px rgba(0,0,0,0.3)':'0 4px 20px rgba(255,107,0,0.5)',
+      transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+    }}>
+      {open
+        ?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        :<svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+          <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+          <circle cx="8" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
+          <circle cx="12" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
+          <circle cx="16" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
+        </svg>
+      }
+      {!open&&unread>0&&<div style={{position:'absolute',top:-3,right:-3,width:18,height:18,borderRadius:'50%',background:'var(--red)',color:'#fff',fontFamily:'var(--fm)',fontSize:9,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid var(--bg)',animation:'pulse 1s infinite'}}>{unread>9?'9+':unread}</div>}
+    </button>
+    {open&&<div style={{position:'fixed',bottom:80,right:12,width:320,height:380,background:'var(--bg2)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:16,boxShadow:'0 8px 40px rgba(0,0,0,0.5)',zIndex:9998,display:'flex',flexDirection:'column',overflow:'hidden',animation:'slide-in 0.25s ease'}}>
+      <div style={{background:'linear-gradient(135deg,#cc4400,var(--orange))',padding:'10px 14px',display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/></svg>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'#fff',letterSpacing:1}}>💬 OBROLAN TIM</div>
+          <div style={{fontSize:9,color:'rgba(255,255,255,0.7)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{participant.name} · {participant.tournament?.name||'Turnamen'}</div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:4}}>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#00ff88',animation:'pulse 1.5s infinite'}}/>
+          <span style={{fontSize:9,color:'rgba(255,255,255,0.8)'}}>LIVE</span>
+        </div>
+      </div>
+      <div style={{flex:1,overflow:'auto',padding:'8px 10px',display:'flex',flexDirection:'column',gap:7}}>
+        {messages.length===0&&<div style={{textAlign:'center',padding:'24px 14px',color:'var(--muted)'}}>
+          <div style={{fontSize:32,marginBottom:8}}>💬</div>
+          <div style={{fontSize:10}}>Belum ada pesan. Mulai obrolan!</div>
+        </div>}
+        {messages.map((m,idx2)=>{
+          const isOrg=m.isOrg||m.name.includes('[ORG]')
+          const isMe=m.name===participant.name
+          const dispName=m.name.replace('[ORG]','')
+          return<div key={m.id||idx2} style={{display:'flex',gap:6,alignItems:'flex-end',flexDirection:isMe?'row-reverse':'row'}}>
+            <div style={{width:24,height:24,borderRadius:'50%',flexShrink:0,background:isOrg?'linear-gradient(135deg,#0088ff,#0044aa)':isMe?'linear-gradient(135deg,var(--orange),#660022)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:900,color:'#fff',border:isOrg?'1.5px solid #0088ff':'none'}}>{dispName[0]?.toUpperCase()||'?'}</div>
+            <div style={{maxWidth:'80%'}}>
+              <div style={{display:'flex',alignItems:'center',gap:3,marginBottom:2,flexDirection:isMe?'row-reverse':'row'}}>
+                {isOrg&&<span style={{background:'#0088ff',color:'#fff',fontSize:7,fontFamily:'var(--fm)',padding:'1px 5px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORG</span>}
+                {isMe&&!isOrg&&<span style={{fontSize:7,color:'var(--orange)',fontFamily:'var(--fm)',letterSpacing:1}}>KAMU</span>}
+                <span style={{fontSize:9,fontWeight:700,color:isOrg?'#0088ff':isMe?'var(--orange)':'var(--text)'}}>{dispName}</span>
+                <span style={{fontSize:7,color:'var(--muted)'}}>{m.time}</span>
+              </div>
+              <div style={{fontSize:11,lineHeight:1.5,background:isOrg?'rgba(0,136,255,0.1)':isMe?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:isMe?'10px 2px 10px 10px':'2px 10px 10px 10px',padding:'6px 9px',border:`1px solid ${isOrg?'rgba(0,136,255,0.2)':isMe?'rgba(255,107,0,0.2)':'var(--border)'}`}}>
+                {isOrg&&<div style={{fontSize:8,color:'#0088ff',fontFamily:'var(--fm)',marginBottom:2,letterSpacing:1}}>📢 INFO</div>}
+                {m.text}
+              </div>
+            </div>
+          </div>
+        })}
+        <div ref={chatEndRef} style={{height:1}}/>
+      </div>
+      <div style={{padding:'7px 9px',borderTop:'1px solid rgba(255,255,255,0.06)',display:'flex',gap:6,alignItems:'center',background:'rgba(0,0,0,0.2)',flexShrink:0}}>
+        <input ref={inputRef} value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg()} placeholder="Pesan ke semua peserta..." style={{flex:1,fontSize:11,borderRadius:20,padding:'7px 12px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'var(--text)'}}/>
+        <button onClick={sendMsg} disabled={!msg.trim()||sending} style={{width:30,height:30,borderRadius:'50%',flexShrink:0,background:msg.trim()?'linear-gradient(135deg,var(--orange),#ff6600)':'rgba(255,255,255,0.08)',border:'none',cursor:msg.trim()?'pointer':'default',display:'flex',alignItems:'center',justifyContent:'center'}}>
+          {sending?<Spinner size={11} color="white"/>:<svg width="14" height="14" viewBox="0 0 24 24" fill={msg.trim()?'white':'gray'}><path d="M2 21L23 12 2 3v7l15 2-15 2z"/></svg>}
+        </button>
+      </div>
+    </div>}
+  </>
+}
+
+
 function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const t=participant.tournament
   const[activeTab,setActiveTab]=useState('home')
@@ -2855,6 +2969,7 @@ function ShareModal({t,onClose,toast,onPreview}){
         </>}
       </>}
     </div>
+    <ParticipantFloatingChat participant={participant}/>
   </div>
 }
 
@@ -4463,6 +4578,289 @@ function Settings({user,lang,toast}){
 // ============================================================
 // MAIN APP ORCHESTRATOR
 // ============================================================
+// ============================================================
+// FLOATING CHAT BUBBLE — Global messenger untuk owner & peserta
+// ============================================================
+function FloatingChat({user,tournaments=[]}){
+  const[open,setOpen]=React.useState(false)
+  const[msg,setMsg]=React.useState('')
+  const[messages,setMessages]=React.useState([])
+  const[unread,setUnread]=React.useState(0)
+  const[selTid,setSelTid]=React.useState(null)
+  const[loading,setLoading]=React.useState(false)
+  const[sending,setSending]=React.useState(false)
+  const chatEndRef=React.useRef(null)
+  const inputRef=React.useRef(null)
+
+  const activeTournaments=tournaments.filter(t=>['active','live','registration'].includes(t.status)||true).slice(0,10)
+  const currentTid=selTid||activeTournaments[0]?.id||null
+
+  // Load messages & subscribe realtime
+  React.useEffect(()=>{
+    if(!currentTid)return
+    setLoading(true)
+    fetchChatFromSupabase(currentTid).then(msgs=>{
+      if(msgs&&msgs.length>0){setMessages(msgs);saveChatHistory(currentTid,msgs)}
+      else setMessages(getChatHistory(currentTid))
+      setLoading(false)
+    })
+    const ch=supabase.channel('float-chat-'+currentTid)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${currentTid}`},(payload)=>{
+        const m=payload.new
+        const newMsg={
+          id:m.id,
+          name:m.sender_name,
+          text:m.message,
+          time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+          isOrg:m.is_organizer||false
+        }
+        setMessages(h=>{
+          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+          const updated=[...h,newMsg]
+          saveChatHistory(currentTid,updated)
+          return updated
+        })
+        // Unread badge kalau chat tertutup
+        if(!open) setUnread(u=>u+1)
+      })
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[currentTid])
+
+  // Auto scroll ke bawah
+  React.useEffect(()=>{
+    if(open&&chatEndRef.current){
+      chatEndRef.current.scrollIntoView({behavior:'smooth'})
+    }
+  },[messages,open])
+
+  // Reset unread saat buka
+  React.useEffect(()=>{
+    if(open){
+      setUnread(0)
+      setTimeout(()=>inputRef.current?.focus(),200)
+    }
+  },[open])
+
+  const sendMsg=async()=>{
+    if(!msg.trim()||!currentTid||sending)return
+    const prof=getProf()
+    const name=prof.name||user?.user_metadata?.organizer_name||user?.email?.split('@')[0]||'Organizer'
+    const newMsg={id:Date.now(),name:name+'[ORG]',text:msg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:true}
+    setSending(true)
+    setMsg('')
+    // Optimistic update
+    setMessages(h=>[...h,newMsg])
+    await sendChatToSupabase(currentTid,newMsg,true)
+    setSending(false)
+  }
+
+  const currentTourn=activeTournaments.find(t=>t.id===currentTid)
+
+  return<>
+    {/* FLOATING BUTTON */}
+    <button
+      onClick={()=>setOpen(o=>!o)}
+      style={{
+        position:'fixed',bottom:open?'calc(420px + 16px)':24,right:24,
+        width:52,height:52,borderRadius:'50%',
+        background:open?'var(--border)':'linear-gradient(135deg,#0088ff,#00c6ff)',
+        border:'none',cursor:'pointer',zIndex:9999,
+        display:'flex',alignItems:'center',justifyContent:'center',
+        boxShadow:open?'0 2px 8px rgba(0,0,0,0.3)':'0 4px 20px rgba(0,136,255,0.5)',
+        transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
+        transform:open?'rotate(0deg)':'rotate(0deg)',
+      }}
+      title="Obrolan Live"
+    >
+      {open
+        ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        :<svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+          <circle cx="8" cy="11" r="1.2" fill="rgba(0,0,0,0.4)"/>
+          <circle cx="12" cy="11" r="1.2" fill="rgba(0,0,0,0.4)"/>
+          <circle cx="16" cy="11" r="1.2" fill="rgba(0,0,0,0.4)"/>
+        </svg>
+      }
+      {/* Unread badge */}
+      {!open&&unread>0&&<div style={{
+        position:'absolute',top:-3,right:-3,
+        width:20,height:20,borderRadius:'50%',
+        background:'var(--red)',color:'#fff',
+        fontFamily:'var(--fm)',fontSize:10,fontWeight:700,
+        display:'flex',alignItems:'center',justifyContent:'center',
+        animation:'pulse 1s infinite',border:'2px solid var(--bg)'
+      }}>{unread>9?'9+':unread}</div>}
+    </button>
+
+    {/* CHAT PANEL */}
+    {open&&<div style={{
+      position:'fixed',bottom:24,right:24,
+      width:340,height:420,
+      background:'var(--bg2)',
+      border:'1px solid rgba(0,136,255,0.3)',
+      borderRadius:16,
+      boxShadow:'0 8px 40px rgba(0,0,0,0.5)',
+      zIndex:9998,
+      display:'flex',flexDirection:'column',
+      overflow:'hidden',
+      animation:'slide-in 0.25s ease'
+    }}>
+      {/* HEADER */}
+      <div style={{
+        background:'linear-gradient(135deg,#0055aa,#0088ff)',
+        padding:'12px 14px',
+        display:'flex',alignItems:'center',gap:10,
+        flexShrink:0
+      }}>
+        <div style={{
+          width:36,height:36,borderRadius:'50%',
+          background:'rgba(255,255,255,0.15)',
+          display:'flex',alignItems:'center',justifyContent:'center',
+          flexShrink:0
+        }}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
+          </svg>
+        </div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'#fff',letterSpacing:1}}>💬 OBROLAN LIVE</div>
+          <div style={{fontSize:9,color:'rgba(255,255,255,0.7)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            {currentTourn?currentTourn.name:'Semua Peserta & Organizer'}
+          </div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:5}}>
+          <div style={{width:7,height:7,borderRadius:'50%',background:'#00ff88',animation:'pulse 1.5s infinite'}}/>
+          <span style={{fontSize:9,color:'rgba(255,255,255,0.8)',fontFamily:'var(--fm)'}}>LIVE</span>
+        </div>
+      </div>
+
+      {/* TOURNAMENT SELECTOR */}
+      {activeTournaments.length>1&&<div style={{
+        padding:'6px 10px',
+        borderBottom:'1px solid rgba(255,255,255,0.05)',
+        display:'flex',gap:5,overflowX:'auto',flexShrink:0,
+        scrollbarWidth:'none'
+      }}>
+        {activeTournaments.map(t=>(
+          <button key={t.id} onClick={()=>setSelTid(t.id)}
+            style={{
+              padding:'3px 9px',borderRadius:20,border:'1px solid',
+              whiteSpace:'nowrap',fontSize:9,cursor:'pointer',
+              fontFamily:'var(--fm)',letterSpacing:0.5,
+              borderColor:currentTid===t.id?'var(--cyan)':'var(--border)',
+              background:currentTid===t.id?'rgba(0,229,255,0.15)':'transparent',
+              color:currentTid===t.id?'var(--cyan)':'var(--muted)'
+            }}>
+            {t.name.split(' ').slice(0,2).join(' ')}
+          </button>
+        ))}
+      </div>}
+
+      {/* MESSAGES */}
+      <div style={{
+        flex:1,overflow:'auto',padding:'10px 12px',
+        display:'flex',flexDirection:'column',gap:8,
+      }}>
+        {loading&&<div style={{textAlign:'center',padding:'20px',color:'var(--muted)'}}><Spinner size={18}/></div>}
+        {!loading&&messages.length===0&&<div style={{
+          textAlign:'center',padding:'30px 16px',color:'var(--muted)',flex:1,
+          display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'
+        }}>
+          <div style={{fontSize:36,marginBottom:10}}>💬</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,letterSpacing:1,marginBottom:5}}>MULAI OBROLAN</div>
+          <div style={{fontSize:10,lineHeight:1.6}}>Tulis pesan — semua peserta<br/>yang login bisa membaca</div>
+        </div>}
+        {messages.map((m,idx)=>{
+          const isOrg=m.isOrg||m.name.includes('[ORG]')
+          const dispName=m.name.replace('[ORG]','')
+          return<div key={m.id||idx} style={{display:'flex',gap:7,alignItems:'flex-end'}}>
+            <div style={{
+              width:26,height:26,borderRadius:'50%',flexShrink:0,
+              background:isOrg?'linear-gradient(135deg,#0088ff,#0044aa)':'linear-gradient(135deg,var(--green),#003322)',
+              display:'flex',alignItems:'center',justifyContent:'center',
+              fontWeight:900,fontSize:10,color:'#fff',
+              border:isOrg?'1.5px solid #0088ff':'none'
+            }}>{dispName[0]?.toUpperCase()||'?'}</div>
+            <div style={{maxWidth:'82%'}}>
+              <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:2}}>
+                {isOrg&&<span style={{
+                  background:'#0088ff',color:'#fff',
+                  fontSize:7,fontFamily:'var(--fm)',
+                  padding:'1px 5px',borderRadius:10,letterSpacing:1,fontWeight:700
+                }}>👑 ORG</span>}
+                <span style={{fontSize:10,fontWeight:700,color:isOrg?'#0088ff':'var(--text)'}}>{dispName}</span>
+                <span style={{fontSize:8,color:'var(--muted)'}}>{m.time}</span>
+              </div>
+              <div style={{
+                fontSize:12,lineHeight:1.5,
+                background:isOrg?'rgba(0,136,255,0.12)':'rgba(255,255,255,0.05)',
+                borderRadius:'2px 10px 10px 10px',
+                padding:'7px 10px',
+                border:`1px solid ${isOrg?'rgba(0,136,255,0.25)':'var(--border)'}`,
+              }}>
+                {isOrg&&<div style={{fontSize:8,color:'#0088ff',fontFamily:'var(--fm)',marginBottom:2,letterSpacing:1}}>📢 ORGANIZER</div>}
+                {m.text}
+              </div>
+            </div>
+          </div>
+        })}
+        <div ref={chatEndRef} style={{height:1}}/>
+      </div>
+
+      {/* INPUT */}
+      <div style={{
+        padding:'8px 10px',
+        borderTop:'1px solid rgba(255,255,255,0.06)',
+        display:'flex',gap:7,alignItems:'center',
+        flexShrink:0,
+        background:'rgba(0,0,0,0.2)'
+      }}>
+        <input
+          ref={inputRef}
+          value={msg}
+          onChange={e=>setMsg(e.target.value)}
+          onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg()}
+          placeholder="Tulis pesan ke semua peserta..."
+          style={{
+            flex:1,fontSize:12,borderRadius:20,
+            padding:'8px 13px',
+            background:'rgba(255,255,255,0.06)',
+            border:'1px solid rgba(255,255,255,0.1)',
+            color:'var(--text)'
+          }}
+        />
+        <button
+          onClick={sendMsg}
+          disabled={!msg.trim()||sending||!currentTid}
+          style={{
+            width:34,height:34,borderRadius:'50%',flexShrink:0,
+            background:msg.trim()&&currentTid?'linear-gradient(135deg,#0088ff,#00c6ff)':'rgba(255,255,255,0.08)',
+            border:'none',cursor:msg.trim()&&currentTid?'pointer':'default',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            transition:'all 0.15s'
+          }}
+        >
+          {sending
+            ?<Spinner size={13} color="white"/>
+            :<svg width="16" height="16" viewBox="0 0 24 24" fill={msg.trim()&&currentTid?'white':'gray'}>
+              <path d="M2 21L23 12 2 3v7l15 2-15 2z"/>
+            </svg>
+          }
+        </button>
+      </div>
+
+      {/* No tournament warning */}
+      {!currentTid&&<div style={{
+        padding:'8px 12px',background:'rgba(255,215,0,0.08)',
+        borderTop:'1px solid rgba(255,215,0,0.15)',
+        fontSize:10,color:'var(--yellow)',textAlign:'center'
+      }}>Buat turnamen dulu untuk mulai obrolan</div>}
+    </div>}
+  </>
+}
+
+
 function AppCore(){
   const[user,setUser]=React.useState(null)
   const[authLoading,setAuthLoading]=React.useState(true)
@@ -4558,6 +4956,7 @@ function AppCore(){
       {renderPage()}
     </main>
     <BottomNav page={page} setPage={p=>{setPage(p);setEditT(null)}} lang={lang} hasLive={hasLive}/>
+    <FloatingChat user={user} tournaments={tournaments}/>
     <Toasts list={toasts}/>
   </div>
 }
