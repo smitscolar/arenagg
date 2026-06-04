@@ -86,7 +86,10 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 @keyframes particle-drift{0%{transform:translateY(100vh) translateX(0);opacity:0;}10%{opacity:0.8;}90%{opacity:0.3;}100%{transform:translateY(-100px) translateX(100px);opacity:0;}}
 .p-star{position:absolute;border-radius:50%;animation:twinkle-star linear infinite;}
 @keyframes twinkle-star{0%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0);}}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:68px;}.card{padding:14px;}.card-glass{padding:14px;}.modal{padding:18px;border-radius:10px;}.stat-card{padding:14px;}.stat-card:hover{transform:none;}.btn{padding:10px 14px;font-size:10px;min-height:42px;}.btn-sm{padding:8px 12px;font-size:9px;min-height:36px;}input,select,textarea{font-size:16px !important;padding:12px 14px;}label{font-size:11px;margin-bottom:6px;}.g2{grid-template-columns:1fr;}.g3{grid-template-columns:1fr;}.g4{grid-template-columns:1fr 1fr;}.bnav-item{font-size:7px;padding:6px 2px;}.bnav-icon{font-size:18px;}.b-match{width:130px;}.b-team{font-size:10px;padding:6px 8px;}.tag{font-size:8px;}.chip{font-size:8px;}}
-@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}.page-content-sm{padding:12px 12px !important;}}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
+@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}
+.pd-content{max-width:680px;margin:0 auto;width:100%;}
+@media(min-width:769px){.pd-wrap{max-width:720px;margin:0 auto;}}
+@media(max-width:480px){.pd-nav-tab{font-size:7px!important;padding:5px 2px!important;}.pd-nav-tab .tab-icon{font-size:16px!important;}}.page-content-sm{padding:12px 12px !important;}}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
 .nav-item{position:relative;}
 .nav-item::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);transform:scaleY(0);transition:transform 0.2s ease;border-radius:0 2px 2px 0;}
 .nav-item.active::after{transform:scaleY(1);}
@@ -1498,7 +1501,7 @@ function ParticipantAuth({onLogin,toast}){
 }
 
 // Dashboard Peserta — setelah login
-function ParticipantDashboard({participant,onLogout,toast}){
+function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const t=participant.tournament
   const[activeTab,setActiveTab]=useState('home')
   const[chatMsg,setChatMsg]=useState('')
@@ -1573,6 +1576,10 @@ function ParticipantDashboard({participant,onLogout,toast}){
   ]
 
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
+    {/* LIVE BANNER - same as organizer */}
+    <LiveBanner tournaments={tournaments}/>
+    {/* AD BANNER */}
+    <AdBanner compact={true}/>
     {/* TOP NAV */}
     <div style={{background:'rgba(5,5,8,0.97)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)'}}>
       <div style={{display:'flex',alignItems:'center',gap:10}}>
@@ -1598,7 +1605,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
       {/* TABS */}
       <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',marginBottom:16}}>
         {TABS.map(tab=>(
-          <button key={tab.id} onClick={()=>setActiveTab(tab.id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'7px 4px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:8,letterSpacing:0.8,transition:'var(--trans)',background:activeTab===tab.id?'var(--orange)':'transparent',color:activeTab===tab.id?'#fff':'var(--muted)',fontWeight:700}}>
+          <button key={tab.id} onClick={()=>setActiveTab(tab.id)} className='pd-nav-tab' style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'7px 4px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:8,letterSpacing:0.8,transition:'var(--trans)',background:activeTab===tab.id?'var(--orange)':'transparent',color:activeTab===tab.id?'#fff':'var(--muted)',fontWeight:700}}>
             <span style={{fontSize:16}}>{tab.icon}</span>
             <span>{tab.label}</span>
           </button>
@@ -1606,7 +1613,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
       </div>
 
       {/* HOME TAB */}
-      {activeTab==='home'&&<div className="animate-in">
+      {activeTab==='home'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
         {/* Tim Card */}
         <div style={{background:'linear-gradient(135deg,rgba(255,107,0,0.1),rgba(0,229,255,0.06))',border:'1px solid rgba(255,107,0,0.25)',borderRadius:14,padding:'18px',marginBottom:14,display:'flex',gap:14,alignItems:'center'}}>
           <div style={{width:56,height:56,borderRadius:14,background:'linear-gradient(135deg,var(--orange),var(--cyan))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:20,color:'#000',flexShrink:0,overflow:'hidden',border:'2px solid rgba(255,107,0,0.3)'}}>
@@ -1655,7 +1662,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
       </div>}
 
       {/* WALLET TAB */}
-      {activeTab==='wallet'&&<div className="animate-in">
+      {activeTab==='wallet'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
         <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:16}}>💳 WALLET PESERTA</div>
 
         {/* STATUS PEMBAYARAN */}
@@ -1759,7 +1766,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
       </div>}
 
       {/* LIVE TAB */}
-      {activeTab==='live'&&<div className="animate-in">
+      {activeTab==='live'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
         <div style={{marginBottom:14}}>
           <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>🔴 Live Pertandingan</div>
           <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
@@ -1829,7 +1836,7 @@ function ParticipantDashboard({participant,onLogout,toast}){
       </div>}
 
       {/* INFO TAB */}
-      {activeTab==='info'&&<div className="animate-in">
+      {activeTab==='info'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
         <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:14}}>ℹ Info & Bantuan</div>
         <div className="card" style={{marginBottom:12}}>
           <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>DATA TIM KAMU</div>
@@ -1883,13 +1890,13 @@ function sendBrowserNotif(title, body, icon='⚔'){
 }
 
 // Main Participant Portal wrapper
-function ParticipantPortal({toast}){
+function ParticipantPortal({toast,tournaments=[]}){
   const[participant,setParticipant]=useState(()=>getParticipant())
 
   const login=p=>{setParticipant(p)}
   const logout=()=>{clearParticipant();setParticipant(null)}
 
-  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast}/>
+  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast} tournaments={tournaments}/>
   return <ParticipantAuth onLogin={login} toast={toast}/>
 }
 
@@ -3938,7 +3945,7 @@ export default function App(){
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`#/daftar/${id}`},lang}
 
   // Render berdasarkan state (NO early returns - fixes React #310)
-  if(pubPeserta)return <><ParticipantPortal toast={toast}/><Toasts list={toasts}/></>
+  if(pubPeserta)return <><ParticipantPortal toast={toast} tournaments={tournaments}/><Toasts list={toasts}/></>
   if(pubLiveTid!==null)return <><PublicLivePage tid={pubLiveTid} onBack={()=>{window.location.hash='';window.history.pushState('',document.title,window.location.pathname+window.location.search);setPubLiveTid(null)}} toast={toast}/><Toasts list={toasts}/></>
   if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
