@@ -119,7 +119,33 @@ input:focus,select:focus,textarea:focus{transform:none;}
 @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 .tooltip{position:relative;}.tooltip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:4px 8px;border-radius:4px;font-family:var(--fm);font-size:9px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:100;}.tooltip:hover::after{opacity:1;}
 [data-theme='light'] .skeleton{background:linear-gradient(90deg,rgba(0,0,0,0.04) 25%,rgba(0,0,0,0.08) 50%,rgba(0,0,0,0.04) 75%);}
-.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:0.5px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text2);}`
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-family:var(--fm);font-size:9px;font-weight:600;letter-spacing:0.5px;border:1px solid var(--border);background:rgba(255,255,255,0.04);color:var(--text2);}
+.app-wrap{display:flex;min-height:100vh;background:var(--bg);}
+.sidebar{width:210px;min-width:210px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;overflow-y:auto;}
+.main-content{flex:1;margin-left:210px;min-height:100vh;overflow-y:auto;background:var(--bg);}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--panel);border-top:1px solid var(--border);z-index:99;padding:4px 0;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:10px 14px;width:100%;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:var(--fb);font-size:12px;font-weight:600;letter-spacing:0.5px;transition:var(--trans);text-align:left;border-radius:6px;margin:1px 4px;}
+.nav-item:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+.nav-item.active{background:rgba(0,229,255,0.1);color:var(--cyan);}
+.nav-icon{font-size:15px;width:20px;text-align:center;}
+.nav-live-dot{width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:pulse 0.8s infinite;margin-left:auto;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border:none;background:transparent;color:var(--muted);cursor:pointer;font-size:8px;font-family:var(--fb);font-weight:600;letter-spacing:0.5px;transition:var(--trans);}
+.bnav-item.active{color:var(--cyan);}
+.bnav-icon{font-size:18px;}
+.toast-wrap{position:fixed;bottom:80px;right:16px;display:flex;flex-direction:column;gap:8px;z-index:9999;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:9px;font-size:12px;font-family:var(--fb);min-width:200px;max-width:340px;animation:slide-in-r 0.3s ease;pointer-events:auto;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+.toast-success{background:#0d2e1a;border:1px solid rgba(0,255,136,0.3);color:var(--green);}
+.toast-error{background:#2e0d0d;border:1px solid rgba(255,45,85,0.3);color:var(--red);}
+.toast-info{background:#0d1a2e;border:1px solid rgba(0,229,255,0.3);color:var(--cyan);}
+.toast-warning{background:#2e2000;border:1px solid rgba(255,215,0,0.3);color:var(--yellow);}
+.theme-toggle-btn{display:flex;align-items:center;justify-content:space-between;width:100%;padding:7px 10px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-family:var(--fm);font-size:9px;color:var(--muted);margin-bottom:7px;transition:var(--trans);}
+.tt-label{letter-spacing:1px;}
+.tt-track{width:28px;height:14px;border-radius:7px;background:rgba(255,255,255,0.1);position:relative;transition:background 0.3s;}
+.tt-track.on{background:var(--cyan);}
+.tt-knob{position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:#fff;transition:transform 0.3s;}
+.tt-track.on .tt-knob{transform:translateX(14px);}
+@media(max-width:768px){.sidebar{display:none;}.main-content{margin-left:0;padding-bottom:60px;}.bottom-nav{display:flex;}}
+`
 try{const styleEl=document.createElement('style');styleEl.textContent=css;document.head.appendChild(styleEl)}catch(e){console.warn('CSS inject failed',e)}
 // Add Google Fonts if not present
 if(!document.getElementById('arenagg-fonts')){const lk=document.createElement('link');lk.id='arenagg-fonts';lk.rel='stylesheet';lk.href='https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap';document.head.appendChild(lk)}
