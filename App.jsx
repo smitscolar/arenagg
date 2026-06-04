@@ -1576,10 +1576,8 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   ]
 
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
-    {/* LIVE BANNER - same as organizer */}
+    {/* LIVE BANNER + AD BANNER (AdBanner already inside LiveBanner) */}
     <LiveBanner tournaments={tournaments}/>
-    {/* AD BANNER */}
-    <AdBanner compact={true}/>
     {/* TOP NAV */}
     <div style={{background:'rgba(5,5,8,0.97)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)'}}>
       <div style={{display:'flex',alignItems:'center',gap:10}}>
