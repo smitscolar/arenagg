@@ -3276,18 +3276,28 @@ function PublicPage({tid,onBack,toast}){
       const{data:existing}=await supabase.from('teams')
         .select('id').eq('tournament_id',tid.trim()).ilike('name',_name).limit(1)
       if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar!','error');setSaving(false);return}
-      // Insert
-      const{error}=await supabase.from('teams').insert({
+      // Insert — dengan fallback jika kolom game_id/stream_url belum ada di DB
+      const basePayload={
         tournament_id:tid.trim(),
         name:sanitize(_name),
         captain:sanitize(_captain),
         contact:phoneClean,
         members:Number(form.members||5),
         paid:false,
-        photo:form.photo||null,
+        photo:form.photo||null
+      }
+      // Coba insert dengan game_id & stream_url
+      let{error}=await supabase.from('teams').insert({
+        ...basePayload,
         game_id:sanitize(_gameId),
         stream_url:hasStream?(form.stream_url||'').trim():''
       })
+      // Kalau error karena kolom tidak ada, coba tanpa extra columns
+      if(error&&(error.message?.includes('column')||error.message?.includes('game_id')||error.message?.includes('stream_url')||error.code==='42703')){
+        console.warn('Kolom game_id/stream_url belum ada, insert tanpa kolom tsb')
+        const res2=await supabase.from('teams').insert(basePayload)
+        error=res2.error
+      }
       if(error){
         console.error('Insert error:',error)
         toast('Error: '+error.message,'error')
@@ -3461,23 +3471,17 @@ function PublicPage({tid,onBack,toast}){
             <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{color:'var(--muted)'}}>{i.amount}</span><span style={{fontFamily:'var(--fm)',color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.entry)}</span></div>
             {(()=>{try{const b=JSON.parse(localStorage.getItem('arenagg_bank_info')||'{}');return b.bankName?<div style={{marginTop:7,padding:'8px 10px',background:'rgba(0,229,255,0.06)',borderRadius:5,lineHeight:2,fontSize:12}}><div>🏦 {i.transfer_to} <b>{b.bankName}</b></div><div>💳 {i.acc_no} <b style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{b.accNumber}</b></div><div>👤 {i.an} <b>{b.accName}</b></div>{b.waNumber&&<div>📱 {i.confirm_wa} <a href={`https://wa.me/62${b.waNumber.replace(/^0/,'')}`} target="_blank" rel="noreferrer" style={{color:'var(--green)'}}>{b.waNumber}</a></div>}</div>:<div style={{color:'var(--muted)',fontSize:11,marginTop:4}}>{i.contact_org}</div>}catch(e){return null}})()}
           </div>
-          {(()=>{
-            const gInfo=GAME_ID_INFO[t?.game]||GAME_ID_INFO['Other']
-            const canSubmit=form.name.trim()&&form.captain.trim()&&form.contact.trim()&&form.game_id.trim()
-            return <button 
-              className="btn btn-cyan btn-full" 
-              style={{fontSize:13,padding:14,marginTop:4,position:'relative',opacity:saving?0.8:1,
-                background:canSubmit?undefined:'rgba(0,229,255,0.3)',
-                cursor:canSubmit&&!saving?'pointer':'default'}}
-              onClick={submit} 
-              disabled={saving}
-            >
-              {saving
-                ?<><Spinner size={14} color="#000"/><span style={{marginLeft:8}}>Mendaftarkan tim...</span></>
-                :<>🚀 <span style={{marginLeft:4}}>{i.btn_submit||'KIRIM PENDAFTARAN'}</span></>
-              }
-            </button>
-          })()}
+          <button 
+            className="btn btn-cyan btn-full" 
+            style={{fontSize:13,padding:14,marginTop:4,position:'relative',opacity:saving?0.8:1}}
+            onClick={submit} 
+            disabled={saving}
+          >
+            {saving
+              ?<><Spinner size={14} color="#000"/><span style={{marginLeft:8}}>Mendaftarkan tim...</span></>
+              :<>🚀 <span style={{marginLeft:4}}>KIRIM PENDAFTARAN</span></>
+            }
+          </button>
         </div>
       </div>}
       {step==='success'&&<SuccessPage form={form} t={t} bank={bank} toast={toast} onBack={()=>setStep('detail')} lang={lang}/>}
