@@ -2957,7 +2957,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
         </div>
         <div className='create-form-grid' style={{display:'grid',gridTemplateColumns:'minmax(150px,1.5fr) minmax(150px,1fr) minmax(120px,0.8fr)',gap:12,marginBottom:12}}>
           <div><label>📍 {i.city} <span style={{color:'var(--red)'}}>*</span></label><input value={form.city} onChange={set('city')} placeholder="Jakarta" style={{width:'100%'}}/></div>
-          <div><label>📅 {i.date} <span style={{color:'var(--red)'}}>*</span></label><input type="date" value={form.date} onChange={set('date')} style={{width:'100%'}}/></div>
+          <div><label>📅 {i.date} <span style={{color:'var(--red)'}}>*</span></label><input type="date" value={form.date} onChange={set('date')} style={{width:'100%',colorScheme:'dark'}}/></div>
           <div>
             <label>⏰ Jam Mulai</label>
             <div style={{position:'relative'}}>
@@ -2966,7 +2966,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
                 value={form.time}
                 onChange={set('time')}
                 style={{paddingLeft:10,paddingRight:8,width:'100%',
-                  background:form.time?'rgba(0,229,255,0.08)':'rgba(255,255,255,0.04)',
+                  colorScheme:'dark',background:form.time?'rgba(0,229,255,0.08)':'rgba(255,255,255,0.04)',
                   border:form.time?'1px solid rgba(0,229,255,0.4)':'1px solid var(--border)',
                   transition:'all 0.2s'
                 }}
