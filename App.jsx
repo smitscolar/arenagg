@@ -4039,16 +4039,21 @@ function AppCore(){
   },[])
 
   React.useEffect(()=>{
-    const hash=window.location.hash
-    if(hash.startsWith('#/peserta'))setPage('portal')
-    if(hash.startsWith('#/live/')){
-      const tid=hash.split('/')[2]
-      if(tid){setLiveTid(tid);setPage('public-live')}
+    const checkHash=()=>{
+      const hash=window.location.hash
+      if(hash.startsWith('#/peserta')){setPage('portal');return}
+      if(hash.startsWith('#/live/')){
+        const tid=hash.split('/')[2]
+        if(tid){setLiveTid(tid);setPage('public-live');return}
+      }
+      if(hash.startsWith('#/t/')){
+        const tid=hash.split('/')[2]
+        if(tid){setPublicTid(tid);setPage('public');return}
+      }
     }
-    if(hash.startsWith('#/t/')){
-      const tid=hash.split('/')[2]
-      if(tid){setPublicTid(tid);setPage('public')}
-    }
+    checkHash()
+    window.addEventListener('hashchange',checkHash)
+    return()=>window.removeEventListener('hashchange',checkHash)
   },[])
 
   const setLangFn=l=>{setLang(l);setLangState(l)}
@@ -4059,12 +4064,12 @@ function AppCore(){
   }
   const onLogout=async()=>{await supabase.auth.signOut();setUser(null);setPage('dashboard')}
 
-  if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
-
   // Public pages (no auth needed)
   if(page==='public'&&publicTid)return <PublicPage tid={publicTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
   if(page==='public-live'&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
   if(page==='portal')return <ParticipantPortal toast={toast} tournaments={tournaments}/>
+
+  if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
 
   if(!user)return <AuthPage onLogin={u=>{setUser(u);setPage('dashboard')}} lang={lang} setLangFn={setLangFn}/>
 
