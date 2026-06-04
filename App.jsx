@@ -2365,6 +2365,20 @@ function PublicPage({tid,onBack,toast}){
       setL(false)
     };load()
   },[tid])
+  // Countdown timer (hook must be before early returns!)
+  const[countdown,setCountdown]=React.useState('')
+  React.useEffect(()=>{
+    if(!t||!t.date)return
+    const update=()=>{
+      const now=new Date();const target=new Date(t.date)
+      const diff=target-now
+      if(diff<=0){setCountdown('Sudah dimulai!');return}
+      const d=Math.floor(diff/86400000);const h=Math.floor((diff%86400000)/3600000)
+      const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000)
+      setCountdown(d>0?`${d} hari ${h} jam lagi`:`${h}j ${m}m ${s}s lagi`)
+    }
+    update();const iv=setInterval(update,1000);return()=>clearInterval(iv)
+  },[t?.date])
   // Fungsi login peserta
   const doLogin=async()=>{
     if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
@@ -2408,20 +2422,7 @@ function PublicPage({tid,onBack,toast}){
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={32} color="var(--cyan)"/></div></div>
   if(!t)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}><div style={{textAlign:'center'}}><div style={{fontSize:48,marginBottom:12,animation:'float 3s infinite'}}>😕</div><div style={{color:'var(--muted)',marginBottom:4,fontFamily:'var(--fm)',fontSize:11,letterSpacing:2}}>TURNAMEN TIDAK DITEMUKAN</div><div style={{color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',fontSize:9,marginBottom:24,wordBreak:'break-all',maxWidth:300}}>ID: {tid}</div><button className="btn btn-ghost" onClick={onBack}>{i.back}</button></div></div>
   const slotsLeft=t.slots-(t.registered||0);const fillPct=Math.round(((t.registered||0)/t.slots)*100);const isFull=slotsLeft<=0
-  // Countdown timer
-  const[countdown,setCountdown]=React.useState('')
-  React.useEffect(()=>{
-    if(!t.date)return
-    const update=()=>{
-      const now=new Date();const target=new Date(t.date)
-      const diff=target-now
-      if(diff<=0){setCountdown('Sudah dimulai!');return}
-      const d=Math.floor(diff/86400000);const h=Math.floor((diff%86400000)/3600000)
-      const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000)
-      setCountdown(d>0?`${d} hari ${h} jam lagi`:`${h}j ${m}m ${s}s lagi`)
-    }
-    update();const iv=setInterval(update,1000);return()=>clearInterval(iv)
-  },[t.date])
+
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
     <div style={{background:'rgba(10,10,18,0.95)',borderBottom:'1px solid var(--border)',padding:'10px 18px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)',boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
       <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:2,fontWeight:900}}>⚔ ARENAGG</div>
