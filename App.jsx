@@ -2485,7 +2485,7 @@ function ShareModal({t,onClose,toast,onPreview}){
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
-  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:''});const[saving,setSaving]=useState(false)
+  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:''});const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
   // Login state untuk peserta
   const[loginName,setLoginName]=useState('')
   const[loginContact,setLoginContact]=useState('')
@@ -2553,13 +2553,22 @@ function PublicPage({tid,onBack,toast}){
   }
 
   const submit=async()=>{
-    // Rate limiting: minimal 10 detik antar submit
+    // Rate limiting
     const now=Date.now()
     if(now-lastSubmit<10000){toast('⏳ Tunggu sebentar sebelum submit lagi!','warning');return}
-    const phoneClean=form.contact.replace(/[^0-9]/g,'')
-    if(!form.name.trim()||!form.captain.trim()||!form.contact.trim()){toast('⚠ Isi semua field!','error');return}
-    if(form.name.trim().length<2){toast('⚠ Nama tim minimal 2 karakter!','error');return}
+    // Read from DOM as fallback if React state not updated
+    const inputs=document.querySelectorAll('input[type="text"],input:not([type])')
+    const telInput=document.querySelector('input[type="tel"]')
+    const _name=(inputs[0]?.value||form.name).trim()
+    const _captain=(inputs[1]?.value||form.captain).trim()
+    const _contact=(telInput?.value||form.contact).trim()
+    const phoneClean=_contact.replace(/[^0-9]/g,'')
+    if(!_name||!_captain||!_contact){toast('⚠ Isi semua field!','error');return}
+    if(_name.length<2){toast('⚠ Nama tim minimal 2 karakter!','error');return}
     if(phoneClean.length<8||phoneClean.length>15){toast('⚠ No. HP tidak valid (8-15 digit)!','error');return}
+    // Sync to form state
+    setForm(f=>({...f,name:_name,captain:_captain,contact:_contact}))
+    setLastSubmit(now)
     setSaving(true)
     // Cek slot masih tersedia
     if(t&&(t.registered||0)>=(t.slots||16)){toast('⚠ Slot turnamen sudah penuh!','error');setSaving(false);return}
@@ -2569,7 +2578,7 @@ function PublicPage({tid,onBack,toast}){
     const{data:existing}=await supabase.from('teams')
       .select('id').eq('tournament_id',tid.trim()).ilike('name',form.name.trim()).limit(1)
     if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar di turnamen ini!','error');setSaving(false);return}
-    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(form.name),captain:sanitize(form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null})
+    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(_name||form.name),captain:sanitize(_captain||form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null})
     if(error){toast('Error: '+error.message,'error');setSaving(false);return}
     await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
     setStep('success');setSaving(false)
