@@ -4064,10 +4064,11 @@ function AppCore(){
   }
   const onLogout=async()=>{await supabase.auth.signOut();setUser(null);setPage('dashboard')}
 
-  // Public pages (no auth needed)
-  if(page==='public'&&publicTid)return <PublicPage tid={publicTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
-  if(page==='public-live'&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
-  if(page==='portal')return <ParticipantPortal toast={toast} tournaments={tournaments}/>
+  // Public pages — check hash directly so it works on fresh load AND navigation
+  const _hash = window.location.hash
+  if(_hash.startsWith('#/peserta')||(page==='portal'))return <ParticipantPortal toast={toast} tournaments={tournaments}/>
+  if((_hash.startsWith('#/live/')||page==='public-live')&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
+  if((_hash.startsWith('#/t/')||page==='public')&&publicTid)return <PublicPage tid={publicTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
 
   if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
 
