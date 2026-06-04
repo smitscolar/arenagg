@@ -1227,6 +1227,15 @@ function PublicLivePage({tid,onBack,toast}){
         <div style={{textAlign:'center',padding:'10px',fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>🔄 Skor diperbarui otomatis setiap 5 detik</div>
       </div>}
 
+      {/* STREAM TAB */}
+      {activeTab==='stream'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
+        <div style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>📺 Live Stream Peserta</div>
+          <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
+        </div>
+        <StreamTab participant={participant} tournamentId={participant.tournamentId}/>
+      </div>}
+
       {/* CHAT TAB */}
       {activeTab==='chat'&&<div>
         {!chatName
@@ -1270,11 +1279,110 @@ function PublicLivePage({tid,onBack,toast}){
 // ============================================================
 // LIVE PAGE — navigasi turnamen live dari sidebar
 // ============================================================
+// ============================================================
+// OWNER STREAM VIEW — Monitor semua stream peserta sekaligus
+// ============================================================
+function OwnerStreamView({tournaments,teams}){
+  const[selTId,setSelTId]=useState(tournaments[0]?.id||null)
+  const[liveTeams,setLiveTeams]=useState([])
+  const[loading,setLoading]=useState(true)
+  const[focusId,setFocusId]=useState(null)
+
+  useEffect(()=>{
+    if(!selTId){setLoading(false);return}
+    const load=async()=>{
+      setLoading(true)
+      const{data}=await supabase.from('teams').select('id,name,captain,game_id,stream_url,photo,paid').eq('tournament_id',selTId).order('name')
+      setLiveTeams(data||[])
+      setLoading(false)
+    }
+    load()
+    const ch=supabase.channel('owner-stream-'+selTId)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'teams',filter:`tournament_id=eq.${selTId}`},load)
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[selTId])
+
+  const withStream=liveTeams.filter(t=>t.stream_url&&getEmbedUrl(t.stream_url))
+  const focused=withStream.find(t=>t.id===focusId)||withStream[0]
+
+  return<div>
+    {/* Pilih turnamen */}
+    {tournaments.length>1&&<div style={{display:'flex',gap:8,flexWrap:'wrap',marginBottom:16}}>
+      {tournaments.map(t=>(
+        <button key={t.id} onClick={()=>{setSelTId(t.id);setFocusId(null)}}
+          style={{padding:'5px 12px',borderRadius:6,border:`1px solid ${selTId===t.id?'var(--cyan)':'var(--border)'}`,background:selTId===t.id?'rgba(0,229,255,0.1)':'var(--bg2)',color:selTId===t.id?'var(--cyan)':'var(--text)',fontSize:11,cursor:'pointer'}}>
+          {t.name}
+        </button>
+      ))}
+    </div>}
+
+    {loading&&<div style={{textAlign:'center',padding:'40px 0'}}><Spinner size={24}/></div>}
+
+    {!loading&&withStream.length===0&&<div className="card" style={{textAlign:'center',padding:'48px 20px',color:'var(--muted)'}}>
+      <div style={{fontSize:48,marginBottom:12}}>📺</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:8}}>BELUM ADA STREAM AKTIF</div>
+      <div style={{fontSize:11}}>Peserta belum menambahkan link stream YouTube/Twitch mereka.<br/>Instruksikan peserta untuk login ke Portal Peserta → tab Live Stream → Edit link.</div>
+      {liveTeams.length>0&&<div style={{marginTop:16,fontSize:11,color:'var(--muted)'}}>
+        {liveTeams.length} tim terdaftar · {withStream.length} punya stream
+      </div>}
+    </div>}
+
+    {!loading&&withStream.length>0&&<div>
+      {/* Focus stream */}
+      {focused&&<div style={{marginBottom:16}}>
+        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:10}}>
+          <div style={{width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
+          <span style={{fontFamily:'var(--fh)',fontSize:12,color:'var(--red)',letterSpacing:1}}>LIVE</span>
+          <span style={{fontSize:14,fontWeight:700}}>{focused.name}</span>
+          {focused.game_id&&<span style={{fontSize:11,color:'var(--cyan)',background:'rgba(0,229,255,0.1)',padding:'2px 8px',borderRadius:4}}>🎮 ID: {focused.game_id}</span>}
+          <span style={{fontSize:10,color:'var(--muted)',marginLeft:'auto'}}>👤 {focused.captain}</span>
+        </div>
+        <div style={{borderRadius:10,overflow:'hidden',border:'1px solid rgba(0,229,255,0.3)',aspectRatio:'16/9',background:'#000',maxHeight:420}}>
+          <iframe src={getEmbedUrl(focused.stream_url)} width="100%" height="100%" style={{border:'none',display:'block'}} allowFullScreen allow="accelerometer; autoplay; encrypted-media; picture-in-picture" title={'Stream '+focused.name}/>
+        </div>
+      </div>}
+
+      {/* Grid semua stream */}
+      {withStream.length>1&&<div>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>📡 SEMUA STREAM ({withStream.length})</div>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',gap:10}}>
+          {withStream.map(tm=>(
+            <div key={tm.id} onClick={()=>setFocusId(tm.id)} style={{cursor:'pointer',border:`1px solid ${focusId===tm.id||(!focusId&&tm.id===withStream[0].id)?'var(--cyan)':'var(--border)'}`,borderRadius:8,overflow:'hidden',background:'var(--panel)'}}>
+              <div style={{aspectRatio:'16/9',background:'#000',position:'relative'}}>
+                <iframe src={getEmbedUrl(tm.stream_url)} width="100%" height="100%" style={{border:'none',display:'block',pointerEvents:'none'}} title={tm.name}/>
+                <div style={{position:'absolute',bottom:0,left:0,right:0,background:'linear-gradient(transparent,rgba(0,0,0,0.8))',padding:'8px 8px 6px',pointerEvents:'none'}}>
+                  <div style={{fontSize:11,fontWeight:700,color:'#fff'}}>{tm.name}</div>
+                  {tm.game_id&&<div style={{fontSize:9,color:'rgba(255,255,255,0.6)'}}>ID: {tm.game_id}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>}
+
+      {/* List peserta belum ada stream */}
+      {liveTeams.filter(t=>!t.stream_url||!getEmbedUrl(t.stream_url)).length>0&&<div style={{marginTop:16}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>⏳ BELUM ADA STREAM</div>
+        <div style={{display:'flex',flexWrap:'wrap',gap:6}}>
+          {liveTeams.filter(t=>!t.stream_url||!getEmbedUrl(t.stream_url)).map(tm=>(
+            <div key={tm.id} style={{padding:'4px 10px',borderRadius:6,background:'var(--bg2)',border:'1px solid var(--border)',fontSize:11,color:'var(--muted)'}}>
+              {tm.name}{tm.game_id&&<span style={{fontSize:9,color:'rgba(255,255,255,0.3)'}}> · {tm.game_id}</span>}
+            </div>
+          ))}
+        </div>
+      </div>}
+    </div>}
+  </div>
+}
+
+
 function LivePage({tournaments,teams,toast,lang}){
   const i=T[lang]||T.id
   const liveT=tournaments.filter(t=>t.status==='live')
   const activeT=tournaments.filter(t=>t.status==='active'||t.status==='live')
   const[selId,setSelId]=useState(liveT[0]?.id||activeT[0]?.id||null)
+  const[liveTab,setLiveTab]=useState('score')
   const selT=tournaments.find(t=>t.id===selId)
 
   if(tournaments.length===0)return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
@@ -1294,6 +1402,16 @@ function LivePage({tournaments,teams,toast,lang}){
       <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>🔴 Live Turnamen</h1>
       <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>SKOR REAL-TIME · OBROLAN LANGSUNG · LINK BISA DIBAGIKAN</p>
     </div>
+    {/* SUB TABS */}
+    <div style={{display:'flex',gap:0,marginBottom:20,borderBottom:'1px solid var(--border)',background:'var(--panel)',borderRadius:'8px 8px 0 0',overflow:'hidden'}}>
+      {[{id:'score',icon:'🔴',label:'Live Score'},{id:'streams',icon:'📺',label:'Live Stream Peserta'}].map(tab=>(
+        <button key={tab.id} onClick={()=>setLiveTab(tab.id)} style={{flex:1,padding:'11px 16px',background:liveTab===tab.id?'rgba(0,229,255,0.1)':'transparent',border:'none',borderBottom:liveTab===tab.id?'2px solid var(--cyan)':'2px solid transparent',color:liveTab===tab.id?'var(--cyan)':'var(--muted)',fontSize:12,fontWeight:liveTab===tab.id?700:400,cursor:'pointer',fontFamily:'var(--fh)',letterSpacing:1,display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+          {tab.icon} {tab.label}
+        </button>
+      ))}
+    </div>
+    {liveTab==='streams'&&<OwnerStreamView tournaments={activeT} teams={teams}/>}
+    {liveTab==='score'&&<div>
 
     {/* LIVE NOW */}
     {liveT.length>0&&<div style={{marginBottom:20}}>
@@ -1351,6 +1469,7 @@ function LivePage({tournaments,teams,toast,lang}){
         </div>
       ))}
     </div>
+    </div>}
   </div>
 }
 
@@ -1477,7 +1596,7 @@ function Leaderboard({tournaments,teams,lang}){
               <span style={{fontSize:18,flexShrink:0,width:28,textAlign:'center'}}>{medals[idx]||`${idx+1}`}</span>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontSize:13,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.name}</div>
-                <div style={{fontSize:10,color:'var(--muted)'}}>👤 {t.captain} · 🎮 {t.game}</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>👤 {t.captain} · 🎮 {t.game}{t.game_id&&<span style={{color:'var(--cyan)'}}> · ID: {t.game_id}</span>}</div>
               </div>
               <div style={{textAlign:'right',flexShrink:0}}>
                 <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)'}}>Rp {Number(t.prize).toLocaleString('id-ID')}</div>
@@ -1641,6 +1760,134 @@ function ParticipantAuth({onLogin,toast}){
 }
 
 // Dashboard Peserta — setelah login
+// ============================================================
+// STREAM TAB — Live stream peserta dari YouTube/Twitch/TikTok
+// ============================================================
+function getEmbedUrl(url){
+  if(!url)return null
+  try{
+    var u=url.trim()
+    var m
+    m=u.match(/youtube\.com\/live\/([a-zA-Z0-9_-]+)/)
+    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
+    m=u.match(/[?&]v=([a-zA-Z0-9_-]+)/)
+    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
+    m=u.match(/youtu\.be\/([a-zA-Z0-9_-]+)/)
+    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
+    m=u.match(/twitch\.tv\/([a-zA-Z0-9_]+)/)
+    if(m)return 'https://player.twitch.tv/?channel='+m[1]+'&parent='+window.location.hostname
+    return null
+  }catch(e){return null}
+}
+
+function StreamTab({participant,tournamentId}){
+  const[teams,setTeams]=useState([])
+  const[loading,setLoading]=useState(true)
+  const[selected,setSelected]=useState(null)
+  const[myStreamUrl,setMyStreamUrl]=useState(participant.stream_url||'')
+  const[editing,setEditing]=useState(false)
+  const[saving,setSaving]=useState(false)
+
+  useEffect(()=>{
+    const load=async()=>{
+      if(!tournamentId){setLoading(false);return}
+      const{data}=await supabase.from('teams').select('id,name,captain,game_id,stream_url,photo').eq('tournament_id',tournamentId).order('name')
+      setTeams(data||[])
+      // Auto-select first team with stream
+      const first=(data||[]).find(t=>t.stream_url&&t.id!==participant.id)
+      if(first)setSelected(first.id)
+      setLoading(false)
+    }
+    load()
+    // Realtime update
+    const ch=supabase.channel('stream-tab-'+tournamentId)
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'teams',filter:`tournament_id=eq.${tournamentId}`},()=>load())
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[tournamentId])
+
+  const saveStream=async()=>{
+    setSaving(true)
+    const url=myStreamUrl.trim()
+    await supabase.from('teams').update({stream_url:url}).eq('id',participant.id)
+    // Update participant in localStorage
+    try{
+      const p=JSON.parse(localStorage.getItem('arenagg_participant')||'{}')
+      p.stream_url=url
+      localStorage.setItem('arenagg_participant',JSON.stringify(p))
+    }catch(e){}
+    // Refresh teams list
+    const{data}=await supabase.from('teams').select('id,name,captain,game_id,stream_url,photo').eq('tournament_id',tournamentId).order('name')
+    setTeams(data||[])
+    setSaving(false)
+    setEditing(false)
+  }
+
+  const teamsWithStream=teams.filter(t=>t.stream_url&&getEmbedUrl(t.stream_url))
+  const selectedTeam=teams.find(t=>t.id===selected)||teamsWithStream[0]
+  const embedUrl=selectedTeam?getEmbedUrl(selectedTeam.stream_url):null
+
+  if(loading)return<div style={{textAlign:'center',padding:'40px 0',color:'var(--muted)'}}><Spinner size={20}/></div>
+
+  return<div>
+    {/* My stream setup */}
+    <div className="card" style={{marginBottom:14,borderColor:'rgba(0,229,255,0.2)'}}>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:1}}>📡 STREAM SAYA</div>
+        {!editing&&<button onClick={()=>setEditing(true)} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'3px 8px',color:'var(--muted)',fontSize:10,cursor:'pointer'}}>✏ Edit</button>}
+      </div>
+      {editing
+        ?<div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <input value={myStreamUrl} onChange={e=>setMyStreamUrl(e.target.value)} placeholder="https://youtube.com/live/... atau https://twitch.tv/..." style={{flex:1,background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'8px 10px',color:'var(--text)',fontSize:11}} onKeyDown={e=>e.key==='Enter'&&saveStream()}/>
+          <button onClick={saveStream} disabled={saving} className="btn btn-cyan" style={{padding:'7px 12px',fontSize:10}}>{saving?'..':'💾'}</button>
+          <button onClick={()=>setEditing(false)} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'7px 10px',color:'var(--muted)',fontSize:10,cursor:'pointer'}}>✕</button>
+        </div>
+        :<div>
+          {participant.stream_url||myStreamUrl
+            ?<div>
+              <div style={{fontSize:11,color:'var(--green)',wordBreak:'break-all'}}>{participant.stream_url||myStreamUrl}</div>
+              {getEmbedUrl(participant.stream_url||myStreamUrl)
+                ?<div style={{fontSize:9,color:'var(--muted)',marginTop:3}}>✅ Link valid — bisa ditonton peserta lain</div>
+                :<div style={{fontSize:9,color:'var(--yellow)',marginTop:3}}>⚠ Format tidak dikenali. Gunakan link YouTube/Twitch.</div>}
+            </div>
+            :<div style={{fontSize:11,color:'var(--muted)'}}>Belum ada link stream. Klik Edit untuk tambahkan.</div>}
+        </div>}
+    </div>
+
+    {/* Pilih peserta */}
+    {teamsWithStream.length>0&&<div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>🎮 TONTON STREAM PESERTA LAIN</div>
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
+        {teamsWithStream.map(tm=>(
+          <button key={tm.id} onClick={()=>setSelected(tm.id)}
+            style={{padding:'5px 10px',borderRadius:6,border:`1px solid ${selected===tm.id?'var(--cyan)':'var(--border)'}`,background:selected===tm.id?'rgba(0,229,255,0.1)':'var(--bg2)',color:selected===tm.id?'var(--cyan)':'var(--text)',fontSize:11,cursor:'pointer',fontWeight:selected===tm.id?700:400}}>
+            {tm.name}
+          </button>
+        ))}
+      </div>
+      {embedUrl&&selectedTeam&&<div>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
+          <div style={{width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
+          <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--red)',letterSpacing:1}}>LIVE</span>
+          <span style={{fontSize:12,fontWeight:600}}>{selectedTeam.name}</span>
+          {selectedTeam.game_id&&<span style={{fontSize:10,color:'var(--muted)'}}>ID: {selectedTeam.game_id}</span>}
+        </div>
+        <div style={{borderRadius:8,overflow:'hidden',border:'1px solid var(--border)',aspectRatio:'16/9',background:'#000'}}>
+          <iframe src={embedUrl} width="100%" height="100%" style={{border:'none',display:'block'}} allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" title={'Stream '+selectedTeam.name}/>
+        </div>
+        <div style={{fontSize:9,color:'var(--muted)',marginTop:6,textAlign:'center'}}>Stream dari {selectedTeam.captain} · Klik fullscreen untuk tampilan lebih besar</div>
+      </div>}
+    </div>}
+
+    {teamsWithStream.length===0&&<div className="card" style={{textAlign:'center',padding:'36px 20px',color:'var(--muted)'}}>
+      <div style={{fontSize:40,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>📺</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:6}}>BELUM ADA STREAM</div>
+      <div style={{fontSize:11}}>Peserta belum menambahkan link stream.<br/>Tambahkan link stream kamu di atas!</div>
+    </div>}
+  </div>
+}
+
+
 function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const t=participant.tournament
   const[activeTab,setActiveTab]=useState('home')
@@ -1710,7 +1957,8 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const TABS=[
     {id:'home',icon:'🏠',label:'Beranda'},
     {id:'wallet',icon:'💳',label:'Wallet'},
-    {id:'live',icon:'🔴',label:'Live'},
+    {id:'live',icon:'🔴',label:'Live Score'},
+    {id:'stream',icon:'📺',label:'Live Stream'},
     {id:'chat',icon:'💬',label:'Chat'+(chatHistory.length>0?` (${chatHistory.length})`:'')},
     {id:'info',icon:'ℹ',label:'Info'},
   ]
@@ -1943,6 +2191,15 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
         }
       </div>}
 
+      {/* STREAM TAB */}
+      {activeTab==='stream'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
+        <div style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>📺 Live Stream Peserta</div>
+          <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
+        </div>
+        <StreamTab participant={participant} tournamentId={participant.tournamentId}/>
+      </div>}
+
       {/* CHAT TAB */}
       {activeTab==='chat'&&<div className="animate-in" style={{display:'flex',flexDirection:'column',height:'60vh'}}>
         <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:12}}>💬 Obrolan Live</div>
@@ -1982,6 +2239,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
             {label:'Nama Tim',val:participant.name},
             {label:'Kapten',val:participant.captain},
             {label:'No. HP',val:participant.contact},
+            {label:'🎮 Game ID',val:participant.game_id||'—'},
             {label:'Jumlah Member',val:participant.members+' orang'},
             {label:'Status Bayar',val:participant.paid?'✓ Lunas':'⏳ Belum Bayar'},
           ].map(s=>(
@@ -2056,17 +2314,19 @@ function AuthPage({onLogin,lang,setLangFn}){
   const[showPass,setShowPass]=useState(false)
   // Fungsi login peserta
   const doLogin=async()=>{
-    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    if(!loginName.trim()){setLoginErr('Isi nama tim');return}
+    if(loginMode==='contact'&&!loginContact.trim()){setLoginErr('Isi No. HP');return}
+    if(loginMode==='gameid'&&!loginGameId.trim()){setLoginErr('Isi Game Account ID');return}
     setLoginErr('');setLoginL(true)
     try{
-      const{data:teamData,error}=await supabase
-        .from('teams').select('*,tournaments(*)')
+      let query=supabase.from('teams').select('*,tournaments(*)')
         .ilike('name',loginName.trim())
-        .eq('contact',loginContact.trim())
         .eq('tournament_id',tid.trim())
-        .single()
+      if(loginMode==='contact') query=query.eq('contact',loginContact.trim())
+      else query=query.ilike('game_id',loginGameId.trim())
+      const{data:teamData,error}=await query.single()
       if(error||!teamData){
-        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginErr(loginMode==='contact'?'Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai.':'Tim tidak ditemukan. Pastikan nama tim dan Game ID sesuai saat pendaftaran.')
         setLoginL(false);return
       }
       // Simpan ke localStorage dan redirect ke portal
@@ -2074,6 +2334,8 @@ function AuthPage({onLogin,lang,setLangFn}){
         id:teamData.id,name:teamData.name,captain:teamData.captain,
         contact:teamData.contact,members:teamData.members,
         photo:teamData.photo,paid:teamData.paid,
+        game_id:teamData.game_id||'',
+        stream_url:teamData.stream_url||'',
         tournamentId:teamData.tournament_id,
         tournament:teamData.tournaments,
         loginAt:Date.now()
@@ -2485,10 +2747,12 @@ function ShareModal({t,onClose,toast,onPreview}){
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
-  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:''});const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
+  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:'',game_id:'',stream_url:''});const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
   // Login state untuk peserta
   const[loginName,setLoginName]=useState('')
   const[loginContact,setLoginContact]=useState('')
+  const[loginGameId,setLoginGameId]=useState('')
+  const[loginMode,setLoginMode]=useState('contact')
   const[loginLoading,setLoginL]=useState(false)
   const[loginErr,setLoginErr]=useState('')
   const[lang,setLangState]=useState(getLang())
@@ -2522,17 +2786,19 @@ function PublicPage({tid,onBack,toast}){
   }
   // Fungsi login peserta
   const doLogin=async()=>{
-    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    if(!loginName.trim()){setLoginErr('Isi nama tim');return}
+    if(loginMode==='contact'&&!loginContact.trim()){setLoginErr('Isi No. HP');return}
+    if(loginMode==='gameid'&&!loginGameId.trim()){setLoginErr('Isi Game Account ID');return}
     setLoginErr('');setLoginL(true)
     try{
-      const{data:teamData,error}=await supabase
-        .from('teams').select('*,tournaments(*)')
+      let query=supabase.from('teams').select('*,tournaments(*)')
         .ilike('name',loginName.trim())
-        .eq('contact',loginContact.trim())
         .eq('tournament_id',tid.trim())
-        .single()
+      if(loginMode==='contact') query=query.eq('contact',loginContact.trim())
+      else query=query.ilike('game_id',loginGameId.trim())
+      const{data:teamData,error}=await query.single()
       if(error||!teamData){
-        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginErr(loginMode==='contact'?'Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai.':'Tim tidak ditemukan. Pastikan nama tim dan Game ID sesuai saat pendaftaran.')
         setLoginL(false);return
       }
       // Simpan ke localStorage dan redirect ke portal
@@ -2540,6 +2806,8 @@ function PublicPage({tid,onBack,toast}){
         id:teamData.id,name:teamData.name,captain:teamData.captain,
         contact:teamData.contact,members:teamData.members,
         photo:teamData.photo,paid:teamData.paid,
+        game_id:teamData.game_id||'',
+        stream_url:teamData.stream_url||'',
         tournamentId:teamData.tournament_id,
         tournament:teamData.tournaments,
         loginAt:Date.now()
@@ -2578,7 +2846,7 @@ function PublicPage({tid,onBack,toast}){
     const{data:existing}=await supabase.from('teams')
       .select('id').eq('tournament_id',tid.trim()).ilike('name',form.name.trim()).limit(1)
     if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar di turnamen ini!','error');setSaving(false);return}
-    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(_name||form.name),captain:sanitize(_captain||form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null})
+    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(_name||form.name),captain:sanitize(_captain||form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null,game_id:sanitize(form.game_id||''),stream_url:(form.stream_url||'').trim()})
     if(error){toast('Error: '+error.message,'error');setSaving(false);return}
     await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
     setStep('success');setSaving(false)
@@ -2653,9 +2921,22 @@ function PublicPage({tid,onBack,toast}){
           <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>⚔ NAMA TIM *</label>
           <input value={loginName} onChange={e=>setLoginName(e.target.value)} placeholder="Nama tim saat mendaftar..." onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/>
         </div>
+        <div style={{marginBottom:10}}>
+          <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🔑 METODE LOGIN</label>
+          <div style={{display:'flex',gap:0,borderRadius:6,overflow:'hidden',border:'1px solid var(--border)'}}>
+            {[{id:'contact',label:'📱 No. HP'},{id:'gameid',label:'🎮 Game ID'}].map(m=>(
+              <button key={m.id} onClick={()=>setLoginMode(m.id)} style={{flex:1,padding:'8px',background:loginMode===m.id?'rgba(0,229,255,0.15)':'transparent',border:'none',color:loginMode===m.id?'var(--cyan)':'var(--muted)',fontSize:11,fontWeight:loginMode===m.id?700:400,cursor:'pointer'}}>
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{marginBottom:18}}>
-          <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📱 NO. HP *</label>
-          <input value={loginContact} onChange={e=>setLoginContact(e.target.value)} placeholder="08xxxxxxxxxx" type="tel" onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/>
+          {loginMode==='contact'
+            ?<><label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📱 NO. HP *</label>
+              <input value={loginContact} onChange={e=>setLoginContact(e.target.value)} placeholder="08xxxxxxxxxx" type="tel" onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/></>
+            :<><label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🎮 GAME ACCOUNT ID *</label>
+              <input value={loginGameId} onChange={e=>setLoginGameId(e.target.value)} placeholder="ID game yang kamu daftarkan..." onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{fontSize:13}}/></>}
         </div>
         {loginErr&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{loginErr}</span></div>}
         <button className="btn btn-orange btn-full" onClick={doLogin} disabled={!loginName.trim()||!loginContact.trim()||loginLoading} style={{fontSize:12,padding:13}}>
@@ -2684,6 +2965,8 @@ function PublicPage({tid,onBack,toast}){
           </div>
           <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Alpha Squad"/></div>
           <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
+          <div style={{marginBottom:11}}><label>🎮 Game Account ID <span style={{fontSize:9,color:'var(--muted)'}}>(ML ID, PUBG UID, dsb - wajib)</span></label><input value={form.game_id||''} onChange={set('game_id')} placeholder="Contoh: 123456789 (1234)" maxLength={80} style={{width:'100%',background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'9px 11px',color:'var(--text)',fontSize:12,boxSizing:'border-box'}}/></div>
+          <div style={{marginBottom:11}}><label>📺 Link Stream Live <span style={{fontSize:9,color:'var(--muted)'}}>(YouTube/Twitch - opsional)</span></label><input value={form.stream_url||''} onChange={set('stream_url')} placeholder="https://youtube.com/live/... atau https://twitch.tv/..." maxLength={200} style={{width:'100%',background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'9px 11px',color:'var(--text)',fontSize:12,boxSizing:'border-box'}}/></div>
           <div style={{marginBottom:14}}><label>{i.members}</label><select value={form.members} onChange={set('members')}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
           <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:6,padding:'10px 12px',marginBottom:14,fontSize:12}}>
             <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',marginBottom:6,letterSpacing:1}}>{i.pay_title}</div>
@@ -2709,6 +2992,7 @@ function PublicPage({tid,onBack,toast}){
             {label:'Kapten',val:form.captain,icon:'👤'},
             {label:'No. HP',val:form.contact,icon:'📱'},
             {label:'Jumlah Member',val:form.members+' orang',icon:'👥'},
+            {label:'Game Account ID',val:form.game_id||'—',icon:'🎮'},
             {label:'Turnamen',val:t.name,icon:'🏆'},
             {label:'Game',val:t.game,icon:'🎮'},
             {label:'Kota',val:t.city,icon:'📍'},
@@ -3263,17 +3547,19 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
   const paidCount=filtered.filter(t=>t.paid).length
   // Fungsi login peserta
   const doLogin=async()=>{
-    if(!loginName.trim()||!loginContact.trim()){setLoginErr('Isi nama tim dan no. HP');return}
+    if(!loginName.trim()){setLoginErr('Isi nama tim');return}
+    if(loginMode==='contact'&&!loginContact.trim()){setLoginErr('Isi No. HP');return}
+    if(loginMode==='gameid'&&!loginGameId.trim()){setLoginErr('Isi Game Account ID');return}
     setLoginErr('');setLoginL(true)
     try{
-      const{data:teamData,error}=await supabase
-        .from('teams').select('*,tournaments(*)')
+      let query=supabase.from('teams').select('*,tournaments(*)')
         .ilike('name',loginName.trim())
-        .eq('contact',loginContact.trim())
         .eq('tournament_id',tid.trim())
-        .single()
+      if(loginMode==='contact') query=query.eq('contact',loginContact.trim())
+      else query=query.ilike('game_id',loginGameId.trim())
+      const{data:teamData,error}=await query.single()
       if(error||!teamData){
-        setLoginErr('Tim tidak ditemukan di turnamen ini. Pastikan nama tim dan no. HP sesuai saat pendaftaran.')
+        setLoginErr(loginMode==='contact'?'Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai.':'Tim tidak ditemukan. Pastikan nama tim dan Game ID sesuai saat pendaftaran.')
         setLoginL(false);return
       }
       // Simpan ke localStorage dan redirect ke portal
@@ -3281,6 +3567,8 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
         id:teamData.id,name:teamData.name,captain:teamData.captain,
         contact:teamData.contact,members:teamData.members,
         photo:teamData.photo,paid:teamData.paid,
+        game_id:teamData.game_id||'',
+        stream_url:teamData.stream_url||'',
         tournamentId:teamData.tournament_id,
         tournament:teamData.tournaments,
         loginAt:Date.now()
