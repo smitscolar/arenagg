@@ -4051,8 +4051,9 @@ function AppCore(){
         const tid=hash.split('/')[2]
         if(tid){setLiveTid(tid);setPage('public-live');return}
       }
-      if(hash.startsWith('#/t/')){
-        const tid=hash.split('/')[2]
+      if(hash.startsWith('#/t/')||hash.startsWith('#/daftar/')){
+        const parts=hash.split('/')
+        const tid=parts[2]
         if(tid){setPublicTid(tid);setPage('public');return}
       }
     }
@@ -4071,9 +4072,11 @@ function AppCore(){
 
   // Public pages — check hash directly so it works on fresh load AND navigation
   const _hash = window.location.hash
+  // Extract tid from hash for direct URL access
+  const _hashTid = (_hash.startsWith('#/t/')||_hash.startsWith('#/daftar/')) ? _hash.split('/')[2] : null
   if(_hash.startsWith('#/peserta')||(page==='portal'))return <ParticipantPortal toast={toast} tournaments={tournaments}/>
   if((_hash.startsWith('#/live/')||page==='public-live')&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
-  if((_hash.startsWith('#/t/')||page==='public')&&publicTid)return <PublicPage tid={publicTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
+  if(((_hash.startsWith('#/t/')||_hash.startsWith('#/daftar/'))||page==='public')&&(publicTid||_hashTid))return <PublicPage tid={publicTid||_hashTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
 
   if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
 
