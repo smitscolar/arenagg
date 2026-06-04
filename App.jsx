@@ -2494,6 +2494,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
         <button className="btn btn-dark btn-full" onClick={onLogout} style={{marginTop:12,fontSize:10,color:'var(--red)',borderColor:'rgba(255,45,85,0.2)'}}>Keluar dari Portal</button>
         <button className="btn btn-cyan btn-full" onClick={()=>setActiveTab('wallet')} style={{marginTop:8,fontSize:10}}>💳 Buka Wallet & Pembayaran</button>
       </div>}
+    <ParticipantFloatingChat participant={participant}/>
     </div>
   </div>
 }
@@ -2969,7 +2970,6 @@ function ShareModal({t,onClose,toast,onPreview}){
         </>}
       </>}
     </div>
-    <ParticipantFloatingChat participant={participant}/>
   </div>
 }
 
