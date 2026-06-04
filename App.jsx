@@ -51,7 +51,7 @@ const uid=()=>Math.random().toString(36).slice(2,18)
 const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','live','leaderboard','finance','settings']
 const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','l':'live','m':'leaderboard','f':'finance','s':'settings'}
 
-const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050508;color:#e8e8f0;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',system-ui,sans-serif;--fb:'Rajdhani',system-ui,sans-serif;--fm:'Share Tech Mono',ui-monospace,monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.25s cubic-bezier(0.4,0,0.2,1);--trans-fast:all 0.15s ease;--trans-slow:all 0.4s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan),0 0 60px rgba(0,229,255,0.3);}50%{text-shadow:0 0 6px var(--cyan),0 0 15px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050508;color:#e8e8f0;}:root{--bg:#050508;--bg2:#0a0a12;--bg3:#0f0f1a;--panel:#13131f;--border:#1a1a2e;--border2:#252540;--cyan:#00e5ff;--orange:#ff6b00;--green:#00ff88;--red:#ff2d55;--yellow:#ffd700;--text:#e8e8f0;--text2:#b0b0c8;--muted:#4a4a6a;--fh:'Orbitron',system-ui,sans-serif;--fb:'Rajdhani',system-ui,sans-serif;--fm:'Share Tech Mono',ui-monospace,monospace;--shadow:0 8px 32px rgba(0,0,0,0.4);--glow-cyan:0 0 20px rgba(0,229,255,0.15);--trans:all 0.3s cubic-bezier(0.4,0,0.2,1);}[data-theme="light"]{--bg:#f0f2f8;--bg2:#e4e6f4;--bg3:#d8daee;--panel:#ffffff;--border:#d0d2e8;--border2:#c0c2d8;--cyan:#0077aa;--orange:#dd4400;--green:#006633;--red:#bb0022;--yellow:#996600;--text:#1a1a2e;--text2:#4a4a6a;--muted:#8a8aaa;--shadow:0 4px 16px rgba(0,0,0,0.08);--glow-cyan:0 0 12px rgba(0,119,170,0.1);}body,body *{transition:background-color 0.35s ease,border-color 0.35s ease,color 0.35s ease;}body{background:var(--bg);color:var(--text);font-family:var(--fb);background-image:radial-gradient(ellipse at 20% 50%,rgba(0,229,255,0.025) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(255,107,0,0.018) 0%,transparent 60%);}[data-theme="light"] body{background-image:radial-gradient(ellipse at 20% 50%,rgba(0,119,170,0.04) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(221,68,0,0.03) 0%,transparent 60%);}::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:0.5;}@keyframes slide-in{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}@keyframes slide-in-r{from{opacity:0;transform:translateX(14px);}to{opacity:1;transform:translateX(0);}}@keyframes fade-in{from{opacity:0;}to{opacity:1;}}@keyframes glow-pulse{0%,100%{text-shadow:0 0 10px var(--cyan),0 0 30px var(--cyan),0 0 60px rgba(0,229,255,0.3);}50%{text-shadow:0 0 6px var(--cyan),0 0 15px var(--cyan);}}@keyframes flicker{0%,19%,21%,25%,54%,56%,100%{opacity:1;}20%,24%,55%{opacity:0.3;}}@keyframes bar-fill{from{width:0!important;}}@keyframes spin{to{transform:rotate(360deg);}}@keyframes pop-in{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}@keyframes bounce-in{0%{transform:translateY(40px);opacity:0;}60%{transform:translateY(-4px);}100%{transform:translateY(0);opacity:1;}}@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 @keyframes twinkle{0%,100%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}}
 @keyframes drift{0%{transform:translateY(0) translateX(0) rotate(0deg);}33%{transform:translateY(-20px) translateX(10px) rotate(120deg);}66%{transform:translateY(-10px) translateX(-8px) rotate(240deg);}100%{transform:translateY(0) translateX(0) rotate(360deg);}}
 @keyframes energy-pulse{0%,100%{box-shadow:0 0 10px rgba(0,229,255,0.3),0 0 30px rgba(0,229,255,0.1);}50%{box-shadow:0 0 20px rgba(0,229,255,0.6),0 0 60px rgba(0,229,255,0.2),0 0 100px rgba(0,229,255,0.05);}}
@@ -71,7 +71,7 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 .animate-in>*:nth-child(3){animation-delay:0.08s}
 .animate-in>*:nth-child(4){animation-delay:0.12s}
 .animate-in>*:nth-child(5){animation-delay:0.16s}
-.animate-in>*:nth-child(6){animation-delay:0.20s}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-1px);}.card{transition:border-color 0.25s ease,box-shadow 0.25s ease,transform 0.25s ease;}
+.animate-in>*:nth-child(6){animation-delay:0.20s}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
 .card-glass{background:rgba(19,19,31,0.6);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.12);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}
 [data-theme="light"] .card-glass{background:rgba(255,255,255,0.7);border-color:rgba(0,119,170,0.15);}
 .card-glass:hover{border-color:rgba(0,229,255,0.25);box-shadow:var(--shadow);}
@@ -86,7 +86,7 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 @keyframes particle-drift{0%{transform:translateY(100vh) translateX(0);opacity:0;}10%{opacity:0.8;}90%{opacity:0.3;}100%{transform:translateY(-100px) translateX(100px);opacity:0;}}
 .p-star{position:absolute;border-radius:50%;animation:twinkle-star linear infinite;}
 @keyframes twinkle-star{0%{opacity:0;transform:scale(0);}50%{opacity:1;transform:scale(1);}100%{opacity:0;transform:scale(0);}}@media(max-width:768px){.sidebar{display:none;}.bottom-nav{display:grid;}main{padding-bottom:68px;}.card{padding:14px;}.card-glass{padding:14px;}.modal{padding:18px;border-radius:10px;}.stat-card{padding:14px;}.stat-card:hover{transform:none;}.btn{padding:10px 14px;font-size:10px;min-height:42px;}.btn-sm{padding:8px 12px;font-size:9px;min-height:36px;}input,select,textarea{font-size:16px !important;padding:12px 14px;}label{font-size:11px;margin-bottom:6px;}.g2{grid-template-columns:1fr;}.g3{grid-template-columns:1fr;}.g4{grid-template-columns:1fr 1fr;}.bnav-item{font-size:7px;padding:6px 2px;}.bnav-icon{font-size:18px;}.b-match{width:130px;}.b-team{font-size:10px;padding:6px 8px;}.tag{font-size:8px;}.chip{font-size:8px;}}
-@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}.page-content-sm{padding:12px 12px !important;}}.skeleton{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;}@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:0.5px;}.badge-cyan{background:rgba(0,229,255,0.12);color:var(--cyan);border:1px solid rgba(0,229,255,0.25);}.badge-green{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.2);}.badge-red{background:rgba(255,45,85,0.1);color:var(--red);border:1px solid rgba(255,45,85,0.2);}.badge-yellow{background:rgba(255,215,0,0.1);color:var(--yellow);border:1px solid rgba(255,215,0,0.2);}.badge-orange{background:rgba(255,107,0,0.1);color:var(--orange);border:1px solid rgba(255,107,0,0.2);}.divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--muted);font-size:10px;font-family:var(--fm);letter-spacing:1px;}.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}.section-title{fontFamily:var(--fh);font-size:10px;color:var(--cyan);letter-spacing:2px;margin-bottom:12px;text-transform:uppercase;}.progress-ring{transform:rotate(-90deg);}@keyframes count-up{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}.count-anim{animation:count-up 0.4s cubic-bezier(0.34,1.56,0.64,1);}@keyframes slide-up{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}.slide-up{animation:slide-up 0.3s ease both;}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
+@media(max-width:768px){.create-layout{grid-template-columns:1fr !important;}.page-content>div[style]{max-width:100% !important;}.page-content-sm{padding:12px 12px !important;}}@media print{.sidebar,.bottom-nav,.btn,.toast-wrap{display:none!important;}body{background:#fff!important;color:#000!important;}main{padding:0!important;}.card{border:1px solid #ccc!important;background:#fff!important;}.animate-in{animation:none!important;}}@media(min-width:769px){.bottom-nav{display:none !important;}}button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}*{-webkit-tap-highlight-color:transparent;}
 .nav-item{position:relative;}
 .nav-item::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--cyan);transform:scaleY(0);transition:transform 0.2s ease;border-radius:0 2px 2px 0;}
 .nav-item.active::after{transform:scaleY(1);}
@@ -118,75 +118,66 @@ const savedTheme=localStorage.getItem('arenagg_theme');if(savedTheme==='light')d
 const NOTIF_KEY='arenagg_notifications'
 function loadNotifs(){try{return JSON.parse(localStorage.getItem(NOTIF_KEY)||'[]')}catch(e){return[]}}
 function saveNotifs(ns){try{localStorage.setItem(NOTIF_KEY,JSON.stringify(ns.slice(0,50)))}catch(e){}}
-function addNotif(msg,type='info',link=''){
+function addNotif(msg,type,link){
+  type=type||'info';link=link||''
   const ns=loadNotifs()
   ns.unshift({id:uid(),msg,type,link,ts:Date.now(),read:false})
   saveNotifs(ns)
   window.dispatchEvent(new Event('arenagg-notif'))
 }
-
-function NotifBell({page,setPage}){
+function NotifBell({setPage}){
   const[open,setOpen]=useState(false)
   const[notifs,setNotifs]=useState(loadNotifs)
-  const unread=notifs.filter(n=>!n.read).length
-  useEffect(()=>{
-    const refresh=()=>setNotifs(loadNotifs())
+  const unread=notifs.filter(function(n){return !n.read}).length
+  useEffect(function(){
+    var refresh=function(){setNotifs(loadNotifs())}
     window.addEventListener('arenagg-notif',refresh)
-    return()=>window.removeEventListener('arenagg-notif',refresh)
+    return function(){window.removeEventListener('arenagg-notif',refresh)}
   },[])
-  const markAll=()=>{
-    const ns=notifs.map(n=>({...n,read:true}))
-    setNotifs(ns);saveNotifs(ns)
-  }
-  const dismiss=(id)=>{
-    const ns=notifs.filter(n=>n.id!==id)
-    setNotifs(ns);saveNotifs(ns)
-  }
-  const clearAll=()=>{setNotifs([]);saveNotifs([])}
-  const timeAgo=ts=>{
-    const d=Date.now()-ts
+  var markAll=function(){var ns=notifs.map(function(n){return Object.assign({},n,{read:true})});setNotifs(ns);saveNotifs(ns)}
+  var dismiss=function(id){var ns=notifs.filter(function(n){return n.id!==id});setNotifs(ns);saveNotifs(ns)}
+  var clearAll=function(){setNotifs([]);saveNotifs([])}
+  var timeAgo=function(ts){
+    var d=Date.now()-ts
     if(d<60000)return 'baru saja'
     if(d<3600000)return Math.floor(d/60000)+'m lalu'
     if(d<86400000)return Math.floor(d/3600000)+'j lalu'
     return Math.floor(d/86400000)+'h lalu'
   }
-  const typeIcon={info:'ℹ',success:'✅',warning:'⚠',error:'❌',tournament:'🏆',payment:'💰',team:'👥',live:'🔴'}
+  var typeIcon={info:'ℹ',success:'✅',warning:'⚠',error:'❌',tournament:'🏆',payment:'💰',team:'👥',live:'🔴'}
   return <div style={{position:'relative'}}>
-    <button onClick={()=>{setOpen(o=>!o);if(!open)markAll()}} style={{position:'relative',background:'none',border:'1px solid var(--border)',borderRadius:8,padding:'6px 8px',cursor:'pointer',color:'var(--text)',transition:'var(--trans)',display:'flex',alignItems:'center',gap:4}} title="Notifikasi">
+    <button onClick={function(){setOpen(function(o){return !o});if(!open)markAll()}} style={{position:'relative',background:'none',border:'1px solid var(--border)',borderRadius:8,padding:'6px 8px',cursor:'pointer',color:'var(--text)',display:'flex',alignItems:'center',gap:4}}>
       <span style={{fontSize:16}}>🔔</span>
       {unread>0&&<span style={{position:'absolute',top:-4,right:-4,background:'var(--red)',color:'#fff',borderRadius:'50%',width:16,height:16,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--fm)',fontSize:9,fontWeight:700,border:'2px solid var(--bg)'}}>{unread>9?'9+':unread}</span>}
     </button>
-    {open&&<div style={{position:'absolute',top:40,right:0,width:300,background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:10,boxShadow:'0 8px 32px rgba(0,0,0,0.5)',zIndex:999,overflow:'hidden',animation:'pop-in 0.15s ease'}}>
+    {open&&<div style={{position:'absolute',top:40,right:0,width:300,background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:10,boxShadow:'0 8px 32px rgba(0,0,0,0.5)',zIndex:999,overflow:'hidden'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',borderBottom:'1px solid var(--border)'}}>
         <span style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1}}>🔔 NOTIFIKASI</span>
         <div style={{display:'flex',gap:6}}>
           {notifs.length>0&&<button onClick={clearAll} style={{background:'none',border:'none',cursor:'pointer',fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>Hapus semua</button>}
-          <button onClick={()=>setOpen(false)} style={{background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--muted)',lineHeight:1}}>×</button>
+          <button onClick={function(){setOpen(false)}} style={{background:'none',border:'none',cursor:'pointer',fontSize:16,color:'var(--muted)',lineHeight:1}}>×</button>
         </div>
       </div>
-      <div style={{maxHeight:320,overflowY:'auto'}}>
+      <div style={{maxHeight:300,overflowY:'auto'}}>
         {notifs.length===0
-          ?<div style={{padding:24,textAlign:'center',color:'var(--muted)',fontSize:11}}>
-            <div style={{fontSize:32,marginBottom:8}}>🔕</div>
-            Belum ada notifikasi
-          </div>
-          :notifs.map(n=>(
-            <div key={n.id} style={{padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',background:n.read?'transparent':'rgba(0,229,255,0.04)',cursor:n.link?'pointer':'default',transition:'background 0.2s'}}
-              onClick={()=>{if(n.link){setPage(n.link);setOpen(false)}}}>
+          ?<div style={{padding:24,textAlign:'center',color:'var(--muted)',fontSize:11}}><div style={{fontSize:32,marginBottom:8}}>🔕</div>Belum ada notifikasi</div>
+          :notifs.map(function(n){return(
+            <div key={n.id} style={{padding:'10px 14px',borderBottom:'1px solid rgba(255,255,255,0.04)',background:n.read?'transparent':'rgba(0,229,255,0.04)',cursor:n.link?'pointer':'default'}}
+              onClick={function(){if(n.link){setPage(n.link);setOpen(false)}}}>
               <div style={{display:'flex',gap:8,alignItems:'flex-start'}}>
                 <span style={{fontSize:14,flexShrink:0,marginTop:1}}>{typeIcon[n.type]||'ℹ'}</span>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:11,lineHeight:1.4,wordBreak:'break-word'}}>{n.msg}</div>
+                  <div style={{fontSize:11,lineHeight:1.4}}>{n.msg}</div>
                   <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',marginTop:3}}>{timeAgo(n.ts)}</div>
                 </div>
-                <button onClick={e=>{e.stopPropagation();dismiss(n.id)}} style={{background:'none',border:'none',cursor:'pointer',color:'var(--muted)',fontSize:12,flexShrink:0,padding:2}}>×</button>
+                <button onClick={function(e){e.stopPropagation();dismiss(n.id)}} style={{background:'none',border:'none',cursor:'pointer',color:'var(--muted)',fontSize:12,flexShrink:0,padding:2}}>×</button>
               </div>
             </div>
-          ))
+          )})
         }
       </div>
     </div>}
-    {open&&<div style={{position:'fixed',inset:0,zIndex:998}} onClick={()=>setOpen(false)}/>}
+    {open&&<div style={{position:'fixed',inset:0,zIndex:998}} onClick={function(){setOpen(false)}}/>}
   </div>
 }
 
@@ -884,7 +875,7 @@ function LiveMatchView({tournament,teams,toast,onBack}){
             {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}><div style={{fontSize:32,marginBottom:8}}>💬</div><div style={{fontSize:11,fontFamily:'var(--fm)',letterSpacing:2}}>BELUM ADA PESAN</div><div style={{fontSize:11,marginTop:4}}>Mulai obrolan sekarang!</div></div>}
             {chatHistory.map(msg=>(
               <div key={msg.id} style={{display:'flex',gap:10,alignItems:'flex-start',animation:'slide-in 0.2s ease'}}>
-                <div style={{width:30,height:30,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,color:'#000',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
+                <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,var(--cyan),var(--orange))`,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,color:'#000',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
                 <div style={{flex:1,minWidth:0}}>
                   <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:3}}>
                     <span style={{fontWeight:700,fontSize:12}}>{msg.name}</span>
@@ -1230,69 +1221,176 @@ function LivePage({tournaments,teams,toast,lang}){
 // ============================================================
 
 // ============================================================
-// EXPORT UTILS — CSV & Bracket Text Export
+// EXPORT CSV
 // ============================================================
-function exportCSVData(filename, headers, rows){
-  const escape=v=>'"'+(String(v||'').replace(/"/g,'""'))+'"'
-  const csv=[headers.map(escape).join(','),...rows.map(r=>r.map(escape).join(','))].join('\n')
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'})
-  const url=URL.createObjectURL(blob)
-  const a=document.createElement('a');a.href=url;a.download=filename
+function exportCSVData(filename,headers,rows){
+  var escape=function(v){return '"'+(String(v||'').replace(/"/g,'""'))+'"'}
+  var csv=[headers.map(escape).join(',')].concat(rows.map(function(r){return r.map(escape).join(',')})).join('\n')
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'})
+  var url=URL.createObjectURL(blob)
+  var a=document.createElement('a');a.href=url;a.download=filename
   document.body.appendChild(a);a.click();document.body.removeChild(a)
-  setTimeout(()=>URL.revokeObjectURL(url),1000)
+  setTimeout(function(){URL.revokeObjectURL(url)},1000)
 }
-
 function ExportButton({tournaments,teams,toast}){
   const[open,setOpen]=useState(false)
-  const exportTeams=()=>{
-    const headers=['No','Nama Tim','Kapten','No HP','Turnamen','Game','Kota','Status Bayar','Terdaftar']
-    const rows=teams.map((t,i)=>{
-      const tourn=tournaments.find(x=>x.id===t.tournament_id)||{}
-      return[i+1,t.name,t.captain,t.contact,tourn.name||'—',tourn.game||'—',tourn.city||'—',t.paid?'Lunas':'Belum Lunas',t.created_at?new Date(t.created_at).toLocaleDateString('id-ID'):'—']
+  var exportTeams=function(){
+    var headers=['No','Nama Tim','Kapten','No HP','Turnamen','Game','Kota','Status Bayar']
+    var rows=teams.map(function(t,i){
+      var tourn=tournaments.find(function(x){return x.id===t.tournament_id})||{}
+      return[i+1,t.name,t.captain,t.contact,tourn.name||'—',tourn.game||'—',tourn.city||'—',t.paid?'Lunas':'Belum Lunas']
     })
     exportCSVData('ArenaGG_Peserta_'+new Date().toISOString().slice(0,10)+'.csv',headers,rows)
     toast('✅ Data peserta diexport!','success');setOpen(false)
     addNotif('📥 Export peserta berhasil','success')
   }
-  const exportTournaments=()=>{
-    const headers=['No','Nama Turnamen','Game','Format','Kota','Tanggal','Prize Pool','Entry Fee','Slot','Terdaftar','Status']
-    const rows=tournaments.map((t,i)=>[i+1,t.name,t.game,t.format,t.city,t.date,'Rp '+Number(t.prize).toLocaleString('id-ID'),'Rp '+Number(t.entry).toLocaleString('id-ID'),t.slots,t.registered||0,t.status])
+  var exportTournaments=function(){
+    var headers=['No','Nama Turnamen','Game','Format','Kota','Tanggal','Prize Pool','Entry Fee','Slot','Terdaftar','Status']
+    var rows=tournaments.map(function(t,i){return[i+1,t.name,t.game,t.format,t.city,t.date,'Rp '+Number(t.prize).toLocaleString('id-ID'),'Rp '+Number(t.entry).toLocaleString('id-ID'),t.slots,t.registered||0,t.status]})
     exportCSVData('ArenaGG_Turnamen_'+new Date().toISOString().slice(0,10)+'.csv',headers,rows)
     toast('✅ Data turnamen diexport!','success');setOpen(false)
     addNotif('📥 Export turnamen berhasil','success')
   }
-  const exportFinance=()=>{
-    const headers=['Turnamen','Game','Total Entry (Rp)','Komisi 15% (Rp)','Tim Lunas','Total Tim']
-    const rows=tournaments.map(t=>{
-      const tms=teams.filter(x=>x.tournament_id===t.id)
-      const paid=tms.filter(x=>x.paid).length
-      const totalEntry=paid*Number(t.entry)
+  var exportFinance=function(){
+    var headers=['Turnamen','Game','Total Entry (Rp)','Komisi 15% (Rp)','Tim Lunas','Total Tim']
+    var rows=tournaments.map(function(t){
+      var tms=teams.filter(function(x){return x.tournament_id===t.id})
+      var paid=tms.filter(function(x){return x.paid}).length
+      var totalEntry=paid*Number(t.entry)
       return[t.name,t.game,totalEntry,Math.round(totalEntry*0.15),paid,tms.length]
     })
     exportCSVData('ArenaGG_Keuangan_'+new Date().toISOString().slice(0,10)+'.csv',headers,rows)
     toast('✅ Data keuangan diexport!','success');setOpen(false)
-    addNotif('📥 Export keuangan berhasil','success')
   }
   return <div style={{position:'relative'}}>
-    <button className="btn btn-dark btn-sm" onClick={()=>setOpen(o=>!o)} style={{gap:5}}>
-      📥 Export
-    </button>
-    {open&&<div style={{position:'absolute',top:36,right:0,background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:8,padding:6,zIndex:200,minWidth:180,boxShadow:'0 8px 24px rgba(0,0,0,0.4)',animation:'pop-in 0.15s ease'}}>
-      {[
-        {icon:'👥',label:'Export Peserta (.csv)',fn:exportTeams},
-        {icon:'🏆',label:'Export Turnamen (.csv)',fn:exportTournaments},
-        {icon:'💰',label:'Export Keuangan (.csv)',fn:exportFinance},
-      ].map(item=>(
-        <button key={item.label} onClick={item.fn} style={{display:'flex',alignItems:'center',gap:8,width:'100%',padding:'8px 10px',background:'none',border:'none',cursor:'pointer',borderRadius:6,fontFamily:'var(--fb)',fontSize:12,color:'var(--text)',transition:'background 0.15s',textAlign:'left'}} onMouseEnter={e=>e.currentTarget.style.background='rgba(0,229,255,0.08)'} onMouseLeave={e=>e.currentTarget.style.background='none'}>
+    <button className="btn btn-dark btn-sm" onClick={function(){setOpen(function(o){return !o})}}>📥 Export</button>
+    {open&&<div style={{position:'absolute',top:36,right:0,background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:8,padding:6,zIndex:200,minWidth:180,boxShadow:'0 8px 24px rgba(0,0,0,0.4)'}}>
+      {[{icon:'👥',label:'Export Peserta (.csv)',fn:exportTeams},{icon:'🏆',label:'Export Turnamen (.csv)',fn:exportTournaments},{icon:'💰',label:'Export Keuangan (.csv)',fn:exportFinance}].map(function(item){
+        return <button key={item.label} onClick={item.fn} style={{display:'flex',alignItems:'center',gap:8,width:'100%',padding:'8px 10px',background:'none',border:'none',cursor:'pointer',borderRadius:6,fontFamily:'var(--fb)',fontSize:12,color:'var(--text)',textAlign:'left'}}
+          onMouseEnter={function(e){e.currentTarget.style.background='rgba(0,229,255,0.08)'}}
+          onMouseLeave={function(e){e.currentTarget.style.background='none'}}>
           <span>{item.icon}</span>{item.label}
         </button>
-      ))}
+      })}
     </div>}
-    {open&&<div style={{position:'fixed',inset:0,zIndex:199}} onClick={()=>setOpen(false)}/>}
+    {open&&<div style={{position:'fixed',inset:0,zIndex:199}} onClick={function(){setOpen(false)}}/>}
+  </div>
+}
+
+// LEADERBOARD — rankings & achievements  
+// ============================================================
+function Leaderboard({tournaments,teams,lang}){
+  const i=T[lang]||T.id
+  const[view,setView]=useState('teams') // teams | organizer
+  
+  // Team stats
+  const teamStats=teams.map(t=>{
+    const tourn=tournaments.find(x=>x.id===t.tournament_id)
+    return{...t,tournName:tourn?.name||'—',game:tourn?.game||'—',prize:tourn?.prize||0}
+  })
+  const paidTeams=teamStats.filter(t=>t.paid).sort((a,b)=>b.prize-a.prize)
+  
+  // Game stats
+  const gameCount={}
+  tournaments.forEach(t=>{if(t.game)gameCount[t.game]=(gameCount[t.game]||0)+1})
+  const topGames=Object.entries(gameCount).sort((a,b)=>b[1]-a[1])
+  
+  // City stats
+  const cityCount={}
+  tournaments.forEach(t=>{if(t.city)cityCount[t.city]=(cityCount[t.city]||0)+1})
+  const topCities=Object.entries(cityCount).sort((a,b)=>b[1]-a[1]).slice(0,5)
+  
+  const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
+  // Extra stats
+  const totalPrizeLb=tournaments.reduce((s,t)=>s+Number(t.prize),0)
+  const totalEntryCollected=teams.filter(t=>t.paid).reduce((s,tm)=>{const tour=tournaments.find(x=>x.id===tm.tournament_id);return s+Number(tour?.entry||0)},0)
+  const avgTeamsPerTournament=tournaments.length?Math.round(teams.length/tournaments.length):0
+  
+  return <div className="animate-in" style={{padding:'24px 28px',maxWidth:900}}>
+    <div style={{marginBottom:20}}>
+      <h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>🏅 Leaderboard</h1>
+      <p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>RANKING TIM & STATISTIK PLATFORM</p>
+    </div>
+    
+    {/* OVERVIEW STATS */}
+    <div className="g4" style={{marginBottom:20}}>
+      {[
+        {icon:'🏆',label:'Total Turnamen',val:tournaments.length,color:'var(--cyan)'},
+        {icon:'👥',label:'Total Tim',val:teams.length,color:'var(--green)'},
+        {icon:'✅',label:'Tim Lunas',val:teams.filter(t=>t.paid).length,color:'var(--yellow)'},
+        {icon:'🎮',label:'Jenis Game',val:Object.keys(gameCount).length,color:'var(--orange)'},
+      ].map((s,idx)=>(
+        <div key={idx} className="stat-card" style={{'--accent-color':s.color}}>
+          <div style={{fontSize:22,marginBottom:8}}>{s.icon}</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:s.color,marginTop:4}}>{s.val}</div>
+        </div>
+      ))}
+    </div>
+
+    <div className="g2" style={{gap:14}}>
+      {/* TOP TEAMS */}
+      <div className="card">
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:14}}>🏅 TOP TIM (BERDASAR PRIZE)</div>
+        {paidTeams.length===0
+          ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>Belum ada tim yang lunas</div>
+          :paidTeams.slice(0,10).map((t,idx)=>(
+            <div key={t.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:idx<paidTeams.length-1?'1px solid rgba(255,255,255,0.03)':'none'}}>
+              <span style={{fontSize:18,flexShrink:0,width:28,textAlign:'center'}}>{medals[idx]||`${idx+1}`}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:13,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{t.name}</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>👤 {t.captain} · 🎮 {t.game}</div>
+              </div>
+              <div style={{textAlign:'right',flexShrink:0}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)'}}>Rp {Number(t.prize).toLocaleString('id-ID')}</div>
+                <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>{t.tournName.slice(0,16)}</div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div style={{display:'flex',flexDirection:'column',gap:14}}>
+        {/* TOP GAMES */}
+        <div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>🎮 GAME TERPOPULER</div>
+          {topGames.length===0
+            ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:12}}>Belum ada data</div>
+            :topGames.map(([game,count],idx)=>{
+              const maxCount=topGames[0][1]||1
+              return <div key={game} style={{marginBottom:10}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span style={{fontSize:12,fontWeight:600}}>{game}</span>
+                  <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)'}}>{count} turnamen</span>
+                </div>
+                <div className="pbar"><div className="pfill" style={{width:`${Math.round(count/maxCount*100)}%`,background:'linear-gradient(90deg,var(--cyan),var(--orange))'}}/></div>
+              </div>
+            })
+          }
+        </div>
+
+        {/* TOP CITIES */}
+        <div className="card">
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>📍 KOTA TERBANYAK</div>
+          {topCities.length===0
+            ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:12}}>Belum ada data</div>
+            :topCities.map(([city,count],idx)=>(
+              <div key={city} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                <span style={{fontSize:12,fontWeight:600}}>{medals[idx]} {city}</span>
+                <span className="badge badge-cyan" style={{fontSize:9}}>{count}x</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </div>
 }
 
 
+// ============================================================
+// PARTICIPANT PORTAL — Login/Register + Dashboard Peserta
+// ============================================================
 
 const PARTICIPANT_KEY = 'arenagg_participant'
 
@@ -2537,7 +2635,10 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
 
   return <div className="sidebar">
     <div style={{padding:'14px 13px 11px',borderBottom:'1px solid var(--border)'}}>
-      <div style={{fontFamily:'var(--fh)',fontWeight:900,fontSize:14,color:'var(--cyan)',letterSpacing:2,animation:'glow-pulse 3s infinite'}}>⚔ ARENAGG</div>
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:2}}>
+        <div style={{fontFamily:'var(--fh)',fontWeight:900,fontSize:14,color:'var(--cyan)',letterSpacing:2,animation:'glow-pulse 3s infinite'}}>⚔ ARENAGG</div>
+        <NotifBell setPage={setPage}/>
+      </div>
       <div style={{fontSize:8,color:'var(--muted)',fontFamily:'var(--fm)',marginTop:2,letterSpacing:2}}>TOURNAMENT PLATFORM</div>
       {hasLive&&<div style={{marginTop:7,display:'flex',alignItems:'center',gap:6,padding:'4px 8px',background:'rgba(255,45,85,0.1)',borderRadius:4,border:'1px solid rgba(255,45,85,0.25)'}}>
         <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>
@@ -2738,7 +2839,7 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   </div>
 }
 
-function TournamentList({tournaments,updateT,deleteT,setPage,setEditT,toast,onPreview,lang}){
+function TournamentList({tournaments,teams=[],updateT,deleteT,setPage,setEditT,toast,onPreview,lang}){
   const i=T[lang]||T.id
   const[filter,setF]=useState('all');const[shareT,setShareT]=useState(null);const[search,setSearch]=useState('');const statusCounts={all:tournaments.length,active:tournaments.filter(t=>t.status==='active').length,live:tournaments.filter(t=>t.status==='live').length,closed:tournaments.filter(t=>t.status==='closed').length,pending:tournaments.filter(t=>t.status==='pending').length}
   const filtered=(filter==='all'?tournaments:tournaments.filter(t=>t.status===filter)).filter(t=>!search||t.name.toLowerCase().includes(search.toLowerCase())||t.game.toLowerCase().includes(search.toLowerCase()))
@@ -2747,6 +2848,7 @@ function TournamentList({tournaments,updateT,deleteT,setPage,setEditT,toast,onPr
       <div><h1 style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:700}}>{i.tourn_title}</h1><p style={{color:'var(--muted)',fontSize:10,marginTop:2,fontFamily:'var(--fm)'}}>{filtered.length}/{tournaments.length} TURNAMEN</p></div>
       <div style={{display:'flex',gap:8,alignItems:'center'}}>
         <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="🔍 Cari nama / game..." style={{width:180,padding:'7px 12px',fontSize:12}}/>
+        <ExportButton tournaments={tournaments} teams={teams} toast={toast}/>
         <button className="btn btn-cyan" onClick={()=>{setEditT(null);setPage('create')}}>{i.btn_create_t}</button>
       </div>
     </div>
@@ -2812,7 +2914,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
     if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
     setSaving(true)
     try{
-      const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date,time:form.time||"",city:form.city,description:form.description}
+      const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date+(form.time?' '+form.time:''),city:form.city,description:form.description}
       if(editData){
         await updateT(editData.id,data)
         toast('✓ Turnamen diupdate!','success')
@@ -2928,8 +3030,6 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
     </div>
   </div>
 }
-
-
 
 
 function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast}){
@@ -3341,86 +3441,59 @@ const MatchCard=({match,round,onWin})=>{
 }
 
 function buildDoubleElim(teams){
-  // Winners bracket + Losers bracket structure
-  const wb=[]; const lb=[]; const sz=Math.min(teams.length,16)
-  for(let i=0;i<sz;i+=2) wb.push({id:'wb_r1_'+i/2,a:teams[i],b:teams[i+1],w:null,l:null,round:1,bracket:'W'})
-  return{wb,lb}
-}
-
-function buildRoundRobin(teams){
-  const matches=[]
-  for(let i=0;i<teams.length;i++)
-    for(let j=i+1;j<teams.length;j++)
-      matches.push({id:'rr_'+i+'_'+j,a:teams[i],b:teams[j],scoreA:0,scoreB:0})
-  return matches
+  var wb=[]; var sz=Math.min(teams.length,16)
+  for(var i=0;i<sz;i+=2) wb.push({id:'wb_r1_'+i/2,a:teams[i],b:teams[i+1],w:null})
+  return wb
 }
 
 function BracketView({tournaments,teams,lang}){
   const i=T[lang]||T.id
-  const[selT,setSelT]=useState(tournaments[0]?.id||'')
+  const[selT,setSelT]=useState(tournaments[0]?tournaments[0].id:'')
   const[tick,setTick]=useState(0)
-  const[viewMode,setViewMode]=useState('bracket') // bracket | schedule | results
-  const t=tournaments.find(x=>x.id===selT)
-  const tTeams=teams.filter(x=>x.tournament_id===selT)
+  const t=tournaments.find(function(x){return x.id===selT})
+  const tTeams=teams.filter(function(x){return x.tournament_id===selT})
   const isDoubleElim=t&&t.format==='Double Elimination'
   const isRoundRobin=t&&(t.format==='Round Robin'||t.format==='Swiss'||t.format==='League')
 
-  const getBracket=()=>{try{return JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')}catch(e){return{}}}
-  const setWinner=(matchIdx,winId)=>{
+  var getBracket=function(){try{return JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')}catch(e){return{}}}
+  var setWinner=function(key,winId){
     try{
-      const bk=getBracket(); bk['m'+matchIdx]=winId
+      var bk=getBracket(); bk[key]=winId
       localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
-      setTick(n=>n+1)
-      addNotif('🏅 Pemenang match '+matchIdx+' ditetapkan','success','bracket')
+      setTick(function(n){return n+1})
+      addNotif('🏅 Pemenang match ditetapkan','success','bracket')
     }catch(e){}
   }
-  const resetBracket=()=>{
-    if(!window.confirm('Reset seluruh bracket? Data match akan hilang.'))return
-    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(n=>n+1);addNotif('↺ Bracket direset','info','bracket')}catch(e){}
+  var resetBracket=function(){
+    if(!window.confirm('Reset seluruh bracket?'))return
+    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(function(n){return n+1})}catch(e){}
   }
-  const bracket=getBracket()
+  var bracket=getBracket()
 
-  // Build rounds (single elim)
-  const r1=[]; for(let idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
-  const r2=[]; for(let idx=0;idx<Math.floor(r1.length/2);idx++) r2.push({id:idx,a:null,b:null,w:bracket['sf'+idx],label:'SF'})
-  const final=[{id:0,a:null,b:null,w:bracket['final'],label:'FINAL'}]
-
-  // Round Robin standings
-  const rrMatches=selT?JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]'):[]
-  const rrStandings=tTeams.map(tm=>{
-    let w=0,l=0,pts=0,gf=0,ga=0
-    rrMatches.forEach(m=>{
-      if(m.a?.id===tm.id){gf+=m.sA||0;ga+=m.sB||0;if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
-      if(m.b?.id===tm.id){gf+=m.sB||0;ga+=m.sA||0;if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
+  // RR matches state
+  var rrMatches=selT?JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]'):[]
+  var rrStandings=tTeams.map(function(tm){
+    var w=0,l=0,pts=0,gf=0,ga=0
+    rrMatches.forEach(function(m){
+      if(m.a&&m.a.id===tm.id){gf+=(m.sA||0);ga+=(m.sB||0);if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
+      if(m.b&&m.b.id===tm.id){gf+=(m.sB||0);ga+=(m.sA||0);if(m.w===tm.id){w++;pts+=3}else if(m.w&&m.w!==tm.id)l++}
     })
-    return{...tm,w,l,pts,gf,ga,gd:gf-ga}
-  }).sort((a,b)=>b.pts-a.pts||b.gd-a.gd||b.gf-a.gf)
+    return Object.assign({},tm,{w:w,l:l,pts:pts,gf:gf,ga:ga,gd:gf-ga})
+  }).sort(function(a,b){return b.pts-a.pts||b.gd-a.gd})
 
-  const setRRResult=(matchId,winId,sA,sB)=>{
-    const ms=JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]')
-    const idx=ms.findIndex(m=>m.id===matchId)
-    const upd={...ms[idx],w:winId,sA,sB}
-    if(idx>=0)ms[idx]=upd; else ms.push(upd)
+  var setRRResult=function(matchId,winId,sA,sB){
+    var ms=JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]')
+    var found=false
+    ms=ms.map(function(m){if(m.id===matchId){found=true;return Object.assign({},m,{w:winId,sA:sA,sB:sB})}return m})
+    if(!found)ms.push({id:matchId,w:winId,sA:sA,sB:sB})
     localStorage.setItem('arenagg_rr_'+selT,JSON.stringify(ms))
-    setTick(n=>n+1)
+    setTick(function(n){return n+1})
   }
 
-  // Initialize RR matches
-  useState(()=>{
-    if(isRoundRobin&&tTeams.length>=2){
-      const existing=localStorage.getItem('arenagg_rr_'+selT)
-      if(!existing){
-        const ms=[]
-        for(let a=0;a<tTeams.length;a++)
-          for(let b=a+1;b<tTeams.length;b++)
-            ms.push({id:'rr_'+a+'_'+b,a:tTeams[a],b:tTeams[b],w:null,sA:0,sB:0})
-        localStorage.setItem('arenagg_rr_'+selT,JSON.stringify(ms))
-        setTick(n=>n+1)
-      }
-    }
-  })
-
-  const winner=bracket['final']?tTeams.find(x=>x.id===bracket['final']):null
+  // Build single elim rounds
+  var r1=[]; for(var idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
+  var r2=[]; for(var idx2=0;idx2<Math.floor(r1.length/2);idx2++) r2.push({id:idx2,w:bracket['sf'+idx2]})
+  var champion=bracket['final']?tTeams.find(function(x){return x.id===bracket['final']}):null
 
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1100}}>
     <div style={{marginBottom:16,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}}>
@@ -3428,40 +3501,29 @@ function BracketView({tournaments,teams,lang}){
         <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
         <p style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:2,letterSpacing:1}}>KLIK NAMA TIM UNTUK SET PEMENANG</p>
       </div>
-      <div style={{display:'flex',gap:8}}>
-        {!isRoundRobin&&<button onClick={()=>setViewMode(v=>v==='bracket'?'schedule':'bracket')} className="btn btn-dark btn-sm">{viewMode==='bracket'?'📋 Jadwal':'📊 Bracket'}</button>}
-        {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset</button>}
-      </div>
+      {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset Bracket</button>}
     </div>
 
-    {/* Tournament tabs */}
     <div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
-      {tournaments.map(x=>(
-        <button key={x.id} onClick={()=>{setSelT(x.id);setViewMode('bracket')}} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:'1px solid '+(selT===x.id?'var(--cyan)':'var(--border)'),transition:'all 0.15s',fontFamily:'var(--fb)'}}>
-          {x.name}
-          <span style={{marginLeft:6,fontSize:9,opacity:0.7}}>{x.format==='Double Elimination'?'🔁':x.format==='Round Robin'?'⚽':x.format==='Swiss'?'🔄':x.format==='League'?'🏆':''}
-          </span>
+      {tournaments.map(function(x){
+        return <button key={x.id} onClick={function(){setSelT(x.id)}} style={{padding:'5px 13px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:500,background:selT===x.id?'var(--cyan)':'var(--panel)',color:selT===x.id?'#000':'var(--text)',border:'1px solid '+(selT===x.id?'var(--cyan)':'var(--border)'),transition:'all 0.15s',fontFamily:'var(--fb)'}}>
+          {x.name} <span style={{fontSize:9,opacity:0.6}}>{x.format==='Double Elimination'?'🔁':x.format==='Round Robin'?'⚽':x.format==='Swiss'?'🔄':''}</span>
         </button>
-      ))}
+      })}
     </div>
 
     {t&&<>
-      {/* Header card */}
-      <div className="card" style={{marginBottom:16,background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))'}}>
+      <div className="card" style={{marginBottom:14,background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))'}}>
         <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:8,alignItems:'center'}}>
           <div>
             <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,color:'var(--cyan)'}}>{t.name}</div>
-            <div style={{fontSize:10,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)'}}>🎮 {t.game} · ⚙ {t.format} · 👥 {tTeams.length} Tim</div>
-            <div style={{marginTop:6,display:'flex',gap:6,flexWrap:'wrap'}}>
-              <span className={'badge badge-'+(t.status==='live'?'red':t.status==='active'?'green':'yellow')}>{t.status?.toUpperCase()}</span>
-              <span className="badge badge-cyan">{t.format}</span>
-            </div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>🎮 {t.game} · ⚙ {t.format} · 👥 {tTeams.length} Tim</div>
           </div>
-          <div style={{display:'flex',gap:16,flexWrap:'wrap'}}>
-            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>PRIZE POOL</div><div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div></div>
-            <div style={{textAlign:'right'}}><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>CHAMPION</div>
-              {winner?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>🏆 {winner.name}</div>
-              :isRoundRobin&&rrStandings[0]?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)',fontWeight:700}}>🥇 {rrStandings[0].name}</div>
+          <div style={{display:'flex',gap:16}}>
+            <div><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>PRIZE POOL</div><div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div></div>
+            <div><div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>CHAMPION</div>
+              {champion?<div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>🏆 {champion.name}</div>
+              :isRoundRobin&&rrStandings[0]?<div style={{fontFamily:'var(--fh)',fontSize:12,color:'var(--cyan)',fontWeight:700}}>🥇 {rrStandings[0].name}</div>
               :<div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)'}}>TBD</div>}
             </div>
           </div>
@@ -3469,18 +3531,18 @@ function BracketView({tournaments,teams,lang}){
       </div>
 
       {tTeams.length<2
-        ?<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MIN. 2 TIM DIPERLUKAN</div><div style={{fontSize:11,marginTop:8}}>Daftarkan tim di halaman Peserta terlebih dahulu</div></div>
+        ?<div className="card" style={{textAlign:'center',padding:40,color:'var(--muted)'}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MIN. 2 TIM DIPERLUKAN</div></div>
 
         :isRoundRobin?<div>
-          {/* ROUND ROBIN / LEAGUE TABLE */}
+          {isDoubleElim&&<div style={{marginBottom:8,padding:'6px 10px',background:'rgba(138,43,226,0.1)',border:'1px solid rgba(138,43,226,0.3)',borderRadius:6,fontSize:10,color:'#b87fff'}}>🔁 Double Elimination aktif</div>}
           <div className="card" style={{marginBottom:14,overflowX:'auto'}}>
             <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>📊 KLASEMEN {t.format.toUpperCase()}</div>
             <table style={{width:'100%',borderCollapse:'collapse',minWidth:400}}>
               <thead><tr style={{borderBottom:'2px solid var(--border)'}}>
-                {['#','Tim','M','W','L','PTS','GF','GA','GD'].map(h=><th key={h} style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,padding:'6px 8px',textAlign:h==='Tim'?'left':'center'}}>{h}</th>)}
+                {['#','Tim','M','W','L','PTS','GD'].map(function(h){return <th key={h} style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,padding:'6px 8px',textAlign:h==='Tim'?'left':'center'}}>{h}</th>})}
               </tr></thead>
               <tbody>
-                {rrStandings.map((tm,idx)=>(
+                {rrStandings.map(function(tm,idx){return(
                   <tr key={tm.id} style={{borderBottom:'1px solid rgba(255,255,255,0.04)',background:idx===0?'rgba(0,255,136,0.04)':idx===1?'rgba(0,229,255,0.03)':'transparent'}}>
                     <td style={{padding:'8px',fontFamily:'var(--fh)',fontSize:12,textAlign:'center',color:idx===0?'var(--yellow)':idx===1?'var(--cyan)':'var(--muted)'}}>{['🥇','🥈','🥉'][idx]||idx+1}</td>
                     <td style={{padding:'8px',fontSize:12,fontWeight:600}}>{tm.name}</td>
@@ -3488,77 +3550,59 @@ function BracketView({tournaments,teams,lang}){
                     <td style={{padding:'8px',fontSize:11,textAlign:'center',color:'var(--green)',fontWeight:700}}>{tm.w}</td>
                     <td style={{padding:'8px',fontSize:11,textAlign:'center',color:'var(--red)'}}>{tm.l}</td>
                     <td style={{padding:'8px',fontFamily:'var(--fh)',fontSize:13,textAlign:'center',color:'var(--yellow)',fontWeight:900}}>{tm.pts}</td>
-                    <td style={{padding:'8px',fontSize:11,textAlign:'center'}}>{tm.gf}</td>
-                    <td style={{padding:'8px',fontSize:11,textAlign:'center'}}>{tm.ga}</td>
-                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:tm.gd>0?'var(--green)':tm.gd<0?'var(--red)':'var(--muted)',fontWeight:600}}>{tm.gd>0?'+':''}{tm.gd}</td>
+                    <td style={{padding:'8px',fontSize:11,textAlign:'center',color:tm.gd>0?'var(--green)':tm.gd<0?'var(--red)':'var(--muted)'}}>{tm.gd>0?'+':''}{tm.gd}</td>
                   </tr>
-                ))}
+                )})}
               </tbody>
             </table>
           </div>
-          {/* RR MATCHES */}
           <div className="card">
             <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>📅 JADWAL PERTANDINGAN</div>
-            {rrMatches.map((m,mIdx)=>(
-              <RRMatchRow key={m.id} match={m} onResult={(w,sA,sB)=>setRRResult(m.id,w,sA,sB)}/>
-            ))}
+            {rrMatches.length===0?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>Belum ada jadwal</div>
+            :rrMatches.map(function(m){return <RRMatchRow key={m.id} match={m} onResult={function(w,sA,sB){setRRResult(m.id,w,sA,sB)}}/>})}
           </div>
         </div>
 
         :<div style={{overflowX:'auto',paddingBottom:16}}>
-          {/* SINGLE / DOUBLE ELIM BRACKET */}
-          {isDoubleElim&&<div style={{marginBottom:8,padding:'6px 10px',background:'rgba(138,43,226,0.1)',border:'1px solid rgba(138,43,226,0.3)',borderRadius:6,fontSize:10,color:'#b87fff',fontFamily:'var(--fm)'}}>🔁 Double Elimination: Tim yang kalah masuk Losers Bracket, masih bisa menang!</div>}
-          <div style={{display:'flex',gap:0,alignItems:'center',minWidth:r1.length>4?700:400}}>
-            {/* ROUND 1 */}
+          {isDoubleElim&&<div style={{marginBottom:8,padding:'6px 10px',background:'rgba(138,43,226,0.1)',border:'1px solid rgba(138,43,226,0.3)',borderRadius:6,fontSize:10,color:'#b87fff'}}>🔁 Double Elimination: Tim yang kalah masuk Losers Bracket!</div>}
+          <div style={{display:'flex',gap:0,alignItems:'flex-start',minWidth:r1.length>4?700:400}}>
             <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0}}>
-              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(0,229,255,0.08)',borderRadius:4}}>BABAK 1 ({r1.length} MATCH)</div>
-              {r1.map((m,idx)=><MatchCard key={idx} match={m} round={1} onWin={wid=>setWinner(idx,wid)}/>)}
+              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(0,229,255,0.08)',borderRadius:4}}>BABAK 1</div>
+              {r1.map(function(m,idx){return <MatchCard key={idx} match={m} round={1} onWin={function(wid){setWinner('m'+idx,wid)}}/>})}
             </div>
-            {/* Connector arrow */}
-            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',height:r1.length*90,flexShrink:0}}>
-              <div style={{width:40,borderTop:'1px dashed rgba(0,229,255,0.2)',position:'relative'}}>
-                <div style={{position:'absolute',right:-6,top:-4,color:'rgba(0,229,255,0.4)',fontSize:10}}>▶</div>
-              </div>
+            <div style={{width:40,display:'flex',alignItems:'center',justifyContent:'center',height:r1.length*88,flexShrink:0}}>
+              <div style={{width:'100%',borderTop:'1px dashed rgba(0,229,255,0.2)',position:'relative'}}><div style={{position:'absolute',right:-6,top:-5,color:'rgba(0,229,255,0.4)',fontSize:10}}>▶</div></div>
             </div>
-            {/* SEMIFINAL */}
             {r2.length>0&&<>
               <div style={{display:'flex',flexDirection:'column',gap:14,flexShrink:0,alignSelf:'center'}}>
                 <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,107,0,0.08)',borderRadius:4}}>SEMI FINAL</div>
-                {r2.map((m,idx)=>{
-                  const prevW1=bracket['m'+(idx*2)]?tTeams.find(x=>x.id===bracket['m'+(idx*2)]):null
-                  const prevW2=bracket['m'+(idx*2+1)]?tTeams.find(x=>x.id===bracket['m'+(idx*2+1)]):null
-                  return <MatchCard key={idx} match={{...m,a:prevW1,b:prevW2,w:bracket['sf'+idx]}} round={2} onWin={wid=>{{const bk=getBracket();bk['sf'+idx]=wid;localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk));setTick(n=>n+1)}}}/>
+                {r2.map(function(m,idx2){
+                  var prevW1=bracket['m'+(idx2*2)]?tTeams.find(function(x){return x.id===bracket['m'+(idx2*2)]}):null
+                  var prevW2=bracket['m'+(idx2*2+1)]?tTeams.find(function(x){return x.id===bracket['m'+(idx2*2+1)]}):null
+                  return <MatchCard key={idx2} match={{id:idx2,a:prevW1,b:prevW2,w:bracket['sf'+idx2]}} round={2} onWin={function(wid){setWinner('sf'+idx2,wid)}}/>
                 })}
               </div>
-              <div style={{width:40,borderTop:'1px dashed rgba(255,107,0,0.2)',flexShrink:0,position:'relative'}}>
-                <div style={{position:'absolute',right:-6,top:-4,color:'rgba(255,107,0,0.4)',fontSize:10}}>▶</div>
+              <div style={{width:40,display:'flex',alignItems:'center',justifyContent:'center',alignSelf:'center',flexShrink:0}}>
+                <div style={{width:'100%',borderTop:'1px dashed rgba(255,107,0,0.2)',position:'relative'}}><div style={{position:'absolute',right:-6,top:-5,color:'rgba(255,107,0,0.4)',fontSize:10}}>▶</div></div>
               </div>
             </>}
-            {/* FINAL */}
             <div style={{display:'flex',flexDirection:'column',flexShrink:0,alignSelf:'center'}}>
               <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--yellow)',letterSpacing:2,marginBottom:6,textAlign:'center',padding:'2px 8px',background:'rgba(255,215,0,0.08)',borderRadius:4}}>⚡ GRAND FINAL</div>
-              {(()=>{
-                const fA=r2.length>0?tTeams.find(x=>x.id===bracket['sf0']):tTeams.find(x=>x.id===bracket['m0'])
-                const fB=r2.length>0?tTeams.find(x=>x.id===bracket['sf1']):tTeams.find(x=>x.id===bracket['m1'])
-                return <MatchCard match={{...final[0],a:fA||null,b:fB||null,w:bracket['final']}} round={3} onWin={wid=>{{const bk=getBracket();bk['final']=wid;localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk));setTick(n=>n+1);addNotif('🏆 Juara turnamen ditetapkan!','tournament','bracket')}}}/>
+              {(function(){
+                var fA=r2.length>0?(bracket['sf0']?tTeams.find(function(x){return x.id===bracket['sf0']}):null):(bracket['m0']?tTeams.find(function(x){return x.id===bracket['m0']}):null)
+                var fB=r2.length>0?(bracket['sf1']?tTeams.find(function(x){return x.id===bracket['sf1']}):null):(bracket['m1']?tTeams.find(function(x){return x.id===bracket['m1']}):null)
+                return <MatchCard match={{id:0,a:fA,b:fB,w:bracket['final']}} round={3} onWin={function(wid){setWinner('final',wid);addNotif('🏆 Juara turnamen ditetapkan!','tournament','bracket')}}/>
               })()}
               {bracket['final']&&<div style={{marginTop:12,padding:'8px 14px',background:'linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,107,0,0.08))',border:'1px solid rgba(255,215,0,0.4)',borderRadius:8,textAlign:'center',animation:'glow-pulse 2s infinite'}}>
                 <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:2,marginBottom:4}}>🏆 CHAMPION</div>
-                <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:'var(--yellow)'}}>{tTeams.find(x=>x.id===bracket['final'])?.name||'TBD'}</div>
+                <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:'var(--yellow)'}}>{tTeams.find(function(x){return x.id===bracket['final']})?tTeams.find(function(x){return x.id===bracket['final']}).name:'TBD'}</div>
               </div>}
             </div>
           </div>
-          {/* Double Elim info */}
-          {isDoubleElim&&<div style={{marginTop:16,padding:'10px 14px',background:'rgba(138,43,226,0.06)',border:'1px solid rgba(138,43,226,0.2)',borderRadius:8,fontSize:10,color:'#b87fff'}}>
-            <strong>Losers Bracket:</strong> Tim yang kalah di Winners Bracket tetap lanjut di Losers Bracket. Pemenang Losers Bracket akan bertemu Winner Bracket champion di Grand Final.
-          </div>}
         </div>
       }
     </>}
-    {!t&&tournaments.length===0&&<div className="card" style={{textAlign:'center',padding:40}}>
-      <div style={{fontSize:40,marginBottom:12}}>🏟</div>
-      <div style={{color:'var(--muted)',fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>BELUM ADA TURNAMEN</div>
-    </div>}
+    {!t&&tournaments.length===0&&<div className="card" style={{textAlign:'center',padding:40}}><div style={{fontSize:40,marginBottom:12}}>🏟</div><div style={{color:'var(--muted)',fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>BELUM ADA TURNAMEN</div></div>}
   </div>
 }
 
@@ -3567,21 +3611,20 @@ function RRMatchRow({match,onResult}){
   const[sB,setSB]=useState(String(match.sB||0))
   const[editing,setEditing]=useState(false)
   return <div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{match.a?.name||'TBD'}</div>
+    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{match.a?match.a.name:'TBD'}</div>
     {editing
       ?<div style={{display:'flex',alignItems:'center',gap:4}}>
-        <input value={sA} onChange={e=>setSA(e.target.value)} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
+        <input value={sA} onChange={function(e){setSA(e.target.value)}} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
         <span style={{color:'var(--muted)'}}>:</span>
-        <input value={sB} onChange={e=>setSB(e.target.value)} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
-        <button onClick={()=>{const a=parseInt(sA)||0,b=parseInt(sB)||0;onResult(a>b?match.a?.id:b>a?match.b?.id:null,a,b);setEditing(false)}} style={{padding:'3px 8px',background:'var(--cyan)',border:'none',borderRadius:4,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,color:'#000',fontWeight:700}}>✓</button>
+        <input value={sB} onChange={function(e){setSB(e.target.value)}} style={{width:40,textAlign:'center',padding:'3px 4px',fontSize:13,fontFamily:'var(--fh)'}}/>
+        <button onClick={function(){var a=parseInt(sA)||0,b=parseInt(sB)||0;onResult(a>b?(match.a?match.a.id:null):b>a?(match.b?match.b.id:null):null,a,b);setEditing(false)}} style={{padding:'3px 8px',background:'var(--cyan)',border:'none',borderRadius:4,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,color:'#000',fontWeight:700}}>✓</button>
       </div>
       :<div style={{display:'flex',alignItems:'center',gap:6}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,minWidth:60,textAlign:'center',color:match.w===match.a?.id?'var(--green)':match.w===match.b?.id?'var(--red)':'var(--muted)'}}>{match.sA||0} : {match.sB||0}</div>
-        <button onClick={()=>setEditing(true)} style={{padding:'2px 7px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>✏</button>
+        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,minWidth:60,textAlign:'center'}}>{match.sA||0} : {match.sB||0}</div>
+        <button onClick={function(){setEditing(true)}} style={{padding:'2px 7px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>✏</button>
       </div>
     }
-    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right'}}>{match.b?.name||'TBD'}</div>
-    {match.w&&<span className={'badge badge-'+(match.w===match.a?.id?'green':'red')} style={{flexShrink:0}}>W: {match.w===match.a?.id?match.a?.name:match.b?.name}</span>}
+    <div style={{flex:1,fontSize:11,fontWeight:600,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',textAlign:'right'}}>{match.b?match.b.name:'TBD'}</div>
   </div>
 }
 
@@ -3709,73 +3752,43 @@ function Settings({user,lang,toast}){
 
     {/* DANGER ZONE TAB */}
 
-    {/* TOOLS TAB */}
     {tab==='tools'&&<div>
       <div className="card" style={{marginBottom:14}}>
         <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:16}}>🔧 ORGANIZER TOOLS</div>
         <div className="g2" style={{marginBottom:16}}>
-          {[
-            {icon:'📋',title:'Template Turnamen',desc:'Simpan format turnamen favoritmu sebagai template',action:'template'},
-            {icon:'⏰',title:'Jadwal Otomatis',desc:'Generate jadwal match berdasarkan slot & format',action:'schedule'},
-            {icon:'📣',title:'Broadcast Pesan',desc:'Kirim pengumuman ke semua peserta via WhatsApp',action:'broadcast'},
-            {icon:'📊',title:'Analitik Cepat',desc:'Lihat statistik turnamen dalam satu klik',action:'analytics'},
-          ].map((tool,idx)=>(
-            <div key={idx} className="card" style={{cursor:'pointer',transition:'var(--trans)'}}
-              onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}
-              onMouseLeave={e=>e.currentTarget.style.borderColor='var(--border)'}
-              onClick={()=>toast('🔧 '+tool.title+' — coming soon!','info')}>
+          {[{icon:'📋',title:'Template Turnamen',desc:'Simpan format turnamen favoritmu'},{icon:'⏰',title:'Jadwal Otomatis',desc:'Generate jadwal match otomatis'},{icon:'📣',title:'Broadcast Pesan',desc:'Kirim pengumuman ke semua peserta'},{icon:'📊',title:'Analitik Cepat',desc:'Statistik turnamen dalam satu klik'}].map(function(tool,idx){
+            return <div key={idx} className="card" style={{cursor:'pointer',transition:'var(--trans)'}}
+              onMouseEnter={function(e){e.currentTarget.style.borderColor='rgba(0,229,255,0.4)'}}
+              onMouseLeave={function(e){e.currentTarget.style.borderColor='var(--border)'}}
+              onClick={function(){toast('🔧 '+tool.title+' — coming soon!','info')}}>
               <div style={{fontSize:28,marginBottom:8}}>{tool.icon}</div>
               <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,marginBottom:4}}>{tool.title}</div>
               <div style={{fontSize:10,color:'var(--muted)',lineHeight:1.5}}>{tool.desc}</div>
-              <div style={{marginTop:8}}><span className="badge badge-cyan">SEGERA</span></div>
+              <div style={{marginTop:8,display:'inline-flex',alignItems:'center',gap:3,padding:'2px 7px',borderRadius:20,fontFamily:'var(--fm)',fontSize:9,fontWeight:700,letterSpacing:0.5,background:'rgba(0,229,255,0.12)',color:'var(--cyan)',border:'1px solid rgba(0,229,255,0.25)'}}>SEGERA</div>
             </div>
-          ))}
+          })}
         </div>
       </div>
-
-      {/* SLOT MANAGEMENT */}
       <div className="card" style={{marginBottom:14}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>👥 MANAJEMEN SLOT DEFAULT</div>
-        <div style={{fontSize:11,color:'var(--muted)',marginBottom:12,lineHeight:1.6}}>
-          Atur preferensi default untuk pembuatan turnamen baru.
-        </div>
-        {[
-          {label:'Slot Default',key:'default_slots',opts:['4','8','16','32','64'],desc:'Jumlah peserta default'},
-          {label:'Format Default',key:'default_format',opts:['Single Elimination','Double Elimination','Round Robin','Swiss'],desc:'Format bracket default'},
-          {label:'Komisi Default (%)',key:'default_comm',opts:['10','15','20','25'],desc:'Komisi yang diambil platform'},
-        ].map((pref,idx)=>{
-          const val=localStorage.getItem('arenagg_pref_'+pref.key)||pref.opts[1]
-          return(
-            <div key={idx} style={{marginBottom:14}}>
-              <label>{pref.label}</label>
-              <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:4}}>
-                {pref.opts.map(opt=>(
-                  <button key={opt} onClick={()=>{localStorage.setItem('arenagg_pref_'+pref.key,opt);toast('✓ Preferensi disimpan','success')}}
-                    style={{padding:'5px 12px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:600,
-                      background:val===opt?'var(--cyan)':'rgba(255,255,255,0.04)',
-                      color:val===opt?'#000':'var(--text)',
-                      border:'1px solid '+(val===opt?'var(--cyan)':'var(--border)'),
-                      transition:'all 0.15s',fontFamily:'var(--fh)'}}>
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              <div style={{fontSize:9,color:'var(--muted)',marginTop:4,fontFamily:'var(--fm)'}}>{pref.desc}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>👥 PREFERENSI DEFAULT</div>
+        {[{label:'Slot Default',key:'default_slots',opts:['4','8','16','32','64']},{label:'Format Default',key:'default_format',opts:['Single Elimination','Double Elimination','Round Robin','Swiss']},{label:'Komisi (%)',key:'default_comm',opts:['10','15','20','25']}].map(function(pref,idx){
+          var val=localStorage.getItem('arenagg_pref_'+pref.key)||pref.opts[1]
+          return <div key={idx} style={{marginBottom:14}}>
+            <label>{pref.label}</label>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:4}}>
+              {pref.opts.map(function(opt){return <button key={opt} onClick={function(){localStorage.setItem('arenagg_pref_'+pref.key,opt);toast('✓ Disimpan','success')}}
+                style={{padding:'5px 12px',borderRadius:5,cursor:'pointer',fontSize:11,fontWeight:600,background:val===opt?'var(--cyan)':'rgba(255,255,255,0.04)',color:val===opt?'#000':'var(--text)',border:'1px solid '+(val===opt?'var(--cyan)':'var(--border)'),transition:'all 0.15s',fontFamily:'var(--fh)'}}>{opt}</button>})}
             </div>
-          )
+          </div>
         })}
       </div>
-
-      {/* KEYBOARD SHORTCUTS */}
       <div className="card">
         <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--green)',letterSpacing:1,marginBottom:12}}>⌨ KEYBOARD SHORTCUTS</div>
         <div className="g2">
-          {[['D','Dashboard'],['R','Komisi'],['T','Turnamen'],['N','Buat Baru'],['P','Peserta'],['B','Bracket'],['L','Live'],['M','Ranking'],['F','Keuangan'],['S','Setting']].map(([key,label])=>(
-            <div key={key} style={{display:'flex',alignItems:'center',gap:8,padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-              <kbd style={{fontFamily:'var(--fm)',fontSize:10,fontWeight:700,background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:4,padding:'2px 7px',color:'var(--cyan)',minWidth:24,textAlign:'center'}}>{key}</kbd>
-              <span style={{fontSize:11,color:'var(--text)'}}>{label}</span>
-            </div>
-          ))}
+          {[['D','Dashboard'],['R','Komisi'],['T','Turnamen'],['N','Buat Baru'],['P','Peserta'],['B','Bracket'],['L','Live'],['M','Ranking'],['F','Keuangan'],['S','Setting']].map(function(pair){return <div key={pair[0]} style={{display:'flex',alignItems:'center',gap:8,padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+            <kbd style={{fontFamily:'var(--fm)',fontSize:10,fontWeight:700,background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:4,padding:'2px 7px',color:'var(--cyan)',minWidth:24,textAlign:'center'}}>{pair[0]}</kbd>
+            <span style={{fontSize:11,color:'var(--text)'}}>{pair[1]}</span>
+          </div>})}
         </div>
       </div>
     </div>}
