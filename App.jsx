@@ -30,6 +30,10 @@ const getLang=()=>{try{return localStorage.getItem('arenagg_lang')||'id'}catch(e
 const getTheme=()=>{try{return localStorage.getItem('arenagg_theme')||'dark'}catch(e){return'dark'}}
 const saveTheme=t=>{try{localStorage.setItem('arenagg_theme',t);document.documentElement.setAttribute('data-theme',t==='light'?'light':'')}catch(e){}}
 const setLang=l=>{try{localStorage.setItem('arenagg_lang',l)}catch(e){}}
+
+// Input sanitizer - strip potential XSS
+const sanitize=s=>typeof s==='string'?s.replace(/<[^>]*>/g,'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#x27;'}[c]||c)).trim():s
+
 const getProf=()=>{try{return JSON.parse(localStorage.getItem('arenagg_profile')||'{}')}catch(e){return{}}}
 const saveProf=p=>{try{localStorage.setItem('arenagg_profile',JSON.stringify(p))}catch(e){}}
 const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Free Fire MAX','Valorant','Clash Royale','Clash of Clans','Dota 2','League of Legends','Honor of Kings','Genshin Impact','Street Fighter 6','Tekken 8','EA Sports FC','NBA 2K25','Pokémon Unite','Wild Rift','Arena of Valor','Chess','Other']
@@ -71,7 +75,7 @@ const css=`*{margin:0;padding:0;box-sizing:border-box;}html,body{background:#050
 .animate-in>*:nth-child(3){animation-delay:0.08s}
 .animate-in>*:nth-child(4){animation-delay:0.12s}
 .animate-in>*:nth-child(5){animation-delay:0.16s}
-.animate-in>*:nth-child(6){animation-delay:0.20s}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.animate-in>*:nth-child(6){animation-delay:0.20s}.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;border-radius:7px;font-family:var(--fh);font-size:10px;font-weight:700;letter-spacing:1.5px;cursor:pointer;transition:var(--trans);text-transform:uppercase;position:relative;overflow:hidden;}.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.12);opacity:0;transition:opacity 0.2s;border-radius:inherit;}.btn:hover::after{opacity:1;}.btn:active{transform:scale(0.97);}.btn:disabled{opacity:0.4;cursor:not-allowed;}.btn:disabled::after{display:none;}.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;box-shadow:0 4px 14px rgba(0,229,255,0.25);}.btn-cyan:not(:disabled):hover{box-shadow:0 4px 22px rgba(0,229,255,0.5),0 0 40px rgba(0,229,255,0.15);transform:translateY(-2px);}.btn-orange{background:linear-gradient(135deg,var(--orange),#cc4400);color:#fff;}.btn-orange:not(:disabled):hover{box-shadow:0 4px 22px rgba(255,107,0,0.4);transform:translateY(-1px);}.btn-ghost{background:transparent;color:var(--cyan);border:1px solid rgba(0,229,255,0.3);}.btn-ghost:not(:disabled):hover{background:rgba(0,229,255,0.08);border-color:var(--cyan);}.btn-danger{background:linear-gradient(135deg,var(--red),#cc0033);color:#fff;}.btn-green{background:linear-gradient(135deg,var(--green),#00bb55);color:#000;}.btn-dark{background:var(--panel);color:var(--text);border:1px solid var(--border);}.btn-dark:hover{border-color:rgba(0,229,255,0.3);}.btn-sm{padding:5px 12px;font-size:9px;}.btn-full{width:100%;justify-content:center;}.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0.3;transition:opacity 0.3s;}.card:hover::before{opacity:0.8;}.card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
 .card-glass{background:rgba(19,19,31,0.6);backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.12);border-radius:12px;padding:20px;position:relative;overflow:hidden;transition:var(--trans);}
 [data-theme="light"] .card-glass{background:rgba(255,255,255,0.7);border-color:rgba(0,119,170,0.15);}
 .card-glass:hover{border-color:rgba(0,229,255,0.25);box-shadow:var(--shadow);}
@@ -182,6 +186,42 @@ function NotifBell({setPage}){
     </div>}
     {open&&<div style={{position:'fixed',inset:0,zIndex:998}} onClick={function(){setOpen(false)}}/>}
   </div>
+}
+
+
+// ============================================================
+// ERROR BOUNDARY — mencegah crash total, tampilkan pesan ramah
+// ============================================================
+class ErrorBoundary extends React.Component {
+  constructor(props){
+    super(props)
+    this.state={hasError:false,error:null}
+  }
+  static getDerivedStateFromError(error){
+    return{hasError:true,error}
+  }
+  componentDidCatch(error,info){
+    console.error('ArenaGG Error:',error,info)
+  }
+  render(){
+    if(this.state.hasError){
+      return React.createElement('div',{style:{minHeight:'100vh',background:'var(--bg,#050508)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}},
+        React.createElement('div',{style:{textAlign:'center',maxWidth:440}},
+          React.createElement('div',{style:{fontSize:60,marginBottom:16}},'⚡'),
+          React.createElement('div',{style:{fontFamily:'var(--fh,Orbitron,sans-serif)',fontSize:18,fontWeight:900,color:'#00e5ff',marginBottom:8,letterSpacing:2}},'ARENAGG'),
+          React.createElement('div',{style:{color:'#ff2d55',marginBottom:16,fontSize:14}},'Terjadi kesalahan teknis'),
+          React.createElement('div',{style:{background:'rgba(255,255,255,0.05)',border:'1px solid rgba(255,255,255,0.1)',borderRadius:8,padding:'8px 14px',marginBottom:20,fontSize:11,fontFamily:'monospace',color:'#aaa',wordBreak:'break-all'}},
+            String(this.state.error?.message||'Unknown error')
+          ),
+          React.createElement('button',{
+            onClick:()=>{this.setState({hasError:false,error:null});window.location.reload()},
+            style:{background:'#00e5ff',color:'#000',border:'none',borderRadius:8,padding:'10px 24px',cursor:'pointer',fontFamily:'var(--fh,Orbitron,sans-serif)',fontSize:11,fontWeight:700,letterSpacing:1}
+          },'🔄 Muat Ulang')
+        )
+      )
+    }
+    return this.props.children
+  }
 }
 
 function Spinner({size=16,color='var(--cyan)'}){return <span style={{width:size,height:size,border:`2px solid rgba(0,229,255,0.15)`,borderTopColor:color,borderRadius:'50%',animation:'spin 0.7s linear infinite',display:'inline-block',flexShrink:0}}/>}
@@ -612,7 +652,7 @@ function AdManager({toast}){
       :<div style={{background:'rgba(255,107,0,0.04)',border:'1px solid rgba(255,107,0,0.25)',borderRadius:10,padding:'16px 14px'}}>
         <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:14}}>📢 IKLAN SPONSOR BARU</div>
         <div className="g2" style={{marginBottom:10}}>
-          <div><label>Nama Brand / Game *</label><input value={form.name} onChange={set('name')} placeholder="Misal: Garena FF"/></div>
+          <div><label>Nama Brand / Game *</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Misal: Garena FF"/></div>
           <div><label>Emoji</label><input value={form.emoji} onChange={set('emoji')} style={{width:60}}/></div>
         </div>
         <div style={{marginBottom:10}}><label>Tagline *</label><input value={form.tagline} onChange={set('tagline')} placeholder="Kalimat iklan singkat..."/></div>
@@ -2053,7 +2093,7 @@ function useData(userId,toast){
   const addT=async d=>{const{error}=await supabase.from('tournaments').insert({...d,organizer_id:userId});if(error){toast('Error: '+error.message,'error');return;}await load()}
   const updateT=async(id,d)=>{const{error}=await supabase.from('tournaments').update(d).eq('id',id).eq('organizer_id',userId);if(error){toast('Error: '+error.message,'error');return;}await load()}
   const deleteT=async id=>{await supabase.from('tournaments').delete().eq('id',id).eq('organizer_id',userId);await load()}
-  const addTeam=async d=>{const{error}=await supabase.from('teams').insert(d);if(error){toast('Error: '+error.message,'error');return;}const cnt=teams.filter(t=>t.tournament_id===d.tournament_id).length+1;await supabase.from('tournaments').update({registered:cnt}).eq('id',d.tournament_id);await load()}
+  const addTeam=async d=>{const{error}=await supabase.from('teams').insert({...d,name:sanitize(d.name),captain:sanitize(d.captain||'')});if(error){toast('Error: '+error.message,'error');return;}const cnt=teams.filter(t=>t.tournament_id===d.tournament_id).length+1;await supabase.from('tournaments').update({registered:cnt}).eq('id',d.tournament_id);await load()}
   const updateTeam=async(id,d)=>{await supabase.from('teams').update(d).eq('id',id);await load()}
   const deleteTeam=async(id,tid)=>{await supabase.from('teams').delete().eq('id',id);const cnt=teams.filter(t=>t.tournament_id===tid&&t.id!==id).length;await supabase.from('tournaments').update({registered:cnt}).eq('id',tid);await load()}
   return{tournaments,teams,loading,reload:load,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}
@@ -2413,9 +2453,23 @@ function PublicPage({tid,onBack,toast}){
   }
 
   const submit=async()=>{
-    if(!form.name||!form.captain||!form.contact){toast('Isi semua field!','error');return}
+    // Rate limiting: minimal 10 detik antar submit
+    const now=Date.now()
+    if(now-lastSubmit<10000){toast('⏳ Tunggu sebentar sebelum submit lagi!','warning');return}
+    const phoneClean=form.contact.replace(/[^0-9]/g,'')
+    if(!form.name.trim()||!form.captain.trim()||!form.contact.trim()){toast('⚠ Isi semua field!','error');return}
+    if(form.name.trim().length<2){toast('⚠ Nama tim minimal 2 karakter!','error');return}
+    if(phoneClean.length<8||phoneClean.length>15){toast('⚠ No. HP tidak valid (8-15 digit)!','error');return}
     setSaving(true)
-    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:form.name,captain:form.captain,contact:form.contact,members:Number(form.members),paid:false,photo:form.photo||null})
+    // Cek slot masih tersedia
+    if(t&&(t.registered||0)>=(t.slots||16)){toast('⚠ Slot turnamen sudah penuh!','error');setSaving(false);return}
+    // Cek status turnamen masih bisa mendaftar
+    if(t&&t.status==='closed'){toast('⚠ Turnamen sudah ditutup!','error');setSaving(false);return}
+    // Cek duplikasi nama tim di turnamen ini
+    const{data:existing}=await supabase.from('teams')
+      .select('id').eq('tournament_id',tid.trim()).ilike('name',form.name.trim()).limit(1)
+    if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar di turnamen ini!','error');setSaving(false);return}
+    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(form.name),captain:sanitize(form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null})
     if(error){toast('Error: '+error.message,'error');setSaving(false);return}
     await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
     setStep('success');setSaving(false)
@@ -2519,7 +2573,7 @@ function PublicPage({tid,onBack,toast}){
             <input id="pub_photo_inp" type="file" accept="image/*" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setForm(p=>({...p,photo:ev.target.result}));r.readAsDataURL(f)}}/>
             <div style={{fontSize:9,color:'var(--muted)',marginTop:5,fontFamily:'var(--fm)',letterSpacing:1}}>FOTO TIM (opsional)</div>
           </div>
-          <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} placeholder="Alpha Squad"/></div>
+          <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Alpha Squad"/></div>
           <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
           <div style={{marginBottom:14}}><label>{i.members}</label><select value={form.members} onChange={set('members')}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
           <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:6,padding:'10px 12px',marginBottom:14,fontSize:12}}>
@@ -2913,6 +2967,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   useEffect(()=>{setForm(editData?{...editData,description:editData.description||''}:empty)},[editData?.id])
 
   const submit=async()=>{
+    const prizeNum=Number(form.prize),entryNum=Number(form.entry)
     if(!form.name||!form.prize||!form.entry||!form.date||!form.city){
       const missing=[]
       if(!form.name)missing.push('Nama Turnamen')
@@ -2923,9 +2978,13 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
       toast('⚠ Wajib diisi: '+missing.join(', '),'error')
       return
     }
+    if(prizeNum<=0||entryNum<0){toast('⚠ Prize pool harus lebih dari 0!','error');return}
+    if(entryNum>prizeNum){toast('⚠ Entry fee tidak boleh melebihi prize pool!','error');return}
+    if(form.name.trim().length<3){toast('⚠ Nama turnamen minimal 3 karakter!','error');return}
     setSaving(true)
+    setLastSubmit(Date.now())
     try{
-      const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date+(form.time?' '+form.time:''),city:form.city,description:form.description}
+      const data={name:sanitize(form.name),game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date+(form.time?' '+form.time:''),city:form.city,description:form.description}
       if(editData){
         await updateT(editData.id,data)
         toast('✓ Turnamen diupdate!','success')
@@ -2952,13 +3011,13 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
       {/* FORM */}
       <div className="card">
         <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:14}}>INFO DASAR</div>
-        <div style={{marginBottom:12}}><label>{i.tourn_name}</label><input value={form.name} onChange={set('name')} placeholder="ML Grand Prix 2026"/></div>
+        <div style={{marginBottom:12}}><label>{i.tourn_name}</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="ML Grand Prix 2026"/></div>
         <div className="g2" style={{marginBottom:12}}>
           <div><label>{i.game}</label><select value={form.game} onChange={set('game')}>{GAMES.map(g=><option key={g}>{g}</option>)}</select></div>
           <div><label>{i.format}</label><select value={form.format} onChange={set('format')}>{FORMATS.map(f=><option key={f}>{f}</option>)}</select></div>
         </div>
         <div className='create-form-grid' style={{display:'grid',gridTemplateColumns:'minmax(150px,1.5fr) minmax(150px,1fr) minmax(120px,0.8fr)',gap:12,marginBottom:12}}>
-          <div><label>📍 {i.city} <span style={{color:'var(--red)'}}>*</span></label><input value={form.city} onChange={set('city')} placeholder="Jakarta" style={{width:'100%'}}/></div>
+          <div><label>📍 {i.city} <span style={{color:'var(--red)'}}>*</span></label><input value={form.city} onChange={set('city')} maxLength={50} placeholder="Jakarta" style={{width:'100%'}}/></div>
           <div><label>📅 {i.date} <span style={{color:'var(--red)'}}>*</span></label><input type="date" value={form.date} onChange={set('date')} style={{width:'100%',colorScheme:'dark'}}/></div>
           <div>
             <label>⏰ Jam Mulai</label>
@@ -3188,11 +3247,11 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
     {showAdd&&<div className="card" style={{marginBottom:12,borderColor:'rgba(0,229,255,0.3)',background:'rgba(0,229,255,0.02)'}}>
       <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>＋ DAFTARKAN TIM BARU</div>
       <div className="g2" style={{marginBottom:10}}>
-        <div><label>{i.team_name}</label><input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Alpha Squad"/></div>
-        <div><label>{i.captain}</label><input value={form.captain} onChange={e=>setForm(f=>({...f,captain:e.target.value}))} placeholder="Nama Kapten"/></div>
+        <div><label>{i.team_name}</label><input value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value.slice(0,50)}))} maxLength={50} placeholder="Alpha Squad"/></div>
+        <div><label>{i.captain}</label><input value={form.captain} onChange={e=>setForm(f=>({...f,captain:e.target.value.slice(0,40)}))} maxLength={40} placeholder="Nama Kapten"/></div>
       </div>
       <div className="g3" style={{marginBottom:10}}>
-        <div><label>📱 {i.contact}</label><input value={form.contact} onChange={e=>setForm(f=>({...f,contact:e.target.value}))} placeholder="08xx" type="tel"/></div>
+        <div><label>📱 {i.contact}</label><input value={form.contact} onChange={e=>setForm(f=>({...f,contact:e.target.value.replace(/[^0-9+\-\s]/g,'').slice(0,15)}))} maxLength={15} placeholder="08xx" type="tel"/></div>
         <div><label>👥 {i.members}</label><select value={form.members} onChange={e=>setForm(f=>({...f,members:e.target.value}))}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
         <div><label>🏆 {i.tournament}</label><select value={form.tournament_id} onChange={e=>setForm(f=>({...f,tournament_id:e.target.value}))}>{tournaments.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
       </div>
@@ -3857,116 +3916,8 @@ function Settings({user,lang,toast}){
 // ============================================================
 // ERROR BOUNDARY — catches React render errors (prevents black screen)
 // ============================================================
-class ErrorBoundary extends React.Component {
-  constructor(props){super(props);this.state={hasError:false,error:null}}
-  static getDerivedStateFromError(error){return{hasError:true,error}}
-  componentDidCatch(error,info){console.error('ArenaGG Error:',error,info)}
-  render(){
-    if(this.state.hasError){
-      return <div style={{minHeight:'100vh',background:'#050508',color:'#e8e8f0',display:'flex',alignItems:'center',justifyContent:'center',padding:20,fontFamily:'system-ui,sans-serif'}}>
-        <div style={{textAlign:'center',maxWidth:500}}>
-          <div style={{fontSize:48,marginBottom:16}}>⚡</div>
-          <div style={{fontSize:20,fontWeight:700,color:'#00e5ff',marginBottom:8,letterSpacing:2}}>ARENAGG</div>
-          <div style={{fontSize:14,color:'#ff2d55',marginBottom:12}}>Terjadi kesalahan teknis</div>
-          <div style={{fontSize:11,color:'#4a4a6a',marginBottom:20,fontFamily:'monospace',background:'rgba(255,255,255,0.05)',padding:12,borderRadius:6,wordBreak:'break-all'}}>{String(this.state.error)}</div>
-          <button onClick={()=>window.location.reload()} style={{background:'#00e5ff',color:'#000',border:'none',padding:'10px 24px',borderRadius:6,cursor:'pointer',fontWeight:700,fontSize:13}}>🔄 Muat Ulang</button>
-        </div>
-      </div>
-    }
-    return this.props.children
-  }
-}
 
+// Safe App wrapper with ErrorBoundary
 export default function App(){
-  const[user,setUser]=useState(null);const[loading,setLoading]=useState(true);const[page,setPage]=useState('dashboard');const[editT,setEditT]=useState(null);const[toasts,setToasts]=useState([])
-  // Init pubTid LANGSUNG dari hash saat komponen pertama kali render
-  const initTid=()=>{const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/);return(m&&m[1])?decodeURIComponent(m[1]).trim():null}
-  const[pubTid,setPubTid]=useState(initTid)
-  const[pubLiveTid,setPubLiveTid]=useState(()=>{const m=window.location.hash.match(/^#\/live\/([a-zA-Z0-9\-_]+)$/);return m?m[1].trim():null})
-  const[pubPeserta,setPubPeserta]=useState(()=>window.location.hash.startsWith('#/peserta'))
-  const[lang,setLangState]=useState(getLang())
-  const[isLight,setIsLight]=useState(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})
-  const toggleTheme=()=>{setIsLight(prev=>{const next=!prev;saveTheme(next?'light':'dark');return next})}
-  useEffect(()=>{document.documentElement.setAttribute('data-theme',isLight?'light':'')},[isLight])
-  const[,forceUpdate]=useState(0)
-  const setLangFn=l=>{setLangState(l);setLang(l)}
-  const toast=useCallback((msg,type='info')=>{const id=uid();setToasts(p=>[...p,{id,msg,type}]);setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),3200)},[])
-
-  // Listen for profile updates to refresh sidebar
-  useEffect(()=>{
-    const handler=()=>forceUpdate(n=>n+1)
-    window.addEventListener('profile-updated',handler)
-    return()=>window.removeEventListener('profile-updated',handler)
-  },[])
-
-  // Hash routing listener — untuk update jika hash berubah setelah mount
-  useEffect(()=>{
-    const parse=()=>{
-      const m=window.location.hash.match(/^#\/daftar\/([a-zA-Z0-9\-_]+)$/)
-      if(m&&m[1])setPubTid(decodeURIComponent(m[1]).trim())
-      else setPubTid(null)
-      const ml=window.location.hash.match(/^#\/live\/([a-zA-Z0-9\-_]+)$/)
-      if(ml&&ml[1])setPubLiveTid(decodeURIComponent(ml[1]).trim())
-      else setPubLiveTid(null)
-      if(window.location.hash.startsWith('#/peserta'))setPubPeserta(true)
-      else setPubPeserta(false)
-    }
-    window.addEventListener('hashchange',parse)
-    return()=>window.removeEventListener('hashchange',parse)
-  },[])
-
-  useEffect(()=>{
-    supabase.auth.getSession().then(({data})=>{setUser(data.session?.user||null);setLoading(false)})
-    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>setUser(session?.user||null))
-    return()=>subscription.unsubscribe()
-  },[])
-
-  const{tournaments,teams,loading:dataLoading,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}=useData(user?.id,toast)
-  useEffect(()=>{if(page!=='create')setEditT(null)},[page])
-
-  const logout=async()=>{await supabase.auth.signOut();setUser(null)}
-  const hasLive=tournaments.some(t=>t.status==='live')
-
-  const goBack=()=>{
-    window.location.hash=''
-    window.history.pushState('',document.title,window.location.pathname+window.location.search)
-  }
-
-  // Scroll to top when page changes (must be before early returns!)
-  useEffect(()=>{const el=document.querySelector('main');if(el)el.scrollTo({top:0,behavior:'smooth'})},[page])
-
-  // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
-  // PORTAL PESERTA — accessible at /#/peserta without login
-  // AUTH loading spinner
-
-  // Scroll to top on page change
-  const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`#/daftar/${id}`},lang}
-
-  // Render berdasarkan state (NO early returns - fixes React #310)
-  if(pubPeserta)return <><ParticipantPortal toast={toast} tournaments={tournaments}/><Toasts list={toasts}/></>
-  if(pubLiveTid!==null)return <><PublicLivePage tid={pubLiveTid} onBack={()=>{window.location.hash='';window.history.pushState('',document.title,window.location.pathname+window.location.search);setPubLiveTid(null)}} toast={toast}/><Toasts list={toasts}/></>
-  if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
-  if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
-  if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
-  return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
-    <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
-    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0}}>
-      <LiveBanner tournaments={tournaments}/>
-      <main style={{flex:1,overflowY:'auto',overflowX:'hidden',WebkitOverflowScrolling:'touch'}}>
-        {page==='dashboard'&&<div className='animate-in page-content' key='dashboard'><Dashboard {...sharedProps}/></div>}
-        {page==='revenue'&&<div className='animate-in page-content'><RevenuePage {...sharedProps}/></div>}
-        {page==='tournaments'&&<div className='animate-in page-content'><TournamentList {...sharedProps}/></div>}
-        {page==='create'&&<div className='animate-in page-content'><CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/></div>}
-        {page==='teams'&&<div className='animate-in page-content'><TeamsView {...sharedProps} toast={toast}/></div>}
-        {page==='bracket'&&<div className='animate-in page-content'><BracketView {...sharedProps}/></div>}
-        {page==='live'&&<div className='animate-in page-content'><LivePage {...sharedProps} toast={toast}/></div>}
-        {page==='leaderboard'&&<div className='animate-in page-content'><Leaderboard {...sharedProps}/></div>}
-        {page==='finance'&&<div className='animate-in page-content'><Finance {...sharedProps}/></div>}
-        {page==='settings'&&<div className='animate-in page-content'><Settings user={user} lang={lang} toast={toast}/></div>}
-      </main>
-    </div>
-    <BottomNav page={page} setPage={setPage} lang={lang} hasLive={hasLive}/>
-    <button onClick={()=>document.querySelector('main')?.scrollTo({top:0,behavior:'smooth'})} className='fab-scroll' style={{position:'fixed',bottom:80,right:16,width:40,height:40,borderRadius:'50%',background:'rgba(0,229,255,0.15)',border:'1px solid rgba(0,229,255,0.3)',color:'var(--cyan)',fontSize:18,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',zIndex:90,backdropFilter:'blur(4px)',transition:'var(--trans)'}} title="Back to top" onMouseEnter={e=>e.currentTarget.style.background='rgba(0,229,255,0.25)'} onMouseLeave={e=>e.currentTarget.style.background='rgba(0,229,255,0.15)'}>↑</button>
-    <Toasts list={toasts}/>
-  </div>
+  return React.createElement(ErrorBoundary, null, React.createElement(AppCore, null))
 }
