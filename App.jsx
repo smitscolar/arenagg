@@ -1055,19 +1055,24 @@ function LiveMatchView({tournament,teams,toast,onBack}){
           {/* Chat messages */}
           <div style={{flex:1,overflow:'auto',display:'flex',flexDirection:'column',gap:8,padding:'0 4px',marginBottom:12}}>
             {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}><div style={{fontSize:32,marginBottom:8}}>💬</div><div style={{fontSize:11,fontFamily:'var(--fm)',letterSpacing:2}}>BELUM ADA PESAN</div><div style={{fontSize:11,marginTop:4}}>Mulai obrolan sekarang!</div></div>}
-            {chatHistory.map(msg=>(
-              <div key={msg.id} style={{display:'flex',gap:10,alignItems:'flex-start',animation:'slide-in 0.2s ease'}}>
-                <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,var(--cyan),var(--orange))`,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,color:'#000',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
+            {chatHistory.map((msg,midx)=>{
+              const isOrg=msg.isOrg||msg.name.includes('[ORG]')
+              const dispName=msg.name.replace('[ORG]','')
+              return<div key={msg.id||midx} style={{display:'flex',gap:10,alignItems:'flex-end',animation:'slide-in 0.2s ease'}}>
+                <div style={{width:32,height:32,borderRadius:'50%',background:isOrg?'linear-gradient(135deg,var(--cyan),#0044cc)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:12,color:'#fff',flexShrink:0,border:isOrg?'2px solid var(--cyan)':'none'}}>{dispName[0]?.toUpperCase()||'?'}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:3}}>
-                    <span style={{fontWeight:700,fontSize:12}}>{msg.name}</span>
-                    {msg.isOrg&&<span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',background:'rgba(0,229,255,0.1)',padding:'1px 5px',borderRadius:3,letterSpacing:1}}>ORG</span>}
+                  <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:3}}>
+                    {isOrg&&<span style={{background:'linear-gradient(90deg,var(--cyan),#0055bb)',color:'#fff',fontSize:8,fontFamily:'var(--fm)',padding:'2px 7px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORGANIZER</span>}
+                    <span style={{fontWeight:700,fontSize:12,color:isOrg?'var(--cyan)':'var(--text)'}}>{dispName}</span>
                     <span style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>{msg.time}</span>
                   </div>
-                  <div style={{fontSize:13,lineHeight:1.5,background:'rgba(255,255,255,0.04)',borderRadius:'0 8px 8px 8px',padding:'7px 11px',border:'1px solid var(--border)',maxWidth:400}}>{msg.text}</div>
+                  <div style={{fontSize:13,lineHeight:1.5,background:isOrg?'rgba(0,229,255,0.08)':'rgba(255,255,255,0.04)',borderRadius:'0 10px 10px 10px',padding:'8px 12px',border:`1px solid ${isOrg?'rgba(0,229,255,0.2)':'var(--border)'}`,maxWidth:400}}>
+                    {isOrg&&<div style={{fontSize:9,color:'var(--cyan)',fontFamily:'var(--fm)',marginBottom:3,letterSpacing:1}}>📢 INFO PENTING</div>}
+                    {msg.text}
+                  </div>
                 </div>
               </div>
-            ))}
+            })}
             <div ref={el=>{chatEndRef.current=el}}/>
           </div>
           {/* Chat input */}
@@ -1302,25 +1307,30 @@ function PublicLivePage({tid,onBack,toast}){
           :<div>
             <div style={{height:350,overflow:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:12,padding:'0 4px'}}>
               {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}><div style={{fontSize:32,marginBottom:8}}>💬</div><div style={{fontSize:11}}>Jadilah yang pertama berkomentar!</div></div>}
-              {chatHistory.map(msg=>(
-                <div key={msg.id} style={{display:'flex',gap:10,alignItems:'flex-start'}}>
-                  <div style={{width:30,height:30,borderRadius:'50%',background:`linear-gradient(135deg,${msg.isOrg?'var(--cyan)':'var(--orange)'},#222)`,display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,color:msg.isOrg?'#000':'#fff',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
+              {chatHistory.map((msg,midx)=>{
+                const isOrg=msg.isOrg||msg.name.includes('[ORG]')
+                const dispName=msg.name.replace('[ORG]','')
+                return<div key={msg.id||midx} style={{display:'flex',gap:8,alignItems:'flex-end'}}>
+                  <div style={{width:30,height:30,borderRadius:'50%',background:isOrg?'linear-gradient(135deg,var(--cyan),#0044cc)':'linear-gradient(135deg,var(--orange),#660022)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:11,color:'#fff',flexShrink:0,border:isOrg?'2px solid var(--cyan)':'none'}}>{dispName[0]?.toUpperCase()||'?'}</div>
                   <div style={{flex:1}}>
-                    <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
-                      <span style={{fontWeight:700,fontSize:12}}>{msg.name}</span>
-                      {msg.isOrg&&<span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',background:'rgba(0,229,255,0.1)',padding:'1px 4px',borderRadius:3}}>ORG</span>}
+                    <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:3}}>
+                      {isOrg&&<span style={{background:'linear-gradient(90deg,var(--cyan),#0055bb)',color:'#fff',fontSize:7,fontFamily:'var(--fm)',padding:'1px 6px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORGANIZER</span>}
+                      <span style={{fontWeight:700,fontSize:12,color:isOrg?'var(--cyan)':'var(--text)'}}>{dispName}</span>
                       <span style={{fontSize:9,color:'var(--muted)'}}>{msg.time}</span>
                     </div>
-                    <div style={{fontSize:13,background:'rgba(255,255,255,0.04)',borderRadius:'0 8px 8px 8px',padding:'6px 10px',border:'1px solid var(--border)',maxWidth:360}}>{msg.text}</div>
+                    <div style={{fontSize:12,lineHeight:1.5,background:isOrg?'rgba(0,229,255,0.08)':'rgba(255,255,255,0.04)',borderRadius:'0 10px 10px 10px',padding:'7px 11px',border:`1px solid ${isOrg?'rgba(0,229,255,0.2)':'var(--border)'}`,maxWidth:360}}>
+                      {isOrg&&<div style={{fontSize:8,color:'var(--cyan)',fontFamily:'var(--fm)',marginBottom:2,letterSpacing:1}}>📢 INFO PENTING</div>}
+                      {msg.text}
+                    </div>
                   </div>
                 </div>
-              ))}
+              })}
             </div>
             <div style={{display:'flex',gap:8}}>
               <input value={chatMsg} onChange={e=>setChatMsg(e.target.value)} placeholder={`${chatName}: tulis pesan...`} onKeyDown={e=>e.key==='Enter'&&sendChat()} style={{flex:1}}/>
               <button onClick={sendChat} disabled={!chatMsg.trim()} className="btn btn-cyan" style={{padding:'8px 14px',fontSize:10}}>→</button>
             </div>
-            <div style={{fontSize:9,color:'var(--muted)',marginTop:6,textAlign:'center',fontFamily:'var(--fm)'}}>🔄 Chat diperbarui setiap 5 detik</div>
+            <div style={{fontSize:9,color:'var(--muted)',marginTop:6,textAlign:'center',fontFamily:'var(--fm)'}}>⚡ Chat real-time · semua peserta & organizer terhubung</div>
           </div>
         }
       </div>}
@@ -3681,7 +3691,7 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
   const[showAdd,setShowAdd]=useState(false)
   const[search,setSearch]=useState('')
   const[viewMode,setViewMode]=useState('table') // 'table' or 'cards'
-  const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||''})
+  const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',paid:false,tournament_id:tournaments[0]?.id||'',game_id:''})
   const[saving,setSaving]=useState(false)
   const filtered=(selT==='all'?teams:teams.filter(t=>t.tournament_id===selT))
     .filter(t=>!search||t.name.toLowerCase().includes(search.toLowerCase())||t.captain.toLowerCase().includes(search.toLowerCase()))
@@ -3792,6 +3802,7 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
         <div><label>👥 {i.members}</label><select value={form.members} onChange={e=>setForm(f=>({...f,members:e.target.value}))}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
         <div><label>🏆 {i.tournament}</label><select value={form.tournament_id} onChange={e=>setForm(f=>({...f,tournament_id:e.target.value}))}>{tournaments.map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></div>
       </div>
+      <div style={{marginBottom:10}}><label>🎮 Game Account ID</label><input value={form.game_id||''} onChange={e=>setForm(f=>({...f,game_id:e.target.value}))} maxLength={100} placeholder="ID game peserta (ML ID, PUBG UID, dsb)"/></div>
       <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12,padding:'8px 12px',background:'rgba(255,215,0,0.05)',borderRadius:6,border:'1px solid rgba(255,215,0,0.15)'}}>
         <input type="checkbox" checked={form.paid} onChange={e=>setForm(f=>({...f,paid:e.target.checked}))} style={{width:16,height:16,accentColor:'var(--cyan)',cursor:'pointer'}}/>
         <span style={{fontSize:13,cursor:'pointer'}} onClick={()=>setForm(f=>({...f,paid:!f.paid}))}>{i.paid_lbl}</span>
@@ -3807,7 +3818,7 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
       <div style={{overflowX:'auto'}}>
         <table style={{width:'100%',borderCollapse:'collapse',minWidth:500}}>
           <thead><tr style={{borderBottom:'1px solid var(--border)',background:'rgba(255,255,255,0.02)'}}>
-            {['#',i.team_name,i.captain,i.contact,i.members,'Turnamen','Bayar',''].map((h,i)=>(
+            {['#',i.team_name,i.captain,i.contact,'Game ID',i.members,'Turnamen','Bayar',''].map((h,i)=>(
               <th key={i} style={{padding:'10px 12px',textAlign:'left',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,fontWeight:400}}>{h}</th>
             ))}
           </tr></thead>
@@ -3820,6 +3831,7 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
                 <td style={{padding:'10px 12px',fontWeight:700,fontSize:13}}>{t.name}</td>
                 <td style={{padding:'10px 12px',fontSize:12,color:'var(--text2)'}}>{t.captain}</td>
                 <td style={{padding:'10px 12px',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)'}}>{t.contact||'—'}</td>
+                <td style={{padding:'10px 12px',fontFamily:'var(--fm)',fontSize:10,color:'var(--cyan)'}}>{t.game_id||<span style={{color:'var(--border)'}}>—</span>}</td>
                 <td style={{padding:'10px 12px',textAlign:'center',fontFamily:'var(--fh)',fontSize:12,color:'var(--cyan)'}}>{t.members}</td>
                 <td style={{padding:'10px 12px',fontSize:11,color:'var(--cyan)',fontFamily:'var(--fm)',maxWidth:120,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{tr?.name||'—'}</td>
                 <td style={{padding:'10px 12px'}}>
@@ -3847,7 +3859,8 @@ function TeamsView({teams,tournaments,addTeam,updateTeam,deleteTeam,lang,toast})
                 <button onClick={()=>updateTeam(t.id,{paid:!t.paid})} style={{background:'none',border:'none',cursor:'pointer',fontSize:18}}>{t.paid?'✅':'⬜'}</button>
               </div>
               <div style={{fontWeight:700,fontSize:14,marginBottom:3}}>{t.name}</div>
-              <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>👤 {t.captain}{t.contact&&` · 📱 ${t.contact}`}</div>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:6}}>👤 {t.captain}{t.contact&&` · 📱 ${t.contact}`}</div>
+              {t.game_id&&<div style={{fontSize:11,color:'var(--cyan)',marginBottom:8,fontFamily:'var(--fm)'}}>🎮 {t.game_id}</div>}
               <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:10}}>
                 <span className="tag tag-active" style={{fontSize:8}}>{t.members} Member</span>
                 {t.paid&&<span className="tag tag-active" style={{fontSize:8}}>✓ LUNAS</span>}
