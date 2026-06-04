@@ -3920,18 +3920,102 @@ function Settings({user,lang,toast}){
   </div>
 }
 
-
-
-
 // ============================================================
-// ERROR BOUNDARY — catches React render errors (prevents black screen)
+// MAIN APP ORCHESTRATOR
 // ============================================================
-
-// Safe App wrapper with ErrorBoundary
 function AppCore(){
-  return React.createElement(ErrorBoundary, null, React.createElement(AppCore, null))
+  const[user,setUser]=React.useState(null)
+  const[authLoading,setAuthLoading]=React.useState(true)
+  const[page,setPage]=React.useState('dashboard')
+  const[editT,setEditT]=React.useState(null)
+  const[lang,setLangState]=React.useState(getLang)
+  const[isLight,setIsLight]=React.useState(()=>getTheme()==='light')
+  const[toasts,setToasts]=React.useState([])
+  const[publicTid,setPublicTid]=React.useState(null)
+  const[liveTid,setLiveTid]=React.useState(null)
+
+  const toast=React.useCallback((msg,type='info',dur=3500)=>{
+    const id=uid()
+    setToasts(p=>[...p.slice(-4),{id,msg,type}])
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),dur)
+  },[])
+
+  const{tournaments,teams,loading,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}=useData(user?.id,toast)
+
+  React.useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      setUser(session?.user??null)
+      setAuthLoading(false)
+    })
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      setUser(session?.user??null)
+      setAuthLoading(false)
+    })
+    return()=>subscription.unsubscribe()
+  },[])
+
+  React.useEffect(()=>{
+    const hash=window.location.hash
+    if(hash.startsWith('#/peserta'))setPage('portal')
+    if(hash.startsWith('#/live/')){
+      const tid=hash.split('/')[2]
+      if(tid){setLiveTid(tid);setPage('public-live')}
+    }
+    if(hash.startsWith('#/t/')){
+      const tid=hash.split('/')[2]
+      if(tid){setPublicTid(tid);setPage('public')}
+    }
+  },[])
+
+  const setLangFn=l=>{setLang(l);setLangState(l)}
+  const toggleTheme=()=>{
+    const nl=!isLight
+    setIsLight(nl)
+    saveTheme(nl?'light':'dark')
+  }
+  const onLogout=async()=>{await supabase.auth.signOut();setUser(null);setPage('dashboard')}
+
+  if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
+
+  // Public pages (no auth needed)
+  if(page==='public'&&publicTid)return <PublicPage tid={publicTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
+  if(page==='public-live'&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
+  if(page==='portal')return <ParticipantPortal toast={toast} tournaments={tournaments}/>
+
+  if(!user)return <AuthPage onLogin={u=>{setUser(u);setPage('dashboard')}} lang={lang} setLangFn={setLangFn}/>
+
+  const hasLive=tournaments.some(t=>t.status==='live')
+
+  const renderPage=()=>{
+    if(editT&&page==='create')return <CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/>
+    switch(page){
+      case 'dashboard':return <Dashboard tournaments={tournaments} teams={teams} setPage={setPage} loading={loading} lang={lang} toast={toast}/>
+      case 'revenue':return <RevenuePage tournaments={tournaments} teams={teams} toast={toast} lang={lang}/>
+      case 'tournaments':return <TournamentList tournaments={tournaments} teams={teams} updateT={updateT} deleteT={deleteT} setPage={setPage} setEditT={setEditT} toast={toast} lang={lang}/>
+      case 'create':return <CreateTournament addT={addT} updateT={updateT} editData={null} setEditT={setEditT} toast={toast} lang={lang}/>
+      case 'teams':return <TeamsView teams={teams} tournaments={tournaments} addTeam={addTeam} updateTeam={updateTeam} deleteTeam={deleteTeam} lang={lang} toast={toast}/>
+      case 'bracket':return <BracketView tournaments={tournaments} teams={teams} lang={lang}/>
+      case 'live':return <LivePage tournaments={tournaments} teams={teams} toast={toast} lang={lang}/>
+      case 'leaderboard':return <Leaderboard tournaments={tournaments} teams={teams} lang={lang}/>
+      case 'finance':return <Finance tournaments={tournaments} teams={teams} lang={lang}/>
+      case 'settings':return <Settings user={user} lang={lang} toast={toast}/>
+      default:return <Dashboard tournaments={tournaments} teams={teams} setPage={setPage} loading={loading} lang={lang} toast={toast}/>
+    }
+  }
+
+  return <div className="app-wrap">
+    <Sidebar page={page} setPage={p=>{setPage(p);setEditT(null)}} user={user} onLogout={onLogout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
+    <main className="main-content">
+      {renderPage()}
+    </main>
+    <BottomNav page={page} setPage={p=>{setPage(p);setEditT(null)}} lang={lang} hasLive={hasLive}/>
+    <Toasts list={toasts}/>
+  </div>
 }
 
+// ============================================================
+// ERROR BOUNDARY
+// ============================================================
 export default function App(){
   return React.createElement(ErrorBoundary, null, React.createElement(AppCore, null))
 }
