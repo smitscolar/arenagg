@@ -2010,7 +2010,7 @@ function AuthPage({onLogin,lang,setLangFn}){
       <div style={{textAlign:'center',marginTop:12,marginBottom:4}}>
         <a href="/#/peserta" style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--orange)',letterSpacing:1,textDecoration:'none',padding:'5px 14px',border:'1px solid rgba(255,107,0,0.3)',borderRadius:20,background:'rgba(255,107,0,0.08)'}}>⚡ Portal Peserta →</a>
       </div>
-      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA · v2.9</div>
+      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA · v2.9.1</div>
     </div>
   </div>
 }
