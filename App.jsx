@@ -2973,6 +2973,201 @@ function ShareModal({t,onClose,toast,onPreview}){
   </div>
 }
 
+// ============================================================
+// SUCCESS PAGE — Halaman konfirmasi setelah daftar berhasil
+// ============================================================
+function SuccessPage({form, t, bank, toast, onBack, lang}){
+  const i=T[lang]||T.id
+  const liveLink = window.location.origin+'/#/live/'+t?.id
+  const pesertaLink = window.location.origin+'/#/peserta'
+  const [copied, setCopied] = React.useState(false)
+  const [copiedPortal, setCopiedPortal] = React.useState(false)
+
+  const copyLink = (link, setCb) => {
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(link).then(()=>{setCb(true);setTimeout(()=>setCb(false),2000);toast('✓ Link disalin!','success')}).catch(()=>{})
+    } else {
+      const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el)
+      setCb(true);setTimeout(()=>setCb(false),2000);toast('✓ Link disalin!','success')
+    }
+  }
+
+  const waConfirmText = encodeURIComponent(
+    '🎮 Konfirmasi Pendaftaran\n'+
+    '━━━━━━━━━━━━━━━━━━\n'+
+    '⚔ Tim: '+form.name+'\n'+
+    '👤 Kapten: '+form.captain+'\n'+
+    '🏆 Turnamen: '+t?.name+'\n'+
+    '🎮 Game ID: '+(form.game_id||'—')+'\n'+
+    '💰 Entry Fee: Rp '+Number(t?.entry||0).toLocaleString('id-ID')+'\n'+
+    '━━━━━━━━━━━━━━━━━━\n'+
+    'Mohon konfirmasi pendaftaran kami. Terima kasih!'
+  )
+
+  return <div className="animate-in" style={{paddingBottom:40}}>
+    {/* ✅ HEADER SUKSES */}
+    <div style={{
+      textAlign:'center', padding:'32px 16px 24px',
+      background:'linear-gradient(135deg,rgba(0,255,136,0.08),rgba(0,229,255,0.05))',
+      borderRadius:16, marginBottom:16,
+      border:'1px solid rgba(0,255,136,0.2)',
+      position:'relative', overflow:'hidden'
+    }}>
+      {/* Animated glow */}
+      <div style={{position:'absolute',top:-40,left:'50%',transform:'translateX(-50%)',width:200,height:200,borderRadius:'50%',background:'rgba(0,255,136,0.05)',filter:'blur(40px)',pointerEvents:'none'}}/>
+      <div style={{fontSize:72,marginBottom:12,animation:'bounce-in 0.6s ease',display:'block',lineHeight:1}}>🎉</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--green)',marginBottom:8,letterSpacing:1,animation:'glow-pulse 2s infinite'}}>
+        PENDAFTARAN BERHASIL!
+      </div>
+      <div style={{fontSize:13,color:'var(--muted)',lineHeight:1.8}}>
+        <b style={{color:'var(--text)',fontSize:15}}>{form.name}</b> telah resmi terdaftar di<br/>
+        <b style={{color:'var(--cyan)'}}>{t?.name}</b>
+      </div>
+      {/* Nomor urut / slot */}
+      <div style={{marginTop:14,display:'inline-flex',alignItems:'center',gap:8,padding:'6px 16px',background:'rgba(0,255,136,0.1)',border:'1px solid rgba(0,255,136,0.25)',borderRadius:20}}>
+        <span style={{width:7,height:7,borderRadius:'50%',background:'var(--green)',animation:'pulse 1s infinite',display:'inline-block'}}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--green)',letterSpacing:1}}>TERDAFTAR · SLOT TERKONFIRMASI</span>
+      </div>
+    </div>
+
+    {/* 📋 KARTU DATA TIM */}
+    <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:14,padding:'16px 18px',marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+        <div style={{width:4,height:20,background:'var(--green)',borderRadius:2}}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--green)',letterSpacing:2,fontWeight:700}}>✓ DATA PENDAFTARAN KAMU</span>
+      </div>
+      {[
+        {label:'Nama Tim',val:form.name,icon:'⚔',color:'var(--cyan)'},
+        {label:'Kapten',val:form.captain,icon:'👤',color:'var(--text)'},
+        {label:'No. HP',val:form.contact,icon:'📱',color:'var(--text)'},
+        {label:'Jumlah Anggota',val:(form.members||5)+' orang',icon:'👥',color:'var(--text)'},
+        {label:GAME_ID_INFO[t?.game]?.label||'Game Account ID',val:form.game_id||'—',icon:'🎮',color:'var(--orange)'},
+        {label:'Game',val:t?.game,icon:getGameEmoji(t?.game)||'🎮',color:'var(--muted)'},
+        {label:'Turnamen',val:t?.name,icon:'🏆',color:'var(--muted)'},
+        {label:'Kota',val:t?.city,icon:'📍',color:'var(--muted)'},
+        {label:'Tanggal',val:t?.date+(t?.time?' · ⏰ '+t.time+' WIB':''),icon:'📅',color:'var(--muted)'},
+      ].filter(s=>s.val&&s.val!=='—').map((s,idx)=>(
+        <div key={s.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:idx<8?'1px solid rgba(255,255,255,0.04)':'none'}}>
+          <span style={{fontSize:11,color:'var(--muted)',display:'flex',alignItems:'center',gap:5}}>{s.icon} {s.label}</span>
+          <span style={{fontSize:12,fontWeight:600,color:s.color,textAlign:'right',maxWidth:'60%'}}>{s.val}</span>
+        </div>
+      ))}
+      <div style={{marginTop:10,padding:'10px 12px',background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <span style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--yellow)'}}>🏅 ENTRY FEE</span>
+        <span style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:'var(--yellow)'}}>Rp {Number(t?.entry||0).toLocaleString('id-ID')}</span>
+      </div>
+    </div>
+
+    {/* 💳 PEMBAYARAN */}
+    <div style={{background:'rgba(255,215,0,0.04)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:14,padding:'16px 18px',marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+        <div style={{width:4,height:20,background:'var(--yellow)',borderRadius:2}}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:2,fontWeight:700}}>💳 LANGKAH PEMBAYARAN</span>
+      </div>
+      {(bank.bankName||bank.accNumber)
+        ?<div>
+          <div style={{display:'flex',flexDirection:'column',gap:8,marginBottom:12}}>
+            {bank.bankName&&<div style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'rgba(255,255,255,0.04)',borderRadius:8}}>
+              <span style={{fontSize:11,color:'var(--muted)'}}>🏦 Bank / E-Wallet</span>
+              <span style={{fontSize:13,fontWeight:700}}>{bank.bankName}</span>
+            </div>}
+            {bank.accNumber&&<div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:8}}>
+              <span style={{fontSize:11,color:'var(--muted)'}}>💳 No. Rekening</span>
+              <div style={{display:'flex',alignItems:'center',gap:8}}>
+                <span style={{fontFamily:'var(--fm)',fontSize:14,fontWeight:700,color:'var(--cyan)',letterSpacing:1}}>{bank.accNumber}</span>
+                <button onClick={()=>{if(navigator.clipboard)navigator.clipboard.writeText(bank.accNumber).then(()=>toast('✓ No. rekening disalin!','success'))}} style={{background:'rgba(0,229,255,0.15)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:5,padding:'3px 8px',cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>SALIN</button>
+              </div>
+            </div>}
+            {bank.accName&&<div style={{display:'flex',justifyContent:'space-between',padding:'8px 12px',background:'rgba(255,255,255,0.04)',borderRadius:8}}>
+              <span style={{fontSize:11,color:'var(--muted)'}}>👤 Atas Nama</span>
+              <span style={{fontSize:13,fontWeight:700}}>{bank.accName}</span>
+            </div>}
+          </div>
+          <div style={{padding:'10px 12px',background:'rgba(255,215,0,0.06)',borderRadius:8,marginBottom:12}}>
+            <span style={{fontSize:11,color:'var(--muted)'}}>💰 Transfer sebesar </span>
+            <span style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'var(--yellow)'}}>Rp {Number(t?.entry||0).toLocaleString('id-ID')}</span>
+            <span style={{fontSize:11,color:'var(--muted)'}}> ke rekening di atas</span>
+          </div>
+          {bank.waNumber&&<a
+            href={`https://wa.me/${bank.waNumber.replace(/[^0-9]/g,'').replace(/^0/,'62')}?text=${waConfirmText}`}
+            target="_blank" rel="noreferrer"
+            style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,padding:'12px',background:'#25D366',borderRadius:10,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:11,fontWeight:700,letterSpacing:1}}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            📱 Konfirmasi Pembayaran via WhatsApp
+          </a>}
+        </div>
+        :<div style={{fontSize:11,color:'var(--muted)',lineHeight:1.7,padding:'8px 0'}}>
+          Hubungi organizer untuk info rekening & konfirmasi pembayaran entry fee.
+        </div>
+      }
+    </div>
+
+    {/* 🔴 LINK LIVE PERTANDINGAN */}
+    <div style={{background:'rgba(255,45,85,0.04)',border:'1px solid rgba(255,45,85,0.2)',borderRadius:14,padding:'16px 18px',marginBottom:14}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+        <div style={{width:4,height:20,background:'var(--red)',borderRadius:2}}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--red)',letterSpacing:2,fontWeight:700}}>🔴 LINK PANTAU PERTANDINGAN</span>
+      </div>
+      <div style={{fontSize:11,color:'var(--muted)',marginBottom:10,lineHeight:1.7}}>
+        Simpan link ini. Gunakan saat turnamen berlangsung untuk pantau <b style={{color:'var(--cyan)'}}>skor live</b> & chat langsung.
+      </div>
+      <div style={{background:'rgba(0,0,0,0.25)',borderRadius:8,padding:'10px 12px',marginBottom:10,display:'flex',alignItems:'center',gap:8,border:'1px solid rgba(255,255,255,0.06)'}}>
+        <span style={{fontFamily:'var(--fm)',fontSize:10,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--cyan)'}}>{liveLink}</span>
+      </div>
+      <div style={{display:'flex',gap:8}}>
+        <button className="btn btn-danger" style={{flex:1,fontSize:10,justifyContent:'center'}} onClick={()=>copyLink(liveLink,setCopied)}>
+          {copied?'✓ Disalin!':'🔗 Salin Link Live'}
+        </button>
+        <a href={`https://wa.me/?text=${encodeURIComponent('🔴 LINK LIVE\n⚔ '+t?.name+'\n🎮 '+t?.game+'\n👉 '+liveLink)}`} target="_blank" rel="noreferrer"
+          style={{flex:1,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'9px 12px',background:'#25D366',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:10,fontWeight:700}}>
+          📱 Share WA
+        </a>
+      </div>
+    </div>
+
+    {/* ⚡ PORTAL PESERTA */}
+    <div style={{background:'linear-gradient(135deg,rgba(255,107,0,0.08),rgba(255,45,85,0.04))',border:'1px solid rgba(255,107,0,0.25)',borderRadius:14,padding:'16px 18px',marginBottom:20}}>
+      <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:10}}>
+        <div style={{width:4,height:20,background:'var(--orange)',borderRadius:2}}/>
+        <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,fontWeight:700}}>⚡ PORTAL PESERTA — WAJIB SIMPAN!</span>
+      </div>
+      <div style={{fontSize:11,color:'var(--muted)',marginBottom:12,lineHeight:1.8}}>
+        Login di Portal Peserta menggunakan:<br/>
+        <div style={{marginTop:6,display:'flex',flexDirection:'column',gap:4}}>
+          <div style={{display:'flex',gap:6,alignItems:'center'}}>
+            <span style={{background:'rgba(255,107,0,0.15)',padding:'2px 8px',borderRadius:4,fontFamily:'var(--fm)',fontSize:10,color:'var(--orange)'}}>Nama Tim</span>
+            <span style={{fontSize:10,color:'var(--muted)'}}>→</span>
+            <span style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--text)',fontWeight:700}}>{form.name}</span>
+          </div>
+          <div style={{display:'flex',gap:6,alignItems:'center'}}>
+            <span style={{background:'rgba(255,107,0,0.15)',padding:'2px 8px',borderRadius:4,fontFamily:'var(--fm)',fontSize:10,color:'var(--orange)'}}>No. HP</span>
+            <span style={{fontSize:10,color:'var(--muted)'}}>→</span>
+            <span style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--text)',fontWeight:700}}>{form.contact}</span>
+          </div>
+        </div>
+      </div>
+      <div style={{display:'flex',gap:8}}>
+        <a href={pesertaLink} target="_blank" rel="noreferrer"
+          style={{flex:1,display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'11px',background:'linear-gradient(135deg,var(--orange),#cc4400)',borderRadius:10,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:11,fontWeight:700,letterSpacing:1}}>
+          ⚡ Buka Portal Peserta
+        </a>
+        <button onClick={()=>copyLink(pesertaLink,setCopiedPortal)} style={{padding:'11px 14px',background:'rgba(255,107,0,0.1)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:10,cursor:'pointer',fontFamily:'var(--fm)',fontSize:10,color:'var(--orange)'}}>
+          {copiedPortal?'✓':'🔗'}
+        </button>
+      </div>
+    </div>
+
+    {/* TOMBOL KEMBALI */}
+    <div style={{textAlign:'center'}}>
+      <button className="btn btn-ghost" onClick={onBack} style={{fontSize:11,padding:'9px 24px'}}>
+        ← Kembali ke Info Turnamen
+      </button>
+    </div>
+  </div>
+}
+
+
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
@@ -3285,86 +3480,7 @@ function PublicPage({tid,onBack,toast}){
           })()}
         </div>
       </div>}
-      {step==='success'&&<div className="animate-in" style={{padding:'24px 0'}}>
-        {/* HEADER SUKSES */}
-        <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{fontSize:60,marginBottom:10,animation:'bounce-in 0.6s ease'}}>🎉</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--green)',marginBottom:6,letterSpacing:1}}>{i.success_title}</div>
-          <div style={{fontSize:13,color:'var(--muted)',lineHeight:1.8}}><b style={{color:'var(--text)'}}>{form.name}</b> {i.success_msg} <b style={{color:'var(--cyan)'}}>{t.name}</b></div>
-        </div>
-
-        {/* KARTU INFO TIM */}
-        <div style={{background:'linear-gradient(135deg,rgba(0,255,136,0.07),rgba(0,229,255,0.05))',border:'1px solid rgba(0,255,136,0.25)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
-          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--green)',letterSpacing:2,marginBottom:12}}>✓ DATA PENDAFTARAN</div>
-          {[
-            {label:'Nama Tim',val:form.name,icon:'⚔'},
-            {label:'Kapten',val:form.captain,icon:'👤'},
-            {label:'No. HP',val:form.contact,icon:'📱'},
-            {label:'Jumlah Member',val:form.members+' orang',icon:'👥'},
-            {label:'Game Account ID',val:form.game_id||'—',icon:'🎮'},
-            {label:'Turnamen',val:t.name,icon:'🏆'},
-            {label:'Game',val:t.game,icon:'🎮'},
-            {label:'Kota',val:t.city,icon:'📍'},
-          ].map(s=>(
-            <div key={s.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'5px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-              <span style={{fontSize:11,color:'var(--muted)'}}>{s.icon} {s.label}</span>
-              <span style={{fontSize:12,fontWeight:600}}>{s.val}</span>
-            </div>
-          ))}
-          <div style={{display:'flex',justifyContent:'space-between',padding:'8px 0',marginTop:4}}>
-            <span style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--yellow)'}}>🏅 ENTRY FEE</span>
-            <span style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--yellow)'}}>Rp {Number(t.entry).toLocaleString('id-ID')}</span>
-          </div>
-        </div>
-
-        {/* LINK LIVE — cara akses saat bertanding */}
-        <div style={{background:'rgba(255,45,85,0.06)',border:'1px solid rgba(255,45,85,0.25)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
-          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--red)',letterSpacing:2,marginBottom:10,display:'flex',alignItems:'center',gap:6}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
-            LINK LIVE PERTANDINGAN
-          </div>
-          <div style={{fontSize:12,color:'var(--muted)',marginBottom:12,lineHeight:1.7}}>
-            Gunakan link ini saat turnamen berlangsung untuk <b style={{color:'var(--text)'}}>pantau skor real-time</b> & <b style={{color:'var(--text)'}}>obrolan langsung</b>
-          </div>
-          <div style={{background:'rgba(0,0,0,0.2)',borderRadius:7,padding:'10px 12px',marginBottom:10,display:'flex',alignItems:'center',gap:8,border:'1px solid rgba(255,255,255,0.06)'}}>
-            <span style={{fontFamily:'var(--fm)',fontSize:10,flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--cyan)'}}>{window.location.origin}/#/live/{t.id}</span>
-          </div>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-            <button className="btn btn-danger" style={{flex:'1 1 auto',justifyContent:'center',fontSize:10}} onClick={()=>{
-              const link=window.location.origin+'/#/live/'+t.id
-              if(navigator.clipboard)navigator.clipboard.writeText(link).then(()=>{}).catch(()=>{})
-              else{const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el)}
-              toast('✓ Link live disalin!','success')
-            }}>🔗 Salin Link Live</button>
-            <a href={`https://wa.me/?text=${encodeURIComponent('🔴 LINK LIVE TURNAMEN\n⚔ '+t.name+'\n🎮 '+t.game+'\n\n👉 Pantau skor & chat live:\n'+window.location.origin+'/#/live/'+t.id+'\n\nBuka link di atas saat pertandingan dimulai!')}`} target="_blank" rel="noreferrer"
-              style={{flex:'1 1 auto',display:'inline-flex',alignItems:'center',justifyContent:'center',gap:6,padding:'9px 12px',background:'#25D366',borderRadius:7,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:10,fontWeight:700,letterSpacing:1,boxShadow:'0 4px 12px rgba(37,211,102,0.25)'}}>📱 Share via WA</a>
-          </div>
-        </div>
-
-        {/* CARA PEMBAYARAN */}
-        {(bank.bankName||bank.waNumber)&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:12,padding:'16px 18px',marginBottom:16}}>
-          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:2,marginBottom:10}}>💳 CARA PEMBAYARAN ENTRY FEE</div>
-          {bank.bankName&&<div style={{fontSize:13,marginBottom:4}}>🏦 <b>{bank.bankName}</b></div>}
-          {bank.accNumber&&<div style={{fontSize:13,marginBottom:4}}>No: <b style={{fontFamily:'var(--fm)',color:'var(--cyan)',letterSpacing:1}}>{bank.accNumber}</b></div>}
-          {bank.accName&&<div style={{fontSize:13,marginBottom:4}}>a.n. <b>{bank.accName}</b></div>}
-          {bank.waNumber&&<div style={{marginTop:8}}>
-            <a href={`https://wa.me/${bank.waNumber.replace(/[^0-9]/g,'').replace(/^0/,'62')}?text=${encodeURIComponent('Halo, saya ingin konfirmasi pembayaran entry fee turnamen '+t.name+'\nNama Tim: '+form.name+'\nKapten: '+form.captain)}`}
-              target="_blank" rel="noreferrer"
-              style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',background:'#25D366',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>📱 Konfirmasi Bayar via WA</a>
-          </div>}
-        </div>}
-
-        {/* TOMBOL */}
-        {/* Link portal peserta */}
-        <div style={{background:'rgba(255,107,0,0.05)',border:'1px solid rgba(255,107,0,0.2)',borderRadius:10,padding:'12px 14px',marginBottom:14}}>
-          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,marginBottom:6}}>⚡ PORTAL PESERTA</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>Login dengan <b style={{color:'var(--text)'}}>Nama Tim</b> & <b style={{color:'var(--text)'}}>No. HP</b> untuk akses dashboard tim, pantau skor live & chat</div>
-          <a href={window.location.origin+'/#/peserta'} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:6,padding:'8px 14px',background:'var(--orange)',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>⚡ Buka Portal Peserta →</a>
-        </div>
-        <div style={{display:'flex',gap:8,justifyContent:'center'}}>
-          <button className="btn btn-ghost" onClick={()=>setStep('detail')} style={{fontSize:11}}>{i.back_detail}</button>
-        </div>
-      </div>}
+      {step==='success'&&<SuccessPage form={form} t={t} bank={bank} toast={toast} onBack={()=>setStep('detail')} lang={lang}/>}
     </div>
   </div>
 }
