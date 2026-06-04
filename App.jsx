@@ -3931,16 +3931,17 @@ export default function App(){
 
   // PUBLIC PAGE: Selalu tampilkan tanpa perlu login
   // PORTAL PESERTA — accessible at /#/peserta without login
-  if(pubPeserta)return <><ParticipantPortal toast={toast}/><Toasts list={toasts}/></>
-  if(pubLiveTid!==null)return <><PublicLivePage tid={pubLiveTid} onBack={()=>{window.location.hash='';window.history.pushState('',document.title,window.location.pathname+window.location.search);setPubLiveTid(null)}} toast={toast}/><Toasts list={toasts}/></>
-  if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
   // AUTH loading spinner
-  if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
-  if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
 
   // Scroll to top on page change
   const sharedProps={tournaments,teams,loading:dataLoading,setPage,editData:editT,setEditT,toast,user,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam,onPreview:id=>{window.location.hash=`#/daftar/${id}`},lang}
 
+  // Render berdasarkan state (NO early returns - fixes React #310)
+  if(pubPeserta)return <><ParticipantPortal toast={toast}/><Toasts list={toasts}/></>
+  if(pubLiveTid!==null)return <><PublicLivePage tid={pubLiveTid} onBack={()=>{window.location.hash='';window.history.pushState('',document.title,window.location.pathname+window.location.search);setPubLiveTid(null)}} toast={toast}/><Toasts list={toasts}/></>
+  if(pubTid!==null)return <><PublicPage tid={pubTid} onBack={goBack} toast={toast}/><Toasts list={toasts}/></>
+  if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:17,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:14}}>⚔ ARENAGG</div><Spinner size={22} color="var(--cyan)"/></div></div>
+  if(!user)return <><AuthPage onLogin={u=>setUser(u)} lang={lang} setLangFn={setLangFn}/><Toasts list={toasts}/></>
   return <div style={{display:'flex',minHeight:'100vh',background:'var(--bg,#050508)',position:'relative',zIndex:1}}>
     <Sidebar page={page} setPage={setPage} user={user} onLogout={logout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
     <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',minWidth:0}}>
