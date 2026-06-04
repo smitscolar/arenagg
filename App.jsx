@@ -1554,11 +1554,16 @@ function ParticipantAuth({onLogin,toast}){
   const i=T[lang]||T.id
 
   const login=async()=>{
-    if(!teamName.trim()||!contact.trim()){setErr('Isi nama tim dan no. HP');return}
+        // Read from DOM as fallback if React state not updated
+    const domTeamName = document.querySelector('input[type="text"]')?.value||teamName
+    const domContact = document.querySelector('input[type="tel"]')?.value||contact
+    const _teamName = domTeamName.trim()||teamName.trim()
+    const _contact = domContact.trim()||contact.trim()
+    if(!_teamName||!_contact){setErr('Isi nama tim dan no. HP');return}
     setErr('');setL(true)
     try{
       // Find team by name + contact
-      const{data,error}=await supabase.from('teams').select('*,tournaments(*)').ilike('name',teamName.trim()).eq('contact',contact.trim()).single()
+      const{data,error}=await supabase.from('teams').select('*,tournaments(*)').ilike('name',_teamName).eq('contact',_contact).single()
       if(error||!data){setErr('Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai saat pendaftaran.');setL(false);return}
       const participant={
         id:data.id,name:data.name,captain:data.captain,contact:data.contact,
@@ -1608,7 +1613,7 @@ function ParticipantAuth({onLogin,toast}){
             <input value={contact} onChange={e=>setContact(e.target.value)} placeholder={i.nohp_ph||"08xxxxxxxxxx"} type="tel" onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
           </div>
           {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
-          <button className="btn btn-orange btn-full" onClick={login} disabled={!teamName.trim()||!contact.trim()||loading} style={{fontSize:11,padding:13,borderRadius:8}}>
+          <button className="btn btn-orange btn-full" onClick={login} disabled={loading} style={{fontSize:11,padding:13,borderRadius:8}}>
             {loading?<><Spinner size={14} color="#fff"/> Mencari...</>:'⚡ Masuk ke Dashboard Tim'}
           </button>
           <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>{i.belum_daftar||'Belum daftar?'} <a href={window.location.origin} style={{color:'var(--cyan)',textDecoration:'none',fontWeight:600}}>Daftar tim →</a></div>
