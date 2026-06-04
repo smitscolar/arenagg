@@ -2995,7 +2995,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
           <div><label>👥 {i.slots}</label><select value={form.slots} onChange={set('slots')}>{[4,8,16,32,64].map(n=><option key={n}>{n}</option>)}</select></div>
         </div>
         <hr className="div"/>
-        <div style={{marginBottom:16}}><label>📝 {i.desc}</label><textarea rows={3} value={form.description} onChange={set('description')} placeholder="Deskripsi, syarat, info hadiah..." style={{resize:'vertical'}}/></div>
+        <div style={{marginBottom:16}}><label>📝 {i.desc}</label><textarea rows={3} value={form.description} onChange={set('description')} placeholder="Contoh: Jam mulai 20:00 WIB. Deskripsi turnamen, syarat peserta, info hadiah..." style={{resize:'vertical'}}/></div>
         <div style={{display:'flex',gap:8}}>
           <button className="btn btn-cyan" onClick={submit} disabled={saving} style={{minWidth:130}}>
             {saving?<><Spinner size={13} color="#000"/> Menyimpan...</>:editData?i.btn_save:i.btn_create2}
