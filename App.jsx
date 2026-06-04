@@ -51,6 +51,16 @@ const exportCSV=(rows,filename)=>{
   a.href=url;a.download=filename;a.click()
   URL.revokeObjectURL(url)
 }
+;(function(){
+  var SK='arenagg_last_active',TO=28800000
+  try{var last=parseInt(localStorage.getItem(SK)||'0');if(last&&Date.now()-last>TO)localStorage.removeItem(SK)}catch(e){}
+  if(typeof window!=='undefined'){
+    var upd=function(){try{localStorage.setItem(SK,Date.now())}catch(e){}}
+    window.addEventListener('click',upd,{passive:true})
+    window.addEventListener('keypress',upd,{passive:true})
+    upd()
+  }
+})()
 const uid=()=>Math.random().toString(36).slice(2,18)
 const NAV_IDS=['dashboard','revenue','tournaments','create','teams','bracket','live','leaderboard','finance','settings']
 const SHORTCUTS={'d':'dashboard','r':'revenue','t':'tournaments','n':'create','p':'teams','b':'bracket','l':'live','m':'leaderboard','f':'finance','s':'settings'}
