@@ -1793,7 +1793,7 @@ function ParticipantAuth({onLogin,toast}){
           </div>
           <div style={{marginBottom:20}}>
             <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>{`📱 ${i.nohp_label||'NO. HP (SAAT DAFTAR) *'}`}</label>
-            <input value={contact} onChange={e=>setContact(e.target.value)} placeholder={i.nohp_ph||"08xxxxxxxxxx"} type="tel" onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
+            <input id="reg_contact" value={contact} onChange={e=>setContact(e.target.value)} placeholder={i.nohp_ph||"08xxxxxxxxxx"} type="tel" onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
           </div>
           {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
           <button className="btn btn-orange btn-full" onClick={login} disabled={loading} style={{fontSize:11,padding:13,borderRadius:8}}>
@@ -3050,35 +3050,62 @@ function PublicPage({tid,onBack,toast}){
   }
 
   const submit=async()=>{
-    // Rate limiting
+    // Rate limiting (kurangi jadi 3 detik, lebih user-friendly)
     const now=Date.now()
-    if(now-lastSubmit<10000){toast('⏳ Tunggu sebentar sebelum submit lagi!','warning');return}
-    // Read from DOM as fallback if React state not updated
-    const inputs=document.querySelectorAll('input[type="text"],input:not([type])')
-    const telInput=document.querySelector('input[type="tel"]')
-    const _name=(inputs[0]?.value||form.name).trim()
-    const _captain=(inputs[1]?.value||form.captain).trim()
-    const _contact=(telInput?.value||form.contact).trim()
+    if(now-lastSubmit<3000){toast('⏳ Tunggu sebentar...','warning');return}
+    // Baca langsung dari form state (sudah di-bind dengan onChange)
+    // Fallback ke input DOM dengan ID spesifik
+    const _name=(document.getElementById('reg_name')?.value||form.name||'').trim()
+    const _captain=(document.getElementById('reg_captain')?.value||form.captain||'').trim()
+    const _contact=(document.getElementById('pub_contact')?.value||form.contact||'').trim()
+    const _gameId=(document.getElementById('reg_gameid')?.value||form.game_id||'').trim()
     const phoneClean=_contact.replace(/[^0-9]/g,'')
-    if(!_name||!_captain||!_contact){toast('⚠ Isi semua field!','error');return}
+    // Validasi
+    if(!_name){toast('⚠ Nama tim belum diisi!','error');return}
     if(_name.length<2){toast('⚠ Nama tim minimal 2 karakter!','error');return}
-    if(phoneClean.length<8||phoneClean.length>15){toast('⚠ No. HP tidak valid (8-15 digit)!','error');return}
-    // Sync to form state
-    setForm(f=>({...f,name:_name,captain:_captain,contact:_contact}))
+    if(!_captain){toast('⚠ Nama kapten belum diisi!','error');return}
+    if(!_contact){toast('⚠ No. HP belum diisi!','error');return}
+    if(phoneClean.length<8||phoneClean.length>15){toast('⚠ No. HP tidak valid! (8-15 digit)','error');return}
+    // Game ID wajib
+    const gInfo=GAME_ID_INFO[t?.game]||GAME_ID_INFO['Other']
+    if(!_gameId){toast('⚠ '+gInfo.label+' belum diisi!','error');return}
+    // Sync ke form state
+    setForm(f=>({...f,name:_name,captain:_captain,contact:_contact,game_id:_gameId}))
     setLastSubmit(now)
     setSaving(true)
-    // Cek slot masih tersedia
-    if(t&&(t.registered||0)>=(t.slots||16)){toast('⚠ Slot turnamen sudah penuh!','error');setSaving(false);return}
-    // Cek status turnamen masih bisa mendaftar
-    if(t&&t.status==='closed'){toast('⚠ Turnamen sudah ditutup!','error');setSaving(false);return}
-    // Cek duplikasi nama tim di turnamen ini
-    const{data:existing}=await supabase.from('teams')
-      .select('id').eq('tournament_id',tid.trim()).ilike('name',form.name.trim()).limit(1)
-    if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar di turnamen ini!','error');setSaving(false);return}
-    const{error}=await supabase.from('teams').insert({tournament_id:tid.trim(),name:sanitize(_name||form.name),captain:sanitize(_captain||form.captain),contact:phoneClean,members:Number(form.members),paid:false,photo:form.photo||null,game_id:sanitize(form.game_id||''),stream_url:(form.stream_url||'').trim()})
-    if(error){toast('Error: '+error.message,'error');setSaving(false);return}
-    await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
-    setStep('success');setSaving(false)
+    try{
+      // Cek slot
+      if(t&&(t.registered||0)>=(t.slots||16)){toast('⚠ Slot turnamen sudah penuh!','error');setSaving(false);return}
+      if(t&&t.status==='closed'){toast('⚠ Pendaftaran sudah ditutup!','error');setSaving(false);return}
+      // Cek duplikasi
+      const{data:existing}=await supabase.from('teams')
+        .select('id').eq('tournament_id',tid.trim()).ilike('name',_name).limit(1)
+      if(existing&&existing.length>0){toast('⚠ Nama tim sudah terdaftar!','error');setSaving(false);return}
+      // Insert
+      const{error}=await supabase.from('teams').insert({
+        tournament_id:tid.trim(),
+        name:sanitize(_name),
+        captain:sanitize(_captain),
+        contact:phoneClean,
+        members:Number(form.members||5),
+        paid:false,
+        photo:form.photo||null,
+        game_id:sanitize(_gameId),
+        stream_url:hasStream?(form.stream_url||'').trim():''
+      })
+      if(error){
+        console.error('Insert error:',error)
+        toast('Error: '+error.message,'error')
+        setSaving(false)
+        return
+      }
+      await supabase.from('tournaments').update({registered:(t?.registered||0)+1}).eq('id',tid.trim())
+      setStep('success')
+    }catch(e){
+      console.error('Submit error:',e)
+      toast('Error: '+e.message,'error')
+    }
+    setSaving(false)
   }
   if(loading)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:18,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={32} color="var(--cyan)"/></div></div>
   if(!t)return <div style={{minHeight:'100vh',background:'var(--bg)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}}><div style={{textAlign:'center'}}><div style={{fontSize:48,marginBottom:12,animation:'float 3s infinite'}}>😕</div><div style={{color:'var(--muted)',marginBottom:4,fontFamily:'var(--fm)',fontSize:11,letterSpacing:2}}>TURNAMEN TIDAK DITEMUKAN</div><div style={{color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',fontSize:9,marginBottom:24,wordBreak:'break-all',maxWidth:300}}>ID: {tid}</div><button className="btn btn-ghost" onClick={onBack}>{i.back}</button></div></div>
@@ -3192,8 +3219,8 @@ function PublicPage({tid,onBack,toast}){
             <input id="pub_photo_inp" type="file" accept="image/*" style={{display:'none'}} onChange={e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>setForm(p=>({...p,photo:ev.target.result}));r.readAsDataURL(f)}}/>
             <div style={{fontSize:9,color:'var(--muted)',marginTop:5,fontFamily:'var(--fm)',letterSpacing:1}}>FOTO TIM (opsional)</div>
           </div>
-          <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Alpha Squad"/></div>
-          <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
+          <div style={{marginBottom:11}}><label>{i.team_name}</label><input id="reg_name" value={form.name} onChange={set('name')} maxLength={80} placeholder="Alpha Squad"/></div>
+          <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input id="reg_captain" value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input id="pub_contact" value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
           {/* GAME ACCOUNT ID — smart per game */}
           {(()=>{
             const gInfo=GAME_ID_INFO[t?.game]||GAME_ID_INFO['Other']
@@ -3201,7 +3228,7 @@ function PublicPage({tid,onBack,toast}){
               <label style={{display:'block',fontFamily:'var(--fm)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:6,fontWeight:700}}>
                 🎮 {gInfo.label.toUpperCase()} <span style={{color:'var(--red)',fontSize:11}}>*</span>
               </label>
-              <input value={form.game_id||''} onChange={set('game_id')} placeholder={gInfo.placeholder} maxLength={100}
+              <input id="reg_gameid" value={form.game_id||''} onChange={set('game_id')} placeholder={gInfo.placeholder} maxLength={100}
                 style={{width:'100%',background:'var(--bg2)',border:'2px solid rgba(0,229,255,0.25)',borderRadius:8,padding:'11px 13px',color:'var(--text)',fontSize:13,boxSizing:'border-box',outline:'none'}}
                 onFocus={e=>e.target.style.borderColor='var(--cyan)'} onBlur={e=>e.target.style.borderColor='rgba(0,229,255,0.25)'}
               />
@@ -3239,7 +3266,23 @@ function PublicPage({tid,onBack,toast}){
             <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span style={{color:'var(--muted)'}}>{i.amount}</span><span style={{fontFamily:'var(--fm)',color:'var(--yellow)',fontWeight:700}}>{fmtRp(t.entry)}</span></div>
             {(()=>{try{const b=JSON.parse(localStorage.getItem('arenagg_bank_info')||'{}');return b.bankName?<div style={{marginTop:7,padding:'8px 10px',background:'rgba(0,229,255,0.06)',borderRadius:5,lineHeight:2,fontSize:12}}><div>🏦 {i.transfer_to} <b>{b.bankName}</b></div><div>💳 {i.acc_no} <b style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{b.accNumber}</b></div><div>👤 {i.an} <b>{b.accName}</b></div>{b.waNumber&&<div>📱 {i.confirm_wa} <a href={`https://wa.me/62${b.waNumber.replace(/^0/,'')}`} target="_blank" rel="noreferrer" style={{color:'var(--green)'}}>{b.waNumber}</a></div>}</div>:<div style={{color:'var(--muted)',fontSize:11,marginTop:4}}>{i.contact_org}</div>}catch(e){return null}})()}
           </div>
-          <button className="btn btn-cyan btn-full" style={{fontSize:12,padding:12}} onClick={submit} disabled={saving}>{saving?<><Spinner size={13} color="#000"/>{i.registering}</>:i.btn_submit}</button>
+          {(()=>{
+            const gInfo=GAME_ID_INFO[t?.game]||GAME_ID_INFO['Other']
+            const canSubmit=form.name.trim()&&form.captain.trim()&&form.contact.trim()&&form.game_id.trim()
+            return <button 
+              className="btn btn-cyan btn-full" 
+              style={{fontSize:13,padding:14,marginTop:4,position:'relative',opacity:saving?0.8:1,
+                background:canSubmit?undefined:'rgba(0,229,255,0.3)',
+                cursor:canSubmit&&!saving?'pointer':'default'}}
+              onClick={submit} 
+              disabled={saving}
+            >
+              {saving
+                ?<><Spinner size={14} color="#000"/><span style={{marginLeft:8}}>Mendaftarkan tim...</span></>
+                :<>🚀 <span style={{marginLeft:4}}>{i.btn_submit||'KIRIM PENDAFTARAN'}</span></>
+              }
+            </button>
+          })()}
         </div>
       </div>}
       {step==='success'&&<div className="animate-in" style={{padding:'24px 0'}}>
