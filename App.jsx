@@ -3918,6 +3918,10 @@ function Settings({user,lang,toast}){
 // ============================================================
 
 // Safe App wrapper with ErrorBoundary
+function AppCore(){
+  return React.createElement(ErrorBoundary, null, React.createElement(AppCore, null))
+}
+
 export default function App(){
   return React.createElement(ErrorBoundary, null, React.createElement(AppCore, null))
 }
