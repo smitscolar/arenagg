@@ -3077,7 +3077,6 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
     if(entryNum>prizeNum){toast('⚠ Entry fee tidak boleh melebihi prize pool!','error');return}
     if(form.name.trim().length<3){toast('⚠ Nama turnamen minimal 3 karakter!','error');return}
     setSaving(true)
-    setLastSubmit(Date.now())
     try{
       const data={name:sanitize(form.name),game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date+(form.time?' '+form.time:''),city:form.city,description:form.description}
       if(editData){
