@@ -2911,7 +2911,16 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
   useEffect(()=>{setForm(editData?{...editData,description:editData.description||''}:empty)},[editData?.id])
 
   const submit=async()=>{
-    if(!form.name||!form.prize||!form.entry||!form.date||!form.city){toast('Isi semua field wajib!','error');return}
+    if(!form.name||!form.prize||!form.entry||!form.date||!form.city){
+      const missing=[]
+      if(!form.name)missing.push('Nama Turnamen')
+      if(!form.city)missing.push('Kota')
+      if(!form.date)missing.push('Tanggal')
+      if(!form.prize)missing.push('Prize Pool')
+      if(!form.entry)missing.push('Entry Fee')
+      toast('⚠ Wajib diisi: '+missing.join(', '),'error')
+      return
+    }
     setSaving(true)
     try{
       const data={name:form.name,game:form.game,prize:Number(form.prize),entry:Number(form.entry),slots:Number(form.slots),format:form.format,date:form.date+(form.time?' '+form.time:''),city:form.city,description:form.description}
@@ -2920,7 +2929,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
         toast('✓ Turnamen diupdate!','success')
       } else {
         await addT({...data,registered:0,status:'pending'})
-        toast('✓ Turnamen dibuat! Cek tab Turnamen.','success')
+        toast('✓ Turnamen dibuat! Cek tab Turnamen.','success');addNotif('🏆 Turnamen "'+data.name+'" berhasil dibuat!','tournament','tournaments')
       }
       setForm(empty);setEditT(null)
     }catch(e){
@@ -2946,9 +2955,9 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
           <div><label>{i.game}</label><select value={form.game} onChange={set('game')}>{GAMES.map(g=><option key={g}>{g}</option>)}</select></div>
           <div><label>{i.format}</label><select value={form.format} onChange={set('format')}>{FORMATS.map(f=><option key={f}>{f}</option>)}</select></div>
         </div>
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 160px',gap:12,marginBottom:12}}>
-          <div><label>📍 {i.city}</label><input value={form.city} onChange={set('city')} placeholder="Jakarta"/></div>
-          <div><label>📅 {i.date}</label><input type="date" value={form.date} onChange={set('date')}/></div>
+        <div className='create-form-grid' style={{display:'grid',gridTemplateColumns:'minmax(150px,1.5fr) minmax(150px,1fr) minmax(120px,0.8fr)',gap:12,marginBottom:12}}>
+          <div><label>📍 {i.city} <span style={{color:'var(--red)'}}>*</span></label><input value={form.city} onChange={set('city')} placeholder="Jakarta" style={{width:'100%'}}/></div>
+          <div><label>📅 {i.date} <span style={{color:'var(--red)'}}>*</span></label><input type="date" value={form.date} onChange={set('date')} style={{width:'100%'}}/></div>
           <div>
             <label>⏰ Jam Mulai</label>
             <div style={{position:'relative'}}>
@@ -2980,7 +2989,7 @@ function CreateTournament({addT,updateT,editData,setEditT,toast,lang}){
         </div>
         <hr className="div"/>
         <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:14}}>PRIZE & BIAYA</div>
-        <div className="g3" style={{marginBottom:12}}>
+        <div className="g3 create-form-grid" style={{marginBottom:12}}>
           <div><label>🏆 {i.prize}</label><input type="number" value={form.prize} onChange={set('prize')} placeholder="2000000"/></div>
           <div><label>🎫 {i.entry}</label><input type="number" value={form.entry} onChange={set('entry')} placeholder="25000"/></div>
           <div><label>👥 {i.slots}</label><select value={form.slots} onChange={set('slots')}>{[4,8,16,32,64].map(n=><option key={n}>{n}</option>)}</select></div>
