@@ -38,6 +38,29 @@ const getProf=()=>{try{return JSON.parse(localStorage.getItem('arenagg_profile')
 const saveProf=p=>{try{localStorage.setItem('arenagg_profile',JSON.stringify(p))}catch(e){}}
 const GAMES=['Mobile Legends','PUBG Mobile','Free Fire','Free Fire MAX','Valorant','Clash Royale','Clash of Clans','Dota 2','League of Legends','Honor of Kings','Genshin Impact','Street Fighter 6','Tekken 8','EA Sports FC','NBA 2K25','Pokémon Unite','Wild Rift','Arena of Valor','Chess','Other']
 const GAME_EMOJI={'Mobile Legends':'⚔','PUBG Mobile':'🔫','Free Fire':'🔥','Free Fire MAX':'🔥','Valorant':'🎯','Clash Royale':'⚡','Clash of Clans':'🏰','Dota 2':'🌀','League of Legends':'🏹','Honor of Kings':'👑','Genshin Impact':'🌸','Street Fighter 6':'🥊','Tekken 8':'🤜','EA Sports FC':'⚽','NBA 2K25':'🏀','Pokémon Unite':'🎮','Wild Rift':'🗡','Arena of Valor':'🛡','Chess':'♟','Other':'🎮'}
+// Game Account ID format per game
+const GAME_ID_INFO={
+  'Mobile Legends':{label:'ID Mobile Legends',placeholder:'Contoh: 123456789 (1234)',hint:'User ID (angka) + Server ID dalam kurung'},
+  'PUBG Mobile':{label:'PUBG Mobile UID',placeholder:'Contoh: 5123456789',hint:'Temukan di profil PUBG Mobile kamu'},
+  'Free Fire':{label:'Free Fire UID',placeholder:'Contoh: 123456789',hint:'ID 9 digit di profil Free Fire'},
+  'Free Fire MAX':{label:'Free Fire MAX UID',placeholder:'Contoh: 123456789',hint:'ID 9 digit di profil Free Fire MAX'},
+  'Valorant':{label:'Riot ID Valorant',placeholder:'Contoh: NamaKamu#1234',hint:'RiotID#Tagline (huruf besar/kecil berpengaruh)'},
+  'Clash Royale':{label:'Player Tag Clash Royale',placeholder:'Contoh: #ABC123XY',hint:'Tag dimulai dengan # di profil'},
+  'Clash of Clans':{label:'Player Tag CoC',placeholder:'Contoh: #ABC123XY',hint:'Tag dimulai dengan # di profil'},
+  'Dota 2':{label:'Steam ID / Friend Code',placeholder:'Contoh: 123456789',hint:'Friend ID dari Steam profile'},
+  'League of Legends':{label:'Summoner Name LoL',placeholder:'Contoh: NamaKamu#ID1',hint:'Summoner Name + Riot Tag'},
+  'Honor of Kings':{label:'Honor of Kings ID',placeholder:'Contoh: 123456789',hint:'ID di profil Honor of Kings'},
+  'Wild Rift':{label:'Riot ID Wild Rift',placeholder:'Contoh: NamaKamu#1234',hint:'RiotID#Tagline'},
+  'Arena of Valor':{label:'Arena of Valor ID',placeholder:'Contoh: 123456789',hint:'ID di profil game'},
+  'Genshin Impact':{label:'Genshin UID',placeholder:'Contoh: 800000000',hint:'UID 9 digit di profil Genshin'},
+  'Street Fighter 6':{label:'CFN ID (SF6)',placeholder:'Contoh: NamaKamu',hint:'Capcom Fighter Network ID'},
+  'Tekken 8':{label:'TEKKEN ID',placeholder:'Contoh: NamaKamu',hint:'ID online di game Tekken 8'},
+  'EA Sports FC':{label:'EA FC Online ID',placeholder:'Contoh: NamaKamu',hint:'Username EA Sports FC'},
+  'NBA 2K25':{label:'2K Online ID',placeholder:'Contoh: NamaKamu',hint:'Username NBA 2K25'},
+  'Pokémon Unite':{label:'Trainer Name',placeholder:'Contoh: NamaKamu',hint:'Nama Trainer di Pokémon Unite'},
+  'Chess':{label:'Chess.com / Lichess Username',placeholder:'Contoh: NamaKamu',hint:'Username platform chess online'},
+  'Other':{label:'Game Account ID',placeholder:'Contoh: ID/Username game kamu',hint:'Isi dengan ID akun game yang dimainkan'},
+}
 const getGameEmoji=g=>GAME_EMOJI[g]||'🎮'
 const FORMATS=['Single Elimination','Double Elimination','Round Robin','Swiss','Group Stage + Knockout','Battle Royale','League','Custom']
 const SLOT_OPTIONS=[4,8,16,32,64,128]
@@ -777,6 +800,24 @@ function AdManager({toast}){
 const CHAT_KEY_PREFIX = 'arenagg_chat_'
 function getChatHistory(tournId){try{return JSON.parse(localStorage.getItem(CHAT_KEY_PREFIX+tournId)||'[]')}catch(e){return[]}}
 function saveChatHistory(tournId,msgs){try{localStorage.setItem(CHAT_KEY_PREFIX+tournId,JSON.stringify(msgs.slice(-200)))}catch(e){}}
+// Supabase chat helpers
+async function fetchChatFromSupabase(tournId){
+  try{
+    const{data,error}=await supabase.from('chat_messages')
+      .select('*').eq('tournament_id',tournId)
+      .order('created_at',{ascending:true}).limit(200)
+    if(error||!data)return null
+    return data.map(m=>({id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}))
+  }catch(e){return null}
+}
+async function sendChatToSupabase(tournId,msg,isOrg=false){
+  try{
+    const{error}=await supabase.from('chat_messages').insert({
+      tournament_id:tournId,sender_name:msg.name,message:msg.text,is_organizer:isOrg
+    })
+    return !error
+  }catch(e){return false}
+}
 
 // --- Score storage helpers ---
 const SCORES_KEY = 'arenagg_scores'
@@ -883,13 +924,18 @@ function LiveMatchView({tournament,teams,toast,onBack}){
   }
 
   // Chat: send message
-  const sendChat=()=>{
+  const sendChat=async()=>{
     if(!chatMsg.trim()||!chatName)return
-    const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:true}
-    const updated=[...chatHistory,msg]
-    setChatHistory(updated)
-    saveChatHistory(t.id,updated)
+    const msg={id:Date.now(),name:chatName+'[ORG]',text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:true}
     setChatMsg('')
+    // Kirim ke Supabase (broadcast ke semua peserta)
+    const ok=await sendChatToSupabase(t.id,msg,true)
+    if(!ok){
+      const updated=[...chatHistory,msg]
+      setChatHistory(updated)
+      saveChatHistory(t.id,updated)
+    }
+    setChatHistory(h=>[...h,msg])
   }
 
   // Share link
@@ -1102,44 +1148,52 @@ function PublicLivePage({tid,onBack,toast}){
           supabase.from('teams').select('*').eq('tournament_id',tid.trim()).order('created_at')
         ])
         if(td){setT(td);setTeams(tms||[])}
-        // Load scores: try Supabase first, fallback to localStorage
         const supScores = await loadScoresFromSupabase(tid.trim())
         if(supScores && Object.keys(supScores).length > 0){
           setScores(supScores)
-          // Also update localStorage cache
           const all=getScores(); all[tid.trim()]=supScores; saveScores(all)
         } else {
           const s=getScores(); if(s[tid.trim()])setScores(s[tid.trim()])
         }
-        // Load chat
-        setChatHistory(getChatHistory(tid.trim()))
+        // Load chat: Supabase first, fallback localStorage
+        const supaChat=await fetchChatFromSupabase(tid.trim())
+        if(supaChat&&supaChat.length>0){setChatHistory(supaChat);saveChatHistory(tid.trim(),supaChat)}
+        else setChatHistory(getChatHistory(tid.trim()))
       }catch(e){console.error(e)}
       setL(false)
     }
     load()
-    // Poll every 5s for live updates (from Supabase if available, else localStorage)
+    // Realtime: chat sync
+    const ch=supabase.channel('lmv-chat-'+tid)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
+        const m=payload.new
+        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
+        setChatHistory(h=>{
+          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+          const updated=[...h,newMsg]
+          saveChatHistory(tid,updated)
+          return updated
+        })
+      })
+      .subscribe()
+    // Score poll 5s
     const poll=setInterval(async()=>{
       const supScores = await loadScoresFromSupabase(tid.trim())
       if(supScores && Object.keys(supScores).length>0){ setScores({...supScores}) }
       else { const s=getScores(); if(s[tid])setScores({...s[tid]}) }
-      setChatHistory([...getChatHistory(tid)])
     },5000)
-    // Also listen for storage events (instant sync same browser)
-    const onStorage=()=>{
-      const s=getScores()
-      if(s[tid])setScores({...s[tid]})
-    }
+    const onStorage=()=>{const s=getScores();if(s[tid])setScores({...s[tid]})}
     window.addEventListener('storage',onStorage)
-    return()=>{clearInterval(poll);window.removeEventListener('storage',onStorage)}
+    return()=>{supabase.removeChannel(ch);clearInterval(poll);window.removeEventListener('storage',onStorage)}
   },[tid])
 
-  const sendChat=()=>{
+  const sendChat=async()=>{
     if(!chatMsg.trim()||!chatName)return
     const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false}
-    const updated=[...chatHistory,msg]
-    setChatHistory(updated)
-    saveChatHistory(tid,updated)
     setChatMsg('')
+    const ok=await sendChatToSupabase(tid,msg,false)
+    if(!ok){const updated=[...chatHistory,msg];setChatHistory(updated);saveChatHistory(tid,updated)}
+    setChatHistory(h=>[...h,msg])
   }
 
   const tTeams = teams
@@ -1931,23 +1985,49 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
 
   // Poll for updates every 5s (scores from Supabase, chat from localStorage)
   useEffect(()=>{
+    const tid=participant.tournamentId||''
+    if(!tid)return
+    // Initial load chat from Supabase
+    fetchChatFromSupabase(tid).then(msgs=>{
+      if(msgs&&msgs.length>0){setChatHistory(msgs);saveChatHistory(tid,msgs)}
+      else setChatHistory(getChatHistory(tid))
+    })
+    // Supabase realtime: chat sync across all devices
+    const ch=supabase.channel('pd-chat-'+tid)
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
+        const m=payload.new
+        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
+        setChatHistory(h=>{
+          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+          const updated=[...h,newMsg]
+          saveChatHistory(tid,updated)
+          return updated
+        })
+      })
+      .subscribe()
+    // Score polling 5s
     const poll=setInterval(async()=>{
-      setChatHistory([...getChatHistory(participant.tournamentId||'')])
-      // Try Supabase for scores
-      const supScores = await loadScoresFromSupabase(participant.tournamentId||'')
+      const supScores = await loadScoresFromSupabase(tid)
       if(supScores && Object.keys(supScores).length>0) setScores({...supScores})
-      else{ const s=getScores();if(s[participant.tournamentId])setScores({...s[participant.tournamentId]}) }
+      else{ const s=getScores();if(s[tid])setScores({...s[tid]}) }
     },5000)
-    return()=>clearInterval(poll)
+    return()=>{supabase.removeChannel(ch);clearInterval(poll)}
   },[])
 
-  const sendChat=()=>{
-    if(!chatMsg.trim())return
+  const sendChat=async()=>{
+    if(!chatMsg.trim()||!chatName)return
     const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false,isPlayer:true}
-    const updated=[...chatHistory,msg]
-    setChatHistory(updated)
-    saveChatHistory(participant.tournamentId,updated)
     setChatMsg('')
+    // Try Supabase first
+    const ok=await sendChatToSupabase(participant.tournamentId,msg,false)
+    if(!ok){
+      // Fallback localStorage
+      const updated=[...chatHistory,msg]
+      setChatHistory(updated)
+      saveChatHistory(participant.tournamentId,updated)
+    }
+    // Optimistic update
+    setChatHistory(h=>[...h,msg])
   }
 
   // Build match data for this team
@@ -2201,33 +2281,57 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
       </div>}
 
       {/* CHAT TAB */}
-      {activeTab==='chat'&&<div className="animate-in" style={{display:'flex',flexDirection:'column',height:'60vh'}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:12}}>💬 Obrolan Live</div>
-        <div style={{flex:1,overflow:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:12}}>
+      {activeTab==='chat'&&<div className="animate-in" style={{display:'flex',flexDirection:'column',height:'65vh'}}>
+        {/* Chat Header */}
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,padding:'0 0 10px',borderBottom:'1px solid var(--border)'}}>
+          <div>
+            <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700}}>💬 Obrolan Live</div>
+            <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>Semua peserta & organizer terhubung real-time</div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(0,255,136,0.08)',border:'1px solid rgba(0,255,136,0.2)',borderRadius:6,padding:'4px 8px'}}>
+            <div style={{width:6,height:6,borderRadius:'50%',background:'var(--green)',animation:'pulse 1.5s infinite'}}/>
+            <span style={{fontSize:9,color:'var(--green)',fontFamily:'var(--fm)'}}>LIVE</span>
+          </div>
+        </div>
+        {/* Messages */}
+        <div id="pd-chat-box" style={{flex:1,overflow:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:10,paddingRight:2}}>
           {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}>
-            <div style={{fontSize:32,marginBottom:8}}>💬</div>
-            <div style={{fontSize:11}}>Belum ada pesan. Mulai obrolan!</div>
+            <div style={{fontSize:40,marginBottom:10}}>💬</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:1}}>BELUM ADA PESAN</div>
+            <div style={{fontSize:11,marginTop:6,lineHeight:1.6}}>Mulai obrolan — semua peserta & organizer<br/>bisa saling berkomunikasi di sini</div>
           </div>}
-          {chatHistory.map(msg=>(
-            <div key={msg.id} style={{display:'flex',gap:8,alignItems:'flex-start',flexDirection:msg.name===participant.name?'row-reverse':'row'}}>
-              <div style={{width:28,height:28,borderRadius:'50%',background:msg.isOrg?'linear-gradient(135deg,var(--cyan),#003366)':msg.name===participant.name?'linear-gradient(135deg,var(--orange),#660022)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:10,color:'#fff',flexShrink:0}}>{msg.name[0].toUpperCase()}</div>
-              <div style={{maxWidth:'75%'}}>
-                <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:2,flexDirection:msg.name===participant.name?'row-reverse':'row'}}>
-                  <span style={{fontWeight:700,fontSize:11}}>{msg.name}</span>
-                  {msg.isOrg&&<span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',background:'rgba(0,229,255,0.1)',padding:'1px 4px',borderRadius:3}}>ORG</span>}
-                  {msg.name===participant.name&&<span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',background:'rgba(255,107,0,0.1)',padding:'1px 4px',borderRadius:3}}>KAMU</span>}
+          {chatHistory.map((msg,idx)=>{
+            const isMe=msg.name===participant.name||msg.name===participant.name+'[ORG]'
+            const isOrg=msg.isOrg||msg.name.includes('[ORG]')
+            const dispName=msg.name.replace('[ORG]','')
+            return<div key={msg.id||idx} style={{display:'flex',gap:8,alignItems:'flex-end',flexDirection:isMe?'row-reverse':'row'}}>
+              <div style={{width:30,height:30,borderRadius:'50%',background:isOrg?'linear-gradient(135deg,#00e5ff,#0044aa)':isMe?'linear-gradient(135deg,var(--orange),#991100)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:12,color:'#fff',flexShrink:0,border:isOrg?'2px solid var(--cyan)':isMe?'2px solid var(--orange)':'none'}}>
+                {dispName[0]?.toUpperCase()||'?'}
+              </div>
+              <div style={{maxWidth:'78%'}}>
+                <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:3,flexDirection:isMe?'row-reverse':'row'}}>
+                  {isOrg&&<span style={{background:'linear-gradient(90deg,var(--cyan),#0066aa)',color:'#fff',fontSize:8,fontFamily:'var(--fm)',padding:'1px 6px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORGANIZER</span>}
+                  {isMe&&!isOrg&&<span style={{fontSize:8,color:'var(--orange)',fontFamily:'var(--fm)',letterSpacing:1}}>KAMU</span>}
+                  <span style={{fontWeight:700,fontSize:11,color:isOrg?'var(--cyan)':isMe?'var(--orange)':'var(--text)'}}>{dispName}</span>
                   <span style={{fontSize:8,color:'var(--muted)'}}>{msg.time}</span>
                 </div>
-                <div style={{fontSize:12,background:msg.name===participant.name?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:msg.name===participant.name?'8px 0 8px 8px':'0 8px 8px 8px',padding:'7px 10px',border:`1px solid ${msg.name===participant.name?'rgba(255,107,0,0.2)':'var(--border)'}`}}>{msg.text}</div>
+                <div style={{fontSize:12,lineHeight:1.5,background:isOrg?'rgba(0,229,255,0.1)':isMe?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:isMe?'12px 2px 12px 12px':'2px 12px 12px 12px',padding:'8px 12px',border:`1px solid ${isOrg?'rgba(0,229,255,0.25)':isMe?'rgba(255,107,0,0.2)':'var(--border)'}`}}>
+                  {isOrg&&<div style={{fontSize:9,color:'var(--cyan)',fontFamily:'var(--fm)',marginBottom:3,letterSpacing:1}}>📢 INFO ORGANIZER</div>}
+                  {msg.text}
+                </div>
               </div>
             </div>
-          ))}
+          })}
+          <div ref={el=>{if(el)el.scrollIntoView({behavior:'smooth'})}} style={{height:1}}/>
         </div>
-        <div style={{display:'flex',gap:8,borderTop:'1px solid var(--border)',paddingTop:10}}>
-          <input value={chatMsg} onChange={e=>setChatMsg(e.target.value)} placeholder={participant.name+': tulis pesan...'} onKeyDown={e=>e.key==='Enter'&&sendChat()} style={{flex:1,fontSize:13}}/>
-          <button onClick={sendChat} disabled={!chatMsg.trim()} className="btn btn-orange" style={{padding:'8px 14px',fontSize:10}}>Kirim →</button>
+        {/* Input */}
+        <div style={{borderTop:'1px solid var(--border)',paddingTop:10}}>
+          <div style={{display:'flex',gap:8}}>
+            <input value={chatMsg} onChange={e=>setChatMsg(e.target.value)} placeholder={'💬 '+participant.name+': tulis pesan...'} onKeyDown={e=>e.key==='Enter'&&sendChat()} style={{flex:1,fontSize:12,borderRadius:20,padding:'9px 14px'}}/>
+            <button onClick={sendChat} disabled={!chatMsg.trim()} className="btn btn-orange" style={{padding:'9px 16px',fontSize:11,borderRadius:20}}>→</button>
+          </div>
+          <div style={{fontSize:8,color:'var(--muted)',textAlign:'center',marginTop:5,fontFamily:'var(--fm)'}}>⚡ Pesan dikirim real-time ke semua peserta & organizer</div>
         </div>
-        <div style={{fontSize:8,color:'var(--muted)',textAlign:'center',marginTop:5,fontFamily:'var(--fm)'}}>🔄 Chat diperbarui setiap 5 detik</div>
       </div>}
 
       {/* INFO TAB */}
@@ -2747,7 +2851,7 @@ function ShareModal({t,onClose,toast,onPreview}){
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
-  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:'',game_id:'',stream_url:''});const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
+  const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:'',game_id:'',stream_url:''});const[hasStream,setHasStream]=useState(false);const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
   // Login state untuk peserta
   const[loginName,setLoginName]=useState('')
   const[loginContact,setLoginContact]=useState('')
@@ -2965,8 +3069,45 @@ function PublicPage({tid,onBack,toast}){
           </div>
           <div style={{marginBottom:11}}><label>{i.team_name}</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Alpha Squad"/></div>
           <div className="g2" style={{marginBottom:11}}><div><label>{i.captain}</label><input value={form.captain} onChange={set('captain')} placeholder="Nama Kapten"/></div><div><label>{i.contact}</label><input value={form.contact} onChange={set('contact')} placeholder="08xx" type="tel"/></div></div>
-          <div style={{marginBottom:11}}><label>🎮 Game Account ID <span style={{fontSize:9,color:'var(--muted)'}}>(ML ID, PUBG UID, dsb - wajib)</span></label><input value={form.game_id||''} onChange={set('game_id')} placeholder="Contoh: 123456789 (1234)" maxLength={80} style={{width:'100%',background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'9px 11px',color:'var(--text)',fontSize:12,boxSizing:'border-box'}}/></div>
-          <div style={{marginBottom:11}}><label>📺 Link Stream Live <span style={{fontSize:9,color:'var(--muted)'}}>(YouTube/Twitch - opsional)</span></label><input value={form.stream_url||''} onChange={set('stream_url')} placeholder="https://youtube.com/live/... atau https://twitch.tv/..." maxLength={200} style={{width:'100%',background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'9px 11px',color:'var(--text)',fontSize:12,boxSizing:'border-box'}}/></div>
+          {/* GAME ACCOUNT ID — smart per game */}
+          {(()=>{
+            const gInfo=GAME_ID_INFO[t?.game]||GAME_ID_INFO['Other']
+            return <div style={{marginBottom:13}}>
+              <label style={{display:'block',fontFamily:'var(--fm)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:6,fontWeight:700}}>
+                🎮 {gInfo.label.toUpperCase()} <span style={{color:'var(--red)',fontSize:11}}>*</span>
+              </label>
+              <input value={form.game_id||''} onChange={set('game_id')} placeholder={gInfo.placeholder} maxLength={100}
+                style={{width:'100%',background:'var(--bg2)',border:'2px solid rgba(0,229,255,0.25)',borderRadius:8,padding:'11px 13px',color:'var(--text)',fontSize:13,boxSizing:'border-box',outline:'none'}}
+                onFocus={e=>e.target.style.borderColor='var(--cyan)'} onBlur={e=>e.target.style.borderColor='rgba(0,229,255,0.25)'}
+              />
+              <div style={{display:'flex',alignItems:'center',gap:5,marginTop:5,padding:'6px 9px',background:'rgba(0,229,255,0.05)',borderRadius:6,border:'1px solid rgba(0,229,255,0.1)'}}>
+                <span style={{fontSize:10}}>💡</span>
+                <span style={{fontSize:10,color:'var(--muted)'}}>{gInfo.hint}</span>
+              </div>
+            </div>
+          })()}
+          {/* LINK STREAM — checkbox dulu */}
+          <div style={{marginBottom:13}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:7,fontWeight:700}}>
+              📺 LINK STREAM LIVE
+            </label>
+            <div onClick={()=>setHasStream(h=>!h)} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 13px',background:hasStream?'rgba(255,107,0,0.08)':'var(--bg2)',border:`1px solid ${hasStream?'rgba(255,107,0,0.4)':'var(--border2)'}`,borderRadius:8,cursor:'pointer',marginBottom:hasStream?8:0,userSelect:'none'}}>
+              <div style={{width:20,height:20,borderRadius:5,border:`2px solid ${hasStream?'var(--orange)':'var(--border)'}`,background:hasStream?'var(--orange)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,transition:'all 0.15s'}}>
+                {hasStream&&<span style={{color:'#000',fontSize:13,fontWeight:900}}>✓</span>}
+              </div>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:hasStream?'var(--orange)':'var(--text)'}}>Saya akan live streaming saat bertanding</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>Centang jika kamu punya channel YouTube/Twitch/TikTok</div>
+              </div>
+            </div>
+            {hasStream&&<div>
+              <input value={form.stream_url||''} onChange={set('stream_url')} placeholder="https://youtube.com/live/... atau https://twitch.tv/username"
+                maxLength={200} style={{width:'100%',background:'var(--bg2)',border:'2px solid rgba(255,107,0,0.3)',borderRadius:8,padding:'11px 13px',color:'var(--text)',fontSize:12,boxSizing:'border-box'}}
+              />
+              <div style={{fontSize:10,color:'var(--muted)',marginTop:4,paddingLeft:2}}>💡 Link ini akan ditampilkan ke penonton & organizer saat turnamen live</div>
+            </div>}
+            {!hasStream&&<div style={{fontSize:10,color:'var(--muted)',paddingLeft:2,marginTop:4}}>Tidak wajib — bisa ditambahkan nanti dari Portal Peserta</div>}
+          </div>
           <div style={{marginBottom:14}}><label>{i.members}</label><select value={form.members} onChange={set('members')}>{[1,2,3,4,5,6].map(n=><option key={n}>{n}</option>)}</select></div>
           <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:6,padding:'10px 12px',marginBottom:14,fontSize:12}}>
             <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',marginBottom:6,letterSpacing:1}}>{i.pay_title}</div>
