@@ -1186,6 +1186,14 @@ function PublicLivePage({tid,onBack,toast}){
   const[loading,setL]=useState(true)
   const[activeTab,setActiveTab]=useState('score')
   const[lang,setLangState]=useState(getLang())
+  // Sync bahasa saat berubah dari tab/komponen lain
+  useEffect(()=>{
+    const onStorage=(e)=>{
+      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
+    }
+    window.addEventListener('storage',onStorage)
+    return()=>window.removeEventListener('storage',onStorage)
+  },[])
   const i=T[lang]||T.id
 
   useEffect(()=>{
@@ -1811,6 +1819,14 @@ function ParticipantAuth({onLogin,toast}){
   const[loading,setL]=useState(false)
   const[err,setErr]=useState('')
   const[lang,setLangState]=useState(getLang())
+  // Sync bahasa saat berubah dari tab/komponen lain
+  useEffect(()=>{
+    const onStorage=(e)=>{
+      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
+    }
+    window.addEventListener('storage',onStorage)
+    return()=>window.removeEventListener('storage',onStorage)
+  },[])
   const i=T[lang]||T.id
 
   const login=async()=>{
@@ -2190,6 +2206,14 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const[chatName]=useState(participant.name)
   const[scores,setScores]=useState(()=>{const s=getScores();return s[participant.tournamentId]||{}})
   const[lang,setLangState]=useState(getLang())
+  // Sync bahasa saat berubah dari tab/komponen lain
+  useEffect(()=>{
+    const onStorage=(e)=>{
+      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
+    }
+    window.addEventListener('storage',onStorage)
+    return()=>window.removeEventListener('storage',onStorage)
+  },[])
   const i=T[lang]||T.id
   const fmtRp2=n=>'Rp '+Number(n).toLocaleString('id-ID')
 
@@ -3359,6 +3383,14 @@ function PublicPage({tid,onBack,toast}){
   const[loginLoading,setLoginL]=useState(false)
   const[loginErr,setLoginErr]=useState('')
   const[lang,setLangState]=useState(getLang())
+  // Sync bahasa saat berubah dari tab/komponen lain
+  useEffect(()=>{
+    const onStorage=(e)=>{
+      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
+    }
+    window.addEventListener('storage',onStorage)
+    return()=>window.removeEventListener('storage',onStorage)
+  },[])
   const i=T[lang]||T.id
   const bank=getProf()  // always defined, safe to call anytime
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
@@ -3674,7 +3706,7 @@ function PublicPage({tid,onBack,toast}){
 }
 
 // SIDEBAR — TANPA pilih bahasa, WITH live indicator, WITH profile photo
-function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,tournaments=[]}){
+function Sidebar({page,setPage,user,onLogout,hasLive,lang,setLangFn,isLight,toggleTheme,tournaments=[]}){
   const i=T[lang]||T.id
   const prof=getProf()
   const name=prof.name||user?.user_metadata?.organizer_name||user?.email?.split('@')[0]||'Organizer'
@@ -3731,6 +3763,18 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,isLight,toggleTheme,to
     <span className="tt-label">{isLight?'☀ LIGHT MODE':'🌙 DARK MODE'}</span>
     <div className={`tt-track${isLight?' on':''}`}><div className="tt-knob"/></div>
   </button>
+  {/* LANGUAGE SELECTOR */}
+  {setLangFn&&<div style={{padding:'6px 10px 4px',marginBottom:4}}>
+    <div style={{fontSize:8,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:1,marginBottom:4}}>🌐 BAHASA</div>
+    <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+      {[['id','🇮🇩','ID'],['en','🇬🇧','EN'],['fil','🇵🇭','FIL'],['vi','🇻🇳','VI'],['zh','🇨🇳','ZH'],['ms','🇲🇾','MS'],['th','🇹🇭','TH']].map(([code,flag,label])=>(
+        <button key={code} onClick={()=>setLangFn(code)}
+          style={{padding:'2px 6px',borderRadius:6,border:`1px solid ${lang===code?'var(--cyan)':'var(--border)'}`,background:lang===code?'rgba(0,229,255,0.15)':'transparent',color:lang===code?'var(--cyan)':'var(--muted)',fontSize:9,cursor:'pointer',fontFamily:'var(--fm)'}}>
+          {flag} {label}
+        </button>
+      ))}
+    </div>
+  </div>}
   <button className="btn btn-dark btn-full btn-sm" onClick={onLogout} style={{fontSize:9}}>{i.logout}</button>
     </div>
   </div>
@@ -4928,7 +4972,7 @@ function Settings({user,lang,toast}){
 // ============================================================
 // FLOATING CHAT BUBBLE — Global messenger untuk owner & peserta
 // ============================================================
-function FloatingChat({user,tournaments=[]}){
+function FloatingChat({user,tournaments=[],lang='id'}){
   const[open,setOpen]=React.useState(false)
   const[msg,setMsg]=React.useState('')
   const[messages,setMessages]=React.useState([])
@@ -5046,7 +5090,7 @@ function FloatingChat({user,tournaments=[]}){
         transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
         transform:open?'rotate(0deg)':'rotate(0deg)',
       }}
-      title="Obrolan Live"
+      title={lang==="en"?"Live Chat":"Obrolan Live"}
     >
       {open
         ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -5099,9 +5143,9 @@ function FloatingChat({user,tournaments=[]}){
           </svg>
         </div>
         <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'#fff',letterSpacing:1}}>💬 OBROLAN LIVE</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'#fff',letterSpacing:1}}>{lang==='en'?'💬 LIVE CHAT':lang==='zh'?'💬 实时聊天':lang==='fil'?'💬 LIVE CHAT':'💬 OBROLAN LIVE'}</div>
           <div style={{fontSize:9,color:'rgba(255,255,255,0.7)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
-            {currentTourn?currentTourn.name:'Semua Peserta & Organizer'}
+            {currentTourn?currentTourn.name:(lang==='en'?'All Participants & Organizer':'Semua Peserta & Organizer')}
           </div>
           <div style={{fontSize:8,color:'rgba(255,255,255,0.5)',marginTop:2}}>
             {messages.length>0?`${messages.length} pesan`:'Belum ada pesan'}
@@ -5146,7 +5190,7 @@ function FloatingChat({user,tournaments=[]}){
           display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'
         }}>
           <div style={{fontSize:36,marginBottom:10}}>💬</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,letterSpacing:1,marginBottom:5}}>MULAI OBROLAN</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,letterSpacing:1,marginBottom:5}}>{lang==='en'?'START CHATTING':'MULAI OBROLAN'}</div>
           <div style={{fontSize:10,lineHeight:1.6}}>Tulis pesan — semua peserta<br/>yang login bisa membaca</div>
         </div>}
         {messages.map((m,idx)=>{
@@ -5188,7 +5232,7 @@ function FloatingChat({user,tournaments=[]}){
 
       {/* QUICK TEMPLATES */}
       <div style={{padding:'4px 8px',display:'flex',gap:4,flexWrap:'wrap',borderTop:'1px solid rgba(255,255,255,0.04)',flexShrink:0}}>
-        {['🔔 Turnamen segera dimulai!','⏰ Harap standby di room','✅ Match dimulai','⚠️ Ada perubahan jadwal'].map(t=>(
+        {(lang==='en'?['🔔 Tournament starting soon!','⏰ Please standby in room','✅ Match started','⚠️ Schedule changed']:['🔔 Turnamen segera dimulai!','⏰ Harap standby di room','✅ Match dimulai','⚠️ Ada perubahan jadwal']).map(t=>(
           <button key={t} onClick={()=>setMsg(t)} style={{padding:'2px 7px',borderRadius:10,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.6)',fontSize:8,cursor:'pointer',whiteSpace:'nowrap'}}>
             {t}
           </button>
@@ -5207,7 +5251,7 @@ function FloatingChat({user,tournaments=[]}){
           value={msg}
           onChange={e=>setMsg(e.target.value)}
           onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg()}
-          placeholder="Tulis pesan ke semua peserta..."
+          placeholder={lang==="en"?"Write message to all participants...":"Tulis pesan ke semua peserta..."}
           style={{
             flex:1,fontSize:12,borderRadius:20,
             padding:'8px 13px',
@@ -5241,7 +5285,7 @@ function FloatingChat({user,tournaments=[]}){
         padding:'8px 12px',background:'rgba(255,215,0,0.08)',
         borderTop:'1px solid rgba(255,215,0,0.15)',
         fontSize:10,color:'var(--yellow)',textAlign:'center'
-      }}>Buat turnamen dulu untuk mulai obrolan</div>}
+      }}>{lang==='en'?'Create a tournament first to start chatting':'Buat turnamen dulu untuk mulai obrolan'}</div>}
     </div>}
   </>
 }
@@ -5297,7 +5341,15 @@ function AppCore(){
     return()=>window.removeEventListener('hashchange',checkHash)
   },[])
 
-  const setLangFn=l=>{setLang(l);setLangState(l)}
+  const setLangFn=l=>{
+    setLang(l)
+    setLangState(l)
+    // Trigger storage event agar komponen di tab yang sama bisa sync
+    try{
+      localStorage.setItem('arenagg_lang',l)
+      window.dispatchEvent(new StorageEvent('storage',{key:'arenagg_lang',newValue:l}))
+    }catch(e){}
+  }
   const toggleTheme=()=>{
     const nl=!isLight
     setIsLight(nl)
@@ -5337,12 +5389,12 @@ function AppCore(){
   }
 
   return <div className="app-wrap">
-    <Sidebar page={page} setPage={p=>{setPage(p);setEditT(null)}} user={user} onLogout={onLogout} hasLive={hasLive} lang={lang} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
+    <Sidebar page={page} setPage={p=>{setPage(p);setEditT(null)}} user={user} onLogout={onLogout} hasLive={hasLive} lang={lang} setLangFn={setLangFn} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
     <main className="main-content">
       {renderPage()}
     </main>
     <BottomNav page={page} setPage={p=>{setPage(p);setEditT(null)}} lang={lang} hasLive={hasLive}/>
-    <FloatingChat user={user} tournaments={tournaments}/>
+    <FloatingChat user={user} tournaments={tournaments} lang={lang}/>
     <Toasts list={toasts}/>
   </div>
 }
