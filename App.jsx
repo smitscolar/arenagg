@@ -800,22 +800,52 @@ function AdManager({toast}){
 const CHAT_KEY_PREFIX = 'arenagg_chat_'
 function getChatHistory(tournId){try{return JSON.parse(localStorage.getItem(CHAT_KEY_PREFIX+tournId)||'[]')}catch(e){return[]}}
 function saveChatHistory(tournId,msgs){try{localStorage.setItem(CHAT_KEY_PREFIX+tournId,JSON.stringify(msgs.slice(-200)))}catch(e){}}
-// Supabase chat helpers
+
+// BroadcastChannel untuk sync real-time antar tab/window
+const _bc = (()=>{try{return new BroadcastChannel('arenagg_chat')}catch(e){return null}})()
+function broadcastMsg(tournId, msg){
+  try{ if(_bc) _bc.postMessage({tournId, msg}) }catch(e){}
+}
+
+// Supabase chat helpers — dengan graceful fallback
+let _supabaseHasChat = null // null=unknown, true=ada, false=tidak ada
 async function fetchChatFromSupabase(tournId){
+  if(_supabaseHasChat === false) return null
   try{
     const{data,error}=await supabase.from('chat_messages')
       .select('*').eq('tournament_id',tournId)
       .order('created_at',{ascending:true}).limit(200)
-    if(error||!data)return null
+    if(error){
+      if(error.code==='42P01'||error.message?.includes('does not exist')||error.code==='PGRST200'){
+        _supabaseHasChat=false; return null
+      }
+      return null
+    }
+    _supabaseHasChat=true
     return data.map(m=>({id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}))
   }catch(e){return null}
 }
 async function sendChatToSupabase(tournId,msg,isOrg=false){
+  // Selalu broadcast dulu (sync antar tab)
+  broadcastMsg(tournId, msg)
+  // Update localStorage
+  const existing=getChatHistory(tournId)
+  if(!existing.find(x=>String(x.id)===String(msg.id))){
+    const updated=[...existing,msg]
+    saveChatHistory(tournId,updated)
+  }
+  // Coba Supabase jika tersedia
+  if(_supabaseHasChat===false) return false
   try{
     const{error}=await supabase.from('chat_messages').insert({
       tournament_id:tournId,sender_name:msg.name,message:msg.text,is_organizer:isOrg
     })
-    return !error
+    if(error){
+      if(error.code==='42P01'||error.message?.includes('does not exist')){_supabaseHasChat=false}
+      return false
+    }
+    _supabaseHasChat=true
+    return true
   }catch(e){return false}
 }
 
@@ -1168,7 +1198,7 @@ function PublicLivePage({tid,onBack,toast}){
       setL(false)
     }
     load()
-    // Realtime: chat sync
+    // Realtime: chat sync via Supabase
     const ch=supabase.channel('lmv-chat-'+tid)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
         const m=payload.new
@@ -1181,6 +1211,27 @@ function PublicLivePage({tid,onBack,toast}){
         })
       })
       .subscribe()
+    // BroadcastChannel sync
+    const onBC=(e)=>{
+      if(e.data?.tournId!==tid)return
+      const newMsg=e.data.msg
+      setChatHistory(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        const updated=[...h,newMsg]
+        saveChatHistory(tid,updated)
+        return updated
+      })
+    }
+    if(_bc)_bc.addEventListener('message',onBC)
+    // localStorage polling 3s
+    const chatPoll=setInterval(()=>{
+      const stored=getChatHistory(tid)
+      setChatHistory(h=>{
+        if(stored.length<=h.length)return h
+        const n=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
+        return n.length?[...h,...n]:h
+      })
+    },3000)
     // Score poll 5s
     const poll=setInterval(async()=>{
       const supScores = await loadScoresFromSupabase(tid.trim())
@@ -1189,7 +1240,7 @@ function PublicLivePage({tid,onBack,toast}){
     },5000)
     const onStorage=()=>{const s=getScores();if(s[tid])setScores({...s[tid]})}
     window.addEventListener('storage',onStorage)
-    return()=>{supabase.removeChannel(ch);clearInterval(poll);window.removeEventListener('storage',onStorage)}
+    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(chatPoll);clearInterval(poll);window.removeEventListener('storage',onStorage)}
   },[tid])
 
   const sendChat=async()=>{
@@ -1969,6 +2020,7 @@ function ParticipantFloatingChat({participant}){
       if(msgs&&msgs.length>0){setMessages(msgs);saveChatHistory(tid,msgs)}
       else setMessages(getChatHistory(tid))
     })
+    // Supabase realtime
     const ch=supabase.channel('pfc-'+tid)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
         const m=payload.new
@@ -1980,7 +2032,29 @@ function ParticipantFloatingChat({participant}){
         if(!open)setUnread(u=>u+1)
       })
       .subscribe()
-    return()=>supabase.removeChannel(ch)
+    // BroadcastChannel sync antar tab
+    const onBC=(e)=>{
+      if(e.data?.tournId!==tid)return
+      const newMsg=e.data.msg
+      setMessages(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        if(!open)setUnread(u=>u+1)
+        return[...h,newMsg]
+      })
+    }
+    if(_bc)_bc.addEventListener('message',onBC)
+    // localStorage polling 3s
+    const poll=setInterval(()=>{
+      const stored=getChatHistory(tid)
+      setMessages(h=>{
+        if(stored.length<=h.length)return h
+        const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
+        if(newMsgs.length===0)return h
+        if(!open)setUnread(u=>u+newMsgs.length)
+        return[...h,...newMsgs]
+      })
+    },3000)
+    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(poll)}
   },[tid])
 
   React.useEffect(()=>{if(open){setUnread(0);setTimeout(()=>inputRef.current?.focus(),200)}},[open])
@@ -2111,12 +2185,12 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   useEffect(()=>{
     const tid=participant.tournamentId||''
     if(!tid)return
-    // Initial load chat from Supabase
+    // Load chat
     fetchChatFromSupabase(tid).then(msgs=>{
       if(msgs&&msgs.length>0){setChatHistory(msgs);saveChatHistory(tid,msgs)}
       else setChatHistory(getChatHistory(tid))
     })
-    // Supabase realtime: chat sync across all devices
+    // Supabase realtime
     const ch=supabase.channel('pd-chat-'+tid)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
         const m=payload.new
@@ -2129,13 +2203,34 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
         })
       })
       .subscribe()
-    // Score polling 5s
+    // BroadcastChannel — sync real-time antar tab/window
+    const onBC=(e)=>{
+      if(e.data?.tournId!==tid)return
+      const newMsg=e.data.msg
+      setChatHistory(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        const updated=[...h,newMsg]
+        saveChatHistory(tid,updated)
+        return updated
+      })
+    }
+    if(_bc)_bc.addEventListener('message',onBC)
+    // localStorage polling 3s — fallback sinkronisasi
+    const chatPoll=setInterval(()=>{
+      const stored=getChatHistory(tid)
+      setChatHistory(h=>{
+        if(stored.length<=h.length)return h
+        const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
+        return newMsgs.length?[...h,...newMsgs]:h
+      })
+    },3000)
+    // Score poll 5s
     const poll=setInterval(async()=>{
       const supScores = await loadScoresFromSupabase(tid)
       if(supScores && Object.keys(supScores).length>0) setScores({...supScores})
       else{ const s=getScores();if(s[tid])setScores({...s[tid]}) }
     },5000)
-    return()=>{supabase.removeChannel(ch);clearInterval(poll)}
+    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(chatPoll);clearInterval(poll)}
   },[])
 
   const sendChat=async()=>{
@@ -4762,32 +4857,48 @@ function FloatingChat({user,tournaments=[]}){
   React.useEffect(()=>{
     if(!currentTid)return
     setLoading(true)
+    // Load: coba Supabase dulu, fallback localStorage
     fetchChatFromSupabase(currentTid).then(msgs=>{
       if(msgs&&msgs.length>0){setMessages(msgs);saveChatHistory(currentTid,msgs)}
       else setMessages(getChatHistory(currentTid))
       setLoading(false)
     })
+    // Supabase realtime (jika tabel ada)
     const ch=supabase.channel('float-chat-'+currentTid)
       .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${currentTid}`},(payload)=>{
         const m=payload.new
-        const newMsg={
-          id:m.id,
-          name:m.sender_name,
-          text:m.message,
-          time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
-          isOrg:m.is_organizer||false
-        }
+        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
         setMessages(h=>{
           if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-          const updated=[...h,newMsg]
-          saveChatHistory(currentTid,updated)
-          return updated
+          saveChatHistory(currentTid,[...h,newMsg])
+          return[...h,newMsg]
         })
-        // Unread badge kalau chat tertutup
-        if(!open) setUnread(u=>u+1)
+        if(!open)setUnread(u=>u+1)
       })
       .subscribe()
-    return()=>supabase.removeChannel(ch)
+    // BroadcastChannel — sync real-time antar tab/window (tanpa Supabase)
+    const onBC=(e)=>{
+      if(e.data?.tournId!==currentTid)return
+      const newMsg=e.data.msg
+      setMessages(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        if(!open)setUnread(u=>u+1)
+        return[...h,newMsg]
+      })
+    }
+    if(_bc)_bc.addEventListener('message',onBC)
+    // localStorage polling 3s — sync jika tidak ada BroadcastChannel
+    const poll=setInterval(()=>{
+      const stored=getChatHistory(currentTid)
+      setMessages(h=>{
+        if(stored.length<=h.length)return h
+        const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
+        if(newMsgs.length===0)return h
+        if(!open)setUnread(u=>u+newMsgs.length)
+        return[...h,...newMsgs]
+      })
+    },3000)
+    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(poll)}
   },[currentTid])
 
   // Auto scroll ke bawah
