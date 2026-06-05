@@ -369,7 +369,6 @@ function LiveBanner({tournaments}){
       <span style={{fontFamily:'var(--fh)',fontSize:11,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 LIVE NOW</span>
       {liveT.map(t=><span key={t.id} style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',background:'rgba(0,0,0,0.2)',padding:'2px 10px',borderRadius:20,border:'1px solid rgba(255,255,255,0.2)'}}>⚔ {t.name}</span>)}
     </div>}
-    <AdBanner compact={true}/>
   </div>
 }
 
@@ -516,7 +515,19 @@ const DEFAULT_ADS = [
 
 const AD_STORAGE_KEY = 'arenagg_custom_ads'
 function getCustomAds(){try{return JSON.parse(localStorage.getItem(AD_STORAGE_KEY)||'[]')}catch(e){return[]}}
-function saveCustomAds(ads){try{localStorage.setItem(AD_STORAGE_KEY,JSON.stringify(ads))}catch(e){}}
+function saveCustomAds(ads){
+  try{
+    localStorage.setItem(AD_STORAGE_KEY,JSON.stringify(ads))
+    // Broadcast ke tab lain (portal peserta) di browser yang sama
+    try{
+      const bc=new BroadcastChannel('arenagg_ads')
+      bc.postMessage({type:'ads_updated',ads})
+      bc.close()
+    }catch(e){}
+    // StorageEvent fallback untuk browser lama
+    window.dispatchEvent(new StorageEvent('storage',{key:AD_STORAGE_KEY,newValue:JSON.stringify(ads)}))
+  }catch(e){}
+}
 
 // Floating particles for ad banner
 function AdParticles({colors=[]}) {
@@ -560,13 +571,25 @@ const AD_KEYFRAMES = `
 if(!document.getElementById('ad-keyframes')){const s=document.createElement('style');s.id='ad-keyframes';s.textContent=AD_KEYFRAMES;document.head.appendChild(s)}
 
 function AdBanner({compact=false}){
-  const customAds = getCustomAds()
+  const[customAds,setCustomAds]=useState(getCustomAds)
   const allAds = [...DEFAULT_ADS, ...customAds.filter(a=>a.active)]
   const[current,setCurrent]=useState(0)
   const[prev,setPrev]=useState(null)
   const[paused,setPaused]=useState(false)
   const[animKey,setAnimKey]=useState(0)
   const[logoErr,setLogoErr]=useState({})
+
+  // Real-time sync: dengarkan update iklan dari tab owner (BroadcastChannel + StorageEvent)
+  useEffect(()=>{
+    let bc
+    try{
+      bc=new BroadcastChannel('arenagg_ads')
+      bc.onmessage=(e)=>{if(e.data?.type==='ads_updated'&&Array.isArray(e.data.ads))setCustomAds(e.data.ads)}
+    }catch(e){}
+    const onStorage=(e)=>{if(e.key===AD_STORAGE_KEY&&e.newValue)setCustomAds(JSON.parse(e.newValue)||[])}
+    window.addEventListener('storage',onStorage)
+    return()=>{try{bc&&bc.close()}catch(e){};window.removeEventListener('storage',onStorage)}
+  },[])
 
   useEffect(()=>{
     if(paused||allAds.length<=1)return
@@ -2334,7 +2357,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:la
   ]
 
   return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
-    {/* LIVE BANNER + AD BANNER (AdBanner already inside LiveBanner) */}
+    {/* LIVE BANNER */}
     <LiveBanner tournaments={tournaments}/>
     {/* TOP NAV */}
     <div style={{background:'rgba(5,5,8,0.97)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)'}}>
@@ -2357,6 +2380,10 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:la
       <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
     </div>}
 
+    {/* ── AD BANNER FULL (sync dengan owner, termasuk iklan sponsor) ── */}
+    <div style={{padding:'14px 16px 0',maxWidth:960,margin:'0 auto'}}>
+      <AdBanner/>
+    </div>
     <div style={{maxWidth:600,margin:'0 auto',padding:'16px 14px'}}>
       {/* TABS */}
       <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',marginBottom:16}}>
