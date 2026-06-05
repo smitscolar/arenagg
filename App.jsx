@@ -572,7 +572,7 @@ if(!document.getElementById('ad-keyframes')){const s=document.createElement('sty
 
 function AdBanner({compact=false}){
   const[customAds,setCustomAds]=useState(getCustomAds)
-  const allAds = [...DEFAULT_ADS, ...customAds.filter(a=>a.active)]
+  const allAds = [...DEFAULT_ADS, ...((customAds||[]).filter(a=>a.active))]
   const[current,setCurrent]=useState(0)
   const[prev,setPrev]=useState(null)
   const[paused,setPaused]=useState(false)
@@ -586,7 +586,7 @@ function AdBanner({compact=false}){
       bc=new BroadcastChannel('arenagg_ads')
       bc.onmessage=(e)=>{if(e.data?.type==='ads_updated'&&Array.isArray(e.data.ads))setCustomAds(e.data.ads)}
     }catch(e){}
-    const onStorage=(e)=>{if(e.key===AD_STORAGE_KEY&&e.newValue)setCustomAds(JSON.parse(e.newValue)||[])}
+    const onStorage=(e)=>{if(e.key===AD_STORAGE_KEY&&e.newValue){try{const d=JSON.parse(e.newValue);setCustomAds(Array.isArray(d)?d:[])}catch(e2){}}}
     window.addEventListener('storage',onStorage)
     return()=>{try{bc&&bc.close()}catch(e){};window.removeEventListener('storage',onStorage)}
   },[])
@@ -692,7 +692,7 @@ function AdBanner({compact=false}){
           <span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',letterSpacing:2,opacity:0.8}}>🎮 GAME AD</span>
           {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}18`,padding:'1px 5px',borderRadius:2,border:`1px solid ${ad.accent||'#ffd700'}33`}}>SPONSOR</span>}
         </div>
-        <div style={{fontFamily:'var(--fm)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1.5,marginBottom:3,fontWeight:700}}>{ad.game.toUpperCase()}</div>
+        <div style={{fontFamily:'var(--fm)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1.5,marginBottom:3,fontWeight:700}}>{(ad.game||'').toUpperCase()}</div>
         <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2,textShadow:`0 0 20px ${ad.accent||'#ffd700'}44`}}>{ad.tagline}</div>
         <div style={{fontSize:10,color:'rgba(255,255,255,0.55)'}}>{ad.sub||ad.description}</div>
       </div>
