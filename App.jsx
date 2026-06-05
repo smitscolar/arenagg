@@ -7,13 +7,13 @@ const supabase = createClient(
 )
 
 const T = {
-  id:{nav:['Dashboard','Komisi','Turnamen','Buat','Peserta','Bracket','🔴 Live','🏅 Ranking','Keuangan','Setting'],login:'Masuk',register:'Daftar',email:'Email',password:'Password',community:'Nama Komunitas',btn_login:'🔑 Masuk',btn_register:'🚀 Buat Akun',dash_title:'Dashboard',dash_sub:'Overview realtime platform turnamen esport',active_t:'TURNAMEN AKTIF',revenue_lbl:'PENDAPATAN',quick:'AKSI CEPAT',btn_create:'＋ Buat Turnamen',btn_comm:'📈 Komisi',btn_part:'👥 Peserta',no_active:'Belum ada turnamen aktif',tourn_title:'Turnamen',btn_create_t:'＋ Buat',no_tourn:'TIDAK ADA TURNAMEN',share:'🔗 Bagikan',live_btn:'▶ Live',close_btn:'■ Tutup',activate:'✓ Aktif',create_title:'＋ BUAT TURNAMEN',edit_title:'✏ EDIT',tourn_name:'Nama Turnamen *',game:'Game',format:'Format',city:'Kota *',date:'Tanggal *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slot',desc:'Deskripsi',btn_save:'💾 Simpan',btn_create2:'🚀 Buat',btn_cancel:'Batal',teams_title:'Peserta & Tim',all:'Semua',btn_reg_team:'＋ Daftarkan Tim',team_name:'Nama Tim *',captain:'Kapten *',contact:'No. HP',members:'Member',tournament:'Turnamen *',paid_lbl:'Sudah bayar entry fee',btn_reg2:'Daftarkan',no_teams:'Belum ada tim',finance_title:'Keuangan',total_entry:'Total Entry',comm_lbl:'Komisi 15%',done:'Selesai',settings_title:'Pengaturan',account:'AKUN ORGANIZER',connected:'✓ Terhubung ke Supabase',bank_title:'💳 INFO PEMBAYARAN',bank_desc:'Data ini akan ditampilkan ke peserta saat mendaftar.',bank_name:'Nama Bank',acc_num:'Nomor Rekening / Nomor HP',acc_owner:'Nama Pemilik Rekening',wa_confirm:'No. WhatsApp Konfirmasi',btn_save_bank:'💾 Simpan Info Bank',saved:'✓ Tersimpan!',expansion:'EKSPANSI SEA',prize_pool:'Total Prize Pool',slots_left:'Slot Tersisa',slot_filled:'Slot Terisi',about:'TENTANG',reg_teams:'TIM TERDAFTAR',full:'❌ Slot Penuh',reg_now:'✅ Daftar Tim Sekarang →',closed_msg:'PENDAFTARAN DITUTUP',reg_title:'DAFTARKAN TIM',pay_title:'CARA PEMBAYARAN',amount:'Jumlah Entry Fee',transfer_to:'Transfer ke:',acc_no:'No. Rek:',an:'A/N:',confirm_wa:'Konfirmasi ke WA:',contact_org:'📱 Hubungi organizer',btn_submit:'🚀 Kirim',registering:'Mendaftarkan...',success_title:'BERHASIL!',success_msg:'terdaftar di',back:'← Kembali',back_detail:'← Lihat Detail',rev_title:'📈 LAPORAN KOMISI',rev_sub:'Pendapatan realtime',saldo:'SALDO TERSEDIA',income:'Masuk:',withdrawn:'Dicairkan:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'SALDO',amount_lbl:'Jumlah (Rp)',acc_lbl:'Rekening',btn_wd:'💸 Cairkan',comm_per:'KOMISI PER TURNAMEN',no_tourn_yet:'Buat turnamen pertamamu!',online:'ONLINE',logout:'Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PREVIEW PESERTA',lang_lbl:'Bahasa',edit:'✏ Edit',profile_title:'PROFIL ORGANIZER',change_photo:'Klik untuk ganti foto',name_lbl:'Nama Organizer',save_profile:'💾 Simpan Profil',profile_saved:'✓ Profil Tersimpan!',portal_peserta:'PORTAL PESERTA',masuk_tim:'Masuk Tim',cara_masuk:'Cara Masuk',nama_tim_label:'NAMA TIM *',nohp_label:'NO. HP (SAAT DAFTAR) *',nama_tim_ph:'Nama tim saat daftar...',nohp_ph:'08xxxxxxxxxx',btn_masuk_tim:'⚡ Masuk ke Dashboard Tim',belum_daftar:'Belum daftar?',portal_sub:'Akses dashboard tim & pantau pertandingan live',pd_beranda:'Beranda',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'INFO TURNAMEN',pd_lunas:'✓ LUNAS',pd_blm_bayar:'⏳ BELUM BAYAR',pd_status_bayar:'Status Bayar',pd_entry_unpaid:'⚠ ENTRY FEE BELUM DIBAYAR',pd_tap_bayar:'TAP UNTUK BAYAR',pd_buka_wallet:'Buka Wallet untuk info rekening & kirim bukti bayar',pd_info_org:'🏦 INFO PEMBAYARAN ORGANIZER',pd_bank:'Bank / E-Wallet',pd_norek:'Nomor Rekening / HP',pd_atasnama:'Atas Nama',pd_salin:'SALIN',pd_konfirm_wa:'📱 Konfirmasi via WA',pd_keluar:'Keluar dari Portal',pd_buka_wallet_btn:'💳 Buka Wallet & Pembayaran',},
-  en:{nav:['Dashboard','Revenue','Tournaments','Create','Participants','Bracket','🔴 Live','🏅 Ranking','Finance','Settings'],login:'Login',register:'Register',email:'Email',password:'Password',community:'Community Name',btn_login:'🔑 Login',btn_register:'🚀 Create Account',dash_title:'Dashboard',dash_sub:'Realtime esport tournament platform overview',active_t:'ACTIVE TOURNAMENTS',revenue_lbl:'REVENUE',quick:'QUICK ACTIONS',btn_create:'＋ Create Tournament',btn_comm:'📈 Revenue',btn_part:'👥 Participants',no_active:'No active tournaments',tourn_title:'Tournaments',btn_create_t:'＋ Create',no_tourn:'NO TOURNAMENTS',share:'🔗 Share',live_btn:'▶ Live',close_btn:'■ Close',activate:'✓ Activate',create_title:'＋ CREATE TOURNAMENT',edit_title:'✏ EDIT',tourn_name:'Tournament Name *',game:'Game',format:'Format',city:'City *',date:'Start Date *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slots',desc:'Description',btn_save:'💾 Save',btn_create2:'🚀 Create',btn_cancel:'Cancel',teams_title:'Participants & Teams',all:'All',btn_reg_team:'＋ Register Team',team_name:'Team Name *',captain:'Captain *',contact:'Phone No.',members:'Members',tournament:'Tournament *',paid_lbl:'Entry fee paid',btn_reg2:'Register',no_teams:'No teams yet',finance_title:'Finance',total_entry:'Total Entry',comm_lbl:'Commission 15%',done:'Done',settings_title:'Settings',account:'ORGANIZER ACCOUNT',connected:'✓ Connected to Supabase',bank_title:'💳 PAYMENT INFO',bank_desc:'This info will be shown to participants.',bank_name:'Bank Name',acc_num:'Account / Phone Number',acc_owner:'Account Owner Name',wa_confirm:'WhatsApp Confirmation',btn_save_bank:'💾 Save Payment Info',saved:'✓ Saved!',expansion:'SEA EXPANSION',prize_pool:'Total Prize Pool',slots_left:'Slots Left',slot_filled:'Slots Filled',about:'ABOUT',reg_teams:'REGISTERED TEAMS',full:'❌ Full',reg_now:'✅ Register Now →',closed_msg:'REGISTRATION CLOSED',reg_title:'REGISTER TEAM',pay_title:'HOW TO PAY',amount:'Entry Fee Amount',transfer_to:'Transfer to:',acc_no:'Acc No:',an:'Name:',confirm_wa:'Confirm via WA:',contact_org:'📱 Contact organizer',btn_submit:'🚀 Submit',registering:'Registering...',success_title:'SUCCESS!',success_msg:'registered in',back:'← Back',back_detail:'← View Detail',rev_title:'📈 REVENUE REPORT',rev_sub:'Realtime earnings',saldo:'AVAILABLE BALANCE',income:'Income:',withdrawn:'Withdrawn:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'BALANCE',amount_lbl:'Amount',acc_lbl:'Account',btn_wd:'💸 Withdraw',comm_per:'COMMISSION PER TOURNAMENT',no_tourn_yet:'Create your first tournament!',online:'ONLINE',logout:'Logout',select_bank:'-- Select Bank --',preview_lbl:'PARTICIPANT PREVIEW',lang_lbl:'Language',edit:'✏ Edit',profile_title:'ORGANIZER PROFILE',change_photo:'Click to change photo',name_lbl:'Organizer Name',save_profile:'💾 Save Profile',profile_saved:'✓ Profile Saved!',portal_peserta:'PARTICIPANT PORTAL',masuk_tim:'Team Login',cara_masuk:'How to Login',nama_tim_label:'TEAM NAME *',nohp_label:'PHONE NUMBER *',nama_tim_ph:'Team name at registration...',nohp_ph:'Phone number',btn_masuk_tim:'⚡ Enter Team Dashboard',belum_daftar:'Not registered?',portal_sub:'Access team dashboard & watch live',pd_beranda:'Home',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'TOURNAMENT INFO',pd_lunas:'✓ PAID',pd_blm_bayar:'⏳ UNPAID',pd_status_bayar:'Payment Status',pd_entry_unpaid:'⚠ ENTRY FEE UNPAID',pd_tap_bayar:'TAP TO PAY',pd_buka_wallet:'Open Wallet for payment info & send proof',pd_info_org:'🏦 ORGANIZER PAYMENT INFO',pd_bank:'Bank / E-Wallet',pd_norek:'Account / Phone Number',pd_atasnama:'Account Name',pd_salin:'COPY',pd_konfirm_wa:'📱 Confirm via WA',pd_keluar:'Exit Portal',pd_buka_wallet_btn:'💳 Open Wallet & Payment',},
-  fil:{nav:['Dashboard','Komisyon','Torneo','Gumawa','Kalahok','Bracket','🔴 Live','🏅 Ranking','Pananalapi','Setting'],login:'Mag-login',register:'Mag-register',email:'Email',password:'Password',community:'Pangalan ng Komunidad',btn_login:'🔑 Mag-login',btn_register:'🚀 Gumawa ng Account',dash_title:'Dashboard',dash_sub:'Real-time na pangkalahatang-ideya',active_t:'MGA AKTIBONG TORNEO',revenue_lbl:'KITA',quick:'MABILIS NA AKSYON',btn_create:'＋ Gumawa ng Torneo',btn_comm:'📈 Komisyon',btn_part:'👥 Kalahok',no_active:'Walang aktibong torneo',tourn_title:'Mga Torneo',btn_create_t:'＋ Gumawa',no_tourn:'WALANG TORNEO',share:'🔗 Ibahagi',live_btn:'▶ Live',close_btn:'■ Isara',activate:'✓ I-activate',create_title:'＋ GUMAWA NG TORNEO',edit_title:'✏ I-EDIT',tourn_name:'Pangalan ng Torneo *',game:'Laro',format:'Format',city:'Lungsod *',date:'Petsa *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Puwesto',desc:'Paglalarawan',btn_save:'💾 I-save',btn_create2:'🚀 Gumawa',btn_cancel:'Kanselahin',teams_title:'Mga Kalahok at Koponan',all:'Lahat',btn_reg_team:'＋ Mag-register',team_name:'Pangalan ng Koponan *',captain:'Kapitan *',contact:'Telepono',members:'Miyembro',tournament:'Torneo *',paid_lbl:'Nabayaran na',btn_reg2:'Mag-register',no_teams:'Walang koponan pa',finance_title:'Pananalapi',total_entry:'Kabuuang Entry',comm_lbl:'Komisyon 15%',done:'Tapos',settings_title:'Mga Setting',account:'ACCOUNT NG ORGANIZER',connected:'✓ Nakakonekta sa Supabase',bank_title:'💳 IMPORMASYON SA BAYAD',bank_desc:'Ipapakita sa mga kalahok.',bank_name:'Pangalan ng Bangko',acc_num:'Numero ng Account',acc_owner:'Pangalan ng May-ari',wa_confirm:'WhatsApp para sa Kumpirmasyon',btn_save_bank:'💾 I-save',saved:'✓ Na-save!',expansion:'PAGPAPALAWAK SA SEA',prize_pool:'Kabuuang Prize Pool',slots_left:'Natitirang Puwesto',slot_filled:'Napuno na Puwesto',about:'TUNGKOL SA',reg_teams:'MGA NAKAREHISTRONG KOPONAN',full:'❌ Puno na',reg_now:'✅ Mag-register Ngayon →',closed_msg:'SARADO NA',reg_title:'IREHISTRO ANG KOPONAN',pay_title:'PAANO MAGBAYAD',amount:'Halaga ng Entry Fee',transfer_to:'I-transfer sa:',acc_no:'Acc No:',an:'Pangalan:',confirm_wa:'Kumpirmahin sa WA:',contact_org:'📱 Makipag-ugnayan',btn_submit:'🚀 Isumite',registering:'Nagrerehistro...',success_title:'MATAGUMPAY!',success_msg:'nairehistro sa',back:'← Bumalik',back_detail:'← Tingnan',rev_title:'📈 ULAT NG KOMISYON',rev_sub:'Real-time na kita',saldo:'AVAILABLE NA BALANSE',income:'Kita:',withdrawn:'Na-withdraw:',withdraw_btn:'💸 I-withdraw',withdraw_title:'💸 I-WITHDRAW',saldo_lbl:'BALANSE',amount_lbl:'Halaga',acc_lbl:'Account',btn_wd:'💸 I-withdraw',comm_per:'KOMISYON BAWAT TORNEO',no_tourn_yet:'Gumawa ng iyong unang torneo!',online:'ONLINE',logout:'Mag-logout',select_bank:'-- Piliin ang Bangko --',preview_lbl:'PREVIEW NG KALAHOK',lang_lbl:'Wika',edit:'✏ I-edit',profile_title:'PROFILE NG ORGANIZER',change_photo:'I-click para palitan',name_lbl:'Pangalan ng Organizer',save_profile:'💾 I-save ang Profile',profile_saved:'✓ Na-save ang Profile!',portal_peserta:'PORTAL NG KALAHOK',masuk_tim:'Login ng Team',cara_masuk:'Paano Mag-login',nama_tim_label:'PANGALAN NG TEAM *',nohp_label:'NUMERO NG TELEPONO *',nama_tim_ph:'Pangalan ng team...',nohp_ph:'Numero ng telepono',btn_masuk_tim:'⚡ Pumasok sa Dashboard',belum_daftar:'Hindi pa nakarehistro?',portal_sub:'I-access ang dashboard ng team',pd_beranda:'Home',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'INFO NG TORNEO',pd_lunas:'✓ BAYAD NA',pd_blm_bayar:'⏳ HINDI PA BAYAD',pd_status_bayar:'Status ng Bayad',pd_entry_unpaid:'⚠ ENTRY FEE HINDI PA BAYAD',pd_tap_bayar:'I-TAP PARA BAYAD',pd_buka_wallet:'Buksan ang Wallet para sa impormasyon sa bayad',pd_info_org:'🏦 IMPORMASYON SA BAYAD NG ORGANIZER',pd_bank:'Bangko / E-Wallet',pd_norek:'Numero ng Account',pd_atasnama:'Pangalan ng Account',pd_salin:'KOPYAHIN',pd_konfirm_wa:'📱 Kumpirmahin sa WA',pd_keluar:'Umalis sa Portal',pd_buka_wallet_btn:'💳 Buksan ang Wallet',},
-  vi:{nav:['Bảng điều khiển','Hoa hồng','Giải đấu','Tạo mới','Người tham gia','Bracket','🔴 Live','🏅 Xếp hạng','Tài chính','Cài đặt'],login:'Đăng nhập',register:'Đăng ký',email:'Email',password:'Mật khẩu',community:'Tên cộng đồng',btn_login:'🔑 Đăng nhập',btn_register:'🚀 Tạo tài khoản',dash_title:'Bảng điều khiển',dash_sub:'Tổng quan thời gian thực',active_t:'GIẢI ĐẤU ĐANG HOẠT ĐỘNG',revenue_lbl:'DOANH THU',quick:'THAO TÁC NHANH',btn_create:'＋ Tạo giải đấu',btn_comm:'📈 Hoa hồng',btn_part:'👥 Người tham gia',no_active:'Không có giải đấu',tourn_title:'Giải đấu',btn_create_t:'＋ Tạo',no_tourn:'KHÔNG CÓ GIẢI ĐẤU',share:'🔗 Chia sẻ',live_btn:'▶ Trực tiếp',close_btn:'■ Đóng',activate:'✓ Kích hoạt',create_title:'＋ TẠO GIẢI ĐẤU',edit_title:'✏ CHỈNH SỬA',tourn_name:'Tên giải đấu *',game:'Trò chơi',format:'Thể thức',city:'Thành phố *',date:'Ngày *',prize:'Tổng giải thưởng *',entry:'Phí tham gia *',slots:'Số suất',desc:'Mô tả',btn_save:'💾 Lưu',btn_create2:'🚀 Tạo',btn_cancel:'Hủy',teams_title:'Người tham gia & Đội',all:'Tất cả',btn_reg_team:'＋ Đăng ký đội',team_name:'Tên đội *',captain:'Đội trưởng *',contact:'Số điện thoại',members:'Thành viên',tournament:'Giải đấu *',paid_lbl:'Đã thanh toán',btn_reg2:'Đăng ký',no_teams:'Chưa có đội',finance_title:'Tài chính',total_entry:'Tổng phí',comm_lbl:'Hoa hồng 15%',done:'Hoàn thành',settings_title:'Cài đặt',account:'TÀI KHOẢN',connected:'✓ Đã kết nối',bank_title:'💳 THÔNG TIN THANH TOÁN',bank_desc:'Hiển thị cho người tham gia.',bank_name:'Tên ngân hàng',acc_num:'Số tài khoản',acc_owner:'Tên chủ tài khoản',wa_confirm:'WhatsApp xác nhận',btn_save_bank:'💾 Lưu',saved:'✓ Đã lưu!',expansion:'MỞ RỘNG ĐÔNG NAM Á',prize_pool:'Tổng giải thưởng',slots_left:'Suất còn lại',slot_filled:'Suất đã đăng ký',about:'GIỚI THIỆU',reg_teams:'ĐỘI ĐÃ ĐĂNG KÝ',full:'❌ Hết suất',reg_now:'✅ Đăng ký ngay →',closed_msg:'ĐÃ ĐÓNG',reg_title:'ĐĂNG KÝ ĐỘI',pay_title:'CÁCH THANH TOÁN',amount:'Số tiền phí',transfer_to:'Chuyển khoản:',acc_no:'Số TK:',an:'Tên:',confirm_wa:'Xác nhận qua WA:',contact_org:'📱 Liên hệ',btn_submit:'🚀 Gửi',registering:'Đang đăng ký...',success_title:'THÀNH CÔNG!',success_msg:'đã đăng ký tham gia',back:'← Quay lại',back_detail:'← Xem chi tiết',rev_title:'📈 BÁO CÁO HOA HỒNG',rev_sub:'Thu nhập thực',saldo:'SỐ DƯ',income:'Thu nhập:',withdrawn:'Đã rút:',withdraw_btn:'💸 Rút tiền',withdraw_title:'💸 RÚT TIỀN',saldo_lbl:'SỐ DƯ',amount_lbl:'Số tiền',acc_lbl:'Tài khoản',btn_wd:'💸 Rút',comm_per:'HOA HỒNG THEO GIẢI',no_tourn_yet:'Tạo giải đấu đầu tiên!',online:'TRỰC TUYẾN',logout:'Đăng xuất',select_bank:'-- Chọn ngân hàng --',preview_lbl:'XEM TRƯỚC',lang_lbl:'Ngôn ngữ',edit:'✏ Sửa',profile_title:'HỒ SƠ',change_photo:'Nhấn để đổi ảnh',name_lbl:'Tên ban tổ chức',save_profile:'💾 Lưu',profile_saved:'✓ Đã lưu!',portal_peserta:'CỔNG THÀNH VIÊN',masuk_tim:'Đăng nhập đội',cara_masuk:'Cách đăng nhập',nama_tim_label:'TÊN ĐỘI *',nohp_label:'SỐ ĐIỆN THOẠI *',nama_tim_ph:'Tên đội khi đăng ký...',nohp_ph:'Số điện thoại',btn_masuk_tim:'⚡ Vào Dashboard',belum_daftar:'Chưa đăng ký?',portal_sub:'Truy cập dashboard & xem trực tiếp',pd_beranda:'Trang chủ',pd_wallet:'Ví',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Thông tin',pd_prize:'Tổng giải thưởng',pd_entry:'Phí tham gia',pd_format:'Thể thức',pd_status:'Trạng thái',pd_info_tourn:'THÔNG TIN GIẢI ĐẤU',pd_lunas:'✓ ĐÃ THANH TOÁN',pd_blm_bayar:'⏳ CHƯA THANH TOÁN',pd_status_bayar:'Trạng thái thanh toán',pd_entry_unpaid:'⚠ CHƯA THANH TOÁN PHÍ',pd_tap_bayar:'NHẤN ĐỂ THANH TOÁN',pd_buka_wallet:'Mở Ví để xem thông tin thanh toán',pd_info_org:'🏦 THÔNG TIN THANH TOÁN CỦA BTC',pd_bank:'Ngân hàng / E-Wallet',pd_norek:'Số tài khoản',pd_atasnama:'Tên chủ tài khoản',pd_salin:'SAO CHÉP',pd_konfirm_wa:'📱 Xác nhận qua WA',pd_keluar:'Thoát Portal',pd_buka_wallet_btn:'💳 Mở Ví & Thanh Toán',},
-  th:{nav:['แดชบอร์ด','ค่าคอมมิชชัน','ทัวร์นาเมนต์','สร้าง','ผู้เข้าร่วม','แบร็กเก็ต','🔴 Live','🏅 อันดับ','การเงิน','ตั้งค่า'],login:'เข้าสู่ระบบ',register:'ลงทะเบียน',email:'อีเมล',password:'รหัสผ่าน',community:'ชื่อชุมชน',btn_login:'🔑 เข้าสู่ระบบ',btn_register:'🚀 สร้างบัญชี',dash_title:'แดชบอร์ด',dash_sub:'ภาพรวมแบบเรียลไทม์',active_t:'ทัวร์นาเมนต์ที่ใช้งาน',revenue_lbl:'รายได้',quick:'การดำเนินการด่วน',btn_create:'＋ สร้างทัวร์นาเมนต์',btn_comm:'📈 ค่าคอมมิชชัน',btn_part:'👥 ผู้เข้าร่วม',no_active:'ไม่มีทัวร์นาเมนต์',tourn_title:'ทัวร์นาเมนต์',btn_create_t:'＋ สร้าง',no_tourn:'ไม่มีทัวร์นาเมนต์',share:'🔗 แชร์',live_btn:'▶ ไลฟ์',close_btn:'■ ปิด',activate:'✓ เปิดใช้งาน',create_title:'＋ สร้างทัวร์นาเมนต์',edit_title:'✏ แก้ไข',tourn_name:'ชื่อ *',game:'เกม',format:'รูปแบบ',city:'เมือง *',date:'วันที่ *',prize:'รางวัล *',entry:'ค่าธรรมเนียม *',slots:'ที่นั่ง',desc:'คำอธิบาย',btn_save:'💾 บันทึก',btn_create2:'🚀 สร้าง',btn_cancel:'ยกเลิก',teams_title:'ผู้เข้าร่วมและทีม',all:'ทั้งหมด',btn_reg_team:'＋ ลงทะเบียนทีม',team_name:'ชื่อทีม *',captain:'กัปตัน *',contact:'โทรศัพท์',members:'สมาชิก',tournament:'ทัวร์นาเมนต์ *',paid_lbl:'ชำระแล้ว',btn_reg2:'ลงทะเบียน',no_teams:'ยังไม่มีทีม',finance_title:'การเงิน',total_entry:'ค่าธรรมเนียมรวม',comm_lbl:'ค่าคอมมิชชัน 15%',done:'เสร็จสิ้น',settings_title:'การตั้งค่า',account:'บัญชีผู้จัดงาน',connected:'✓ เชื่อมต่อแล้ว',bank_title:'💳 ข้อมูลการชำระเงิน',bank_desc:'แสดงให้ผู้เข้าร่วมเห็น',bank_name:'ชื่อธนาคาร',acc_num:'เลขบัญชี',acc_owner:'ชื่อเจ้าของบัญชี',wa_confirm:'WhatsApp ยืนยัน',btn_save_bank:'💾 บันทึก',saved:'✓ บันทึกแล้ว!',expansion:'การขยายตัวอาเซียน',prize_pool:'เงินรางวัลรวม',slots_left:'ที่นั่งที่เหลือ',slot_filled:'ที่นั่งที่จอง',about:'เกี่ยวกับ',reg_teams:'ทีมที่ลงทะเบียน',full:'❌ เต็มแล้ว',reg_now:'✅ ลงทะเบียน →',closed_msg:'ปิดรับสมัคร',reg_title:'ลงทะเบียนทีม',pay_title:'วิธีชำระ',amount:'จำนวนเงิน',transfer_to:'โอนไปที่:',acc_no:'เลขบัญชี:',an:'ชื่อ:',confirm_wa:'ยืนยันผ่าน WA:',contact_org:'📱 ติดต่อ',btn_submit:'🚀 ส่ง',registering:'กำลังลงทะเบียน...',success_title:'สำเร็จ!',success_msg:'ลงทะเบียนใน',back:'← กลับ',back_detail:'← ดูรายละเอียด',rev_title:'📈 รายงาน',rev_sub:'รายได้เรียลไทม์',saldo:'ยอดคงเหลือ',income:'รายรับ:',withdrawn:'ถอนออก:',withdraw_btn:'💸 ถอนเงิน',withdraw_title:'💸 ถอนเงิน',saldo_lbl:'ยอดคงเหลือ',amount_lbl:'จำนวน',acc_lbl:'บัญชี',btn_wd:'💸 ถอน',comm_per:'ค่าคอมมิชชันต่อทัวร์',no_tourn_yet:'สร้างทัวร์นาเมนต์แรก!',online:'ออนไลน์',logout:'ออกจากระบบ',select_bank:'-- เลือกธนาคาร --',preview_lbl:'ตัวอย่าง',lang_lbl:'ภาษา',edit:'✏ แก้ไข',profile_title:'โปรไฟล์',change_photo:'คลิกเพื่อเปลี่ยนรูป',name_lbl:'ชื่อผู้จัดงาน',save_profile:'💾 บันทึก',profile_saved:'✓ บันทึกแล้ว!',portal_peserta:'พอร์ทัลผู้แข่งขัน',masuk_tim:'เข้าสู่ระบบทีม',cara_masuk:'วิธีเข้าสู่ระบบ',nama_tim_label:'ชื่อทีม *',nohp_label:'หมายเลขโทรศัพท์ *',nama_tim_ph:'ชื่อทีมตอนลงทะเบียน...',nohp_ph:'หมายเลขโทรศัพท์',btn_masuk_tim:'⚡ เข้าสู่แดชบอร์ดทีม',belum_daftar:'ยังไม่ได้ลงทะเบียน?',portal_sub:'เข้าถึงแดชบอร์ดและดูสด',pd_beranda:'หน้าหลัก',pd_wallet:'กระเป๋า',pd_live:'คะแนนสด',pd_stream:'ถ่ายทอดสด',pd_chat:'แชท',pd_info:'ข้อมูล',pd_prize:'เงินรางวัล',pd_entry:'ค่าธรรมเนียม',pd_format:'รูปแบบ',pd_status:'สถานะ',pd_info_tourn:'ข้อมูลทัวร์นาเมนต์',pd_lunas:'✓ ชำระแล้ว',pd_blm_bayar:'⏳ ยังไม่ชำระ',pd_status_bayar:'สถานะการชำระ',pd_entry_unpaid:'⚠ ยังไม่ชำระค่าธรรมเนียม',pd_tap_bayar:'แตะเพื่อชำระ',pd_buka_wallet:'เปิดกระเป๋าเพื่อดูข้อมูลการชำระ',pd_info_org:'🏦 ข้อมูลการชำระของผู้จัด',pd_bank:'ธนาคาร / E-Wallet',pd_norek:'หมายเลขบัญชี',pd_atasnama:'ชื่อบัญชี',pd_salin:'คัดลอก',pd_konfirm_wa:'📱 ยืนยันผ่าน WA',pd_keluar:'ออกจากพอร์ทัล',pd_buka_wallet_btn:'💳 เปิดกระเป๋า',},
-  zh:{nav:['仪表板','佣金','锦标赛','创建','参与者','对阵表','🔴 Live','🏅 排名','财务','设置'],login:'登录',register:'注册',email:'邮箱',password:'密码',community:'社区名称',btn_login:'🔑 登录',btn_register:'🚀 创建账户',dash_title:'仪表板',dash_sub:'实时概览',active_t:'进行中的锦标赛',revenue_lbl:'收入',quick:'快速操作',btn_create:'＋ 创建锦标赛',btn_comm:'📈 佣金',btn_part:'👥 参与者',no_active:'暂无锦标赛',tourn_title:'锦标赛',btn_create_t:'＋ 创建',no_tourn:'暂无锦标赛',share:'🔗 分享',live_btn:'▶ 直播',close_btn:'■ 关闭',activate:'✓ 激活',create_title:'＋ 创建锦标赛',edit_title:'✏ 编辑',tourn_name:'名称 *',game:'游戏',format:'格式',city:'城市 *',date:'日期 *',prize:'奖金池 *',entry:'报名费 *',slots:'名额',desc:'描述',btn_save:'💾 保存',btn_create2:'🚀 创建',btn_cancel:'取消',teams_title:'参与者和队伍',all:'全部',btn_reg_team:'＋ 注册队伍',team_name:'队伍名称 *',captain:'队长 *',contact:'电话',members:'成员',tournament:'锦标赛 *',paid_lbl:'已支付',btn_reg2:'注册',no_teams:'暂无队伍',finance_title:'财务',total_entry:'总报名费',comm_lbl:'佣金 15%',done:'已完成',settings_title:'设置',account:'主办方账户',connected:'✓ 已连接',bank_title:'💳 支付信息',bank_desc:'显示给参与者。',bank_name:'银行名称',acc_num:'账号',acc_owner:'账户持有人',wa_confirm:'WhatsApp 确认',btn_save_bank:'💾 保存',saved:'✓ 已保存!',expansion:'东南亚扩张',prize_pool:'总奖金池',slots_left:'剩余名额',slot_filled:'已报名',about:'关于',reg_teams:'已注册队伍',full:'❌ 已满',reg_now:'✅ 立即报名 →',closed_msg:'已截止',reg_title:'注册队伍',pay_title:'如何支付',amount:'金额',transfer_to:'转账至:',acc_no:'账号:',an:'姓名:',confirm_wa:'通过WA确认:',contact_org:'📱 联系主办方',btn_submit:'🚀 提交',registering:'注册中...',success_title:'成功!',success_msg:'已报名参加',back:'← 返回',back_detail:'← 查看详情',rev_title:'📈 佣金报告',rev_sub:'实时收入',saldo:'可用余额',income:'收入:',withdrawn:'已提现:',withdraw_btn:'💸 提现',withdraw_title:'💸 提现',saldo_lbl:'余额',amount_lbl:'金额',acc_lbl:'账户',btn_wd:'💸 提现',comm_per:'各锦标赛佣金',no_tourn_yet:'创建第一个锦标赛!',online:'在线',logout:'退出',select_bank:'-- 选择银行 --',preview_lbl:'参与者预览',lang_lbl:'语言',edit:'✏ 编辑',profile_title:'主办方资料',change_photo:'点击更换头像',name_lbl:'名称',save_profile:'💾 保存',profile_saved:'✓ 已保存!',portal_peserta:'参赛者门户',masuk_tim:'队伍登录',cara_masuk:'登录方法',nama_tim_label:'队伍名称 *',nohp_label:'手机号码 *',nama_tim_ph:'注册时的队伍名称...',nohp_ph:'手机号码',btn_masuk_tim:'⚡ 进入队伍仪表板',belum_daftar:'还没注册？',portal_sub:'访问队伍仪表板并观看直播',pd_beranda:'主页',pd_wallet:'钱包',pd_live:'实时得分',pd_stream:'直播',pd_chat:'聊天',pd_info:'信息',pd_prize:'奖金池',pd_entry:'报名费',pd_format:'格式',pd_status:'状态',pd_info_tourn:'锦标赛信息',pd_lunas:'✓ 已付款',pd_blm_bayar:'⏳ 未付款',pd_status_bayar:'付款状态',pd_entry_unpaid:'⚠ 报名费未支付',pd_tap_bayar:'点击支付',pd_buka_wallet:'打开钱包查看付款信息',pd_info_org:'🏦 主办方付款信息',pd_bank:'银行 / 电子钱包',pd_norek:'账号',pd_atasnama:'账户姓名',pd_salin:'复制',pd_konfirm_wa:'📱 通过WA确认',pd_keluar:'退出门户',pd_buka_wallet_btn:'💳 打开钱包',},
-  ms:{nav:['Papan Pemuka','Komisen','Kejohanan','Cipta','Peserta','Bracket','🔴 Live','🏅 Kedudukan','Kewangan','Tetapan'],login:'Log Masuk',register:'Daftar',email:'E-mel',password:'Kata Laluan',community:'Nama Komuniti',btn_login:'🔑 Log Masuk',btn_register:'🚀 Buat Akaun',dash_title:'Papan Pemuka',dash_sub:'Gambaran masa nyata',active_t:'KEJOHANAN AKTIF',revenue_lbl:'PENDAPATAN',quick:'TINDAKAN PANTAS',btn_create:'＋ Cipta Kejohanan',btn_comm:'📈 Komisen',btn_part:'👥 Peserta',no_active:'Tiada kejohanan aktif',tourn_title:'Kejohanan',btn_create_t:'＋ Cipta',no_tourn:'TIADA KEJOHANAN',share:'🔗 Kongsi',live_btn:'▶ Langsung',close_btn:'■ Tutup',activate:'✓ Aktifkan',create_title:'＋ CIPTA KEJOHANAN',edit_title:'✏ SUNTING',tourn_name:'Nama *',game:'Permainan',format:'Format',city:'Bandar *',date:'Tarikh *',prize:'Hadiah *',entry:'Yuran *',slots:'Slot',desc:'Penerangan',btn_save:'💾 Simpan',btn_create2:'🚀 Cipta',btn_cancel:'Batal',teams_title:'Peserta & Pasukan',all:'Semua',btn_reg_team:'＋ Daftar Pasukan',team_name:'Nama Pasukan *',captain:'Kapten *',contact:'Telefon',members:'Ahli',tournament:'Kejohanan *',paid_lbl:'Yuran dibayar',btn_reg2:'Daftar',no_teams:'Tiada pasukan',finance_title:'Kewangan',total_entry:'Jumlah Yuran',comm_lbl:'Komisen 15%',done:'Selesai',settings_title:'Tetapan',account:'AKAUN PENGANJUR',connected:'✓ Disambungkan',bank_title:'💳 MAKLUMAT BAYARAN',bank_desc:'Dipaparkan kepada peserta.',bank_name:'Nama Bank',acc_num:'Nombor Akaun',acc_owner:'Nama Pemilik',wa_confirm:'WhatsApp Pengesahan',btn_save_bank:'💾 Simpan',saved:'✓ Tersimpan!',expansion:'PENGEMBANGAN SEA',prize_pool:'Jumlah Hadiah',slots_left:'Slot Berbaki',slot_filled:'Slot Diisi',about:'TENTANG',reg_teams:'PASUKAN BERDAFTAR',full:'❌ Penuh',reg_now:'✅ Daftar Sekarang →',closed_msg:'PENDAFTARAN TUTUP',reg_title:'DAFTAR PASUKAN',pay_title:'CARA BAYAR',amount:'Jumlah Yuran',transfer_to:'Pindah ke:',acc_no:'No. Akaun:',an:'Nama:',confirm_wa:'Sahkan WA:',contact_org:'📱 Hubungi',btn_submit:'🚀 Hantar',registering:'Mendaftar...',success_title:'BERJAYA!',success_msg:'didaftarkan dalam',back:'← Kembali',back_detail:'← Lihat',rev_title:'📈 LAPORAN',rev_sub:'Pendapatan masa nyata',saldo:'BAKI',income:'Masuk:',withdrawn:'Keluar:',withdraw_btn:'💸 Keluarkan',withdraw_title:'💸 PENGELUARAN',saldo_lbl:'BAKI',amount_lbl:'Jumlah',acc_lbl:'Akaun',btn_wd:'💸 Keluarkan',comm_per:'KOMISEN PER KEJOHANAN',no_tourn_yet:'Cipta kejohanan pertama!',online:'DALAM TALIAN',logout:'Log Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PRATONTON',lang_lbl:'Bahasa',edit:'✏ Sunting',profile_title:'PROFIL PENGANJUR',change_photo:'Klik untuk tukar foto',name_lbl:'Nama Penganjur',save_profile:'💾 Simpan',profile_saved:'✓ Tersimpan!',portal_peserta:'PORTAL PESERTA',masuk_tim:'Log Masuk Pasukan',cara_masuk:'Cara Log Masuk',nama_tim_label:'NAMA PASUKAN *',nohp_label:'NO. TELEFON *',nama_tim_ph:'Nama pasukan semasa mendaftar...',nohp_ph:'Nombor telefon',btn_masuk_tim:'⚡ Masuk Dashboard Pasukan',belum_daftar:'Belum daftar?',portal_sub:'Akses dashboard pasukan & tonton perlawanan langsung',pd_beranda:'Laman Utama',pd_wallet:'Dompet',pd_live:'Skor Langsung',pd_stream:'Siaran Langsung',pd_chat:'Sembang',pd_info:'Maklumat',pd_prize:'Hadiah',pd_entry:'Yuran',pd_format:'Format',pd_status:'Status',pd_info_tourn:'MAKLUMAT KEJOHANAN',pd_lunas:'✓ SUDAH BAYAR',pd_blm_bayar:'⏳ BELUM BAYAR',pd_status_bayar:'Status Bayaran',pd_entry_unpaid:'⚠ YURAN BELUM DIBAYAR',pd_tap_bayar:'KETUK UNTUK BAYAR',pd_buka_wallet:'Buka Dompet untuk maklumat bayaran',pd_info_org:'🏦 MAKLUMAT BAYARAN PENGANJUR',pd_bank:'Bank / E-Wallet',pd_norek:'Nombor Akaun',pd_atasnama:'Nama Akaun',pd_salin:'SALIN',pd_konfirm_wa:'📱 Sahkan via WA',pd_keluar:'Keluar Portal',pd_buka_wallet_btn:'💳 Buka Dompet',},
+  id:{nav:['Dashboard','Komisi','Turnamen','Buat','Peserta','Bracket','🔴 Live','🏅 Ranking','Keuangan','Setting'],login:'Masuk',register:'Daftar',email:'Email',password:'Password',community:'Nama Komunitas',btn_login:'🔑 Masuk',btn_register:'🚀 Buat Akun',dash_title:'Dashboard',dash_sub:'Overview realtime platform turnamen esport',active_t:'TURNAMEN AKTIF',revenue_lbl:'PENDAPATAN',quick:'AKSI CEPAT',btn_create:'＋ Buat Turnamen',btn_comm:'📈 Komisi',btn_part:'👥 Peserta',no_active:'Belum ada turnamen aktif',tourn_title:'Turnamen',btn_create_t:'＋ Buat',no_tourn:'TIDAK ADA TURNAMEN',share:'🔗 Bagikan',live_btn:'▶ Live',close_btn:'■ Tutup',activate:'✓ Aktif',create_title:'＋ BUAT TURNAMEN',edit_title:'✏ EDIT',tourn_name:'Nama Turnamen *',game:'Game',format:'Format',city:'Kota *',date:'Tanggal *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slot',desc:'Deskripsi',btn_save:'💾 Simpan',btn_create2:'🚀 Buat',btn_cancel:'Batal',teams_title:'Peserta & Tim',all:'Semua',btn_reg_team:'＋ Daftarkan Tim',team_name:'Nama Tim *',captain:'Kapten *',contact:'No. HP',members:'Member',tournament:'Turnamen *',paid_lbl:'Sudah bayar entry fee',btn_reg2:'Daftarkan',no_teams:'Belum ada tim',finance_title:'Keuangan',total_entry:'Total Entry',comm_lbl:'Komisi 15%',done:'Selesai',settings_title:'Pengaturan',account:'AKUN ORGANIZER',connected:'✓ Terhubung ke Supabase',bank_title:'💳 INFO PEMBAYARAN',bank_desc:'Data ini akan ditampilkan ke peserta saat mendaftar.',bank_name:'Nama Bank',acc_num:'Nomor Rekening / Nomor HP',acc_owner:'Nama Pemilik Rekening',wa_confirm:'No. WhatsApp Konfirmasi',btn_save_bank:'💾 Simpan Info Bank',saved:'✓ Tersimpan!',expansion:'EKSPANSI SEA',prize_pool:'Total Prize Pool',slots_left:'Slot Tersisa',slot_filled:'Slot Terisi',about:'TENTANG',reg_teams:'TIM TERDAFTAR',full:'❌ Slot Penuh',reg_now:'✅ Daftar Tim Sekarang →',closed_msg:'PENDAFTARAN DITUTUP',reg_title:'DAFTARKAN TIM',pay_title:'CARA PEMBAYARAN',amount:'Jumlah Entry Fee',transfer_to:'Transfer ke:',acc_no:'No. Rek:',an:'A/N:',confirm_wa:'Konfirmasi ke WA:',contact_org:'📱 Hubungi organizer',btn_submit:'🚀 Kirim',registering:'Mendaftarkan...',success_title:'BERHASIL!',success_msg:'terdaftar di',back:'← Kembali',back_detail:'← Lihat Detail',rev_title:'📈 LAPORAN KOMISI',rev_sub:'Pendapatan realtime',saldo:'SALDO TERSEDIA',income:'Masuk:',withdrawn:'Dicairkan:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'SALDO',amount_lbl:'Jumlah (Rp)',acc_lbl:'Rekening',btn_wd:'💸 Cairkan',comm_per:'KOMISI PER TURNAMEN',no_tourn_yet:'Buat turnamen pertamamu!',online:'ONLINE',logout:'Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PREVIEW PESERTA',lang_lbl:'Bahasa',edit:'✏ Edit',profile_title:'PROFIL ORGANIZER',change_photo:'Klik untuk ganti foto',name_lbl:'Nama Organizer',save_profile:'💾 Simpan Profil',profile_saved:'✓ Profil Tersimpan!',portal_peserta:'PORTAL PESERTA',masuk_tim:'Masuk Tim',cara_masuk:'Cara Masuk',nama_tim_label:'NAMA TIM *',nohp_label:'NO. HP (SAAT DAFTAR) *',nama_tim_ph:'Nama tim saat daftar...',nohp_ph:'08xxxxxxxxxx',btn_masuk_tim:'⚡ Masuk ke Dashboard Tim',belum_daftar:'Belum daftar?',portal_sub:'Akses dashboard tim & pantau pertandingan live',pd_beranda:'Beranda',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'INFO TURNAMEN',pd_lunas:'✓ LUNAS',pd_blm_bayar:'⏳ BELUM BAYAR',pd_status_bayar:'Status Bayar',pd_entry_unpaid:'⚠ ENTRY FEE BELUM DIBAYAR',pd_tap_bayar:'TAP UNTUK BAYAR',pd_buka_wallet:'Buka Wallet untuk info rekening & kirim bukti bayar',pd_info_org:'🏦 INFO PEMBAYARAN ORGANIZER',pd_bank:'Bank / E-Wallet',pd_norek:'Nomor Rekening / HP',pd_atasnama:'Atas Nama',pd_salin:'SALIN',pd_konfirm_wa:'📱 Konfirmasi via WA',pd_keluar:'Keluar dari Portal',pd_buka_wallet_btn:'💳 Buka Wallet & Pembayaran',reg_member:'Buat Akun Member',login_member:'Masuk Akun',nama_lengkap:'Nama Lengkap *',email_member:'Email *',nohp_member:'No. HP *',gameid_member:'ID Game (opsional)',pw_member:'Password *',pw_confirm:'Konfirmasi Password *',btn_buat_akun:'🚀 Buat Akun',btn_masuk_akun:'🔑 Masuk',verif_title:'CEK EMAIL KAMU!',verif_msg:'Link aktivasi dikirim ke',verif_sub:'Klik link di email untuk aktifkan akun, lalu kembali & masuk.',verif_resend:'Kirim ulang email',verif_back:'← Ganti Email',id_peserta_lbl:'ID PESERTA',sudah_akun:'Sudah punya akun?',belum_akun:'Belum punya akun?',masuk_skrg:'Masuk sekarang',daftar_skrg:'Daftar sekarang',all_tourn_tab:'Semua Turnamen',history_tab:'Riwayat',notif_tab:'Notifikasi',profil_tab:'Profil',open_reg:'Buka Pendaftaran',ongoing:'Sedang Berlangsung',no_tourn_member:'Belum ada turnamen tersedia',join_now:'✅ Daftar ke Turnamen Ini',my_history:'Turnamen yang pernah kamu ikuti',no_history:'Belum pernah ikut turnamen',notif_empty:'Tidak ada notifikasi',profil_member:'Profil Member',edit_profil:'Edit Profil',save_profil:'Simpan',logout_member:'Keluar',member_since:'Member sejak',pw_min:'Password minimal 6 karakter',pw_not_match:'Password tidak cocok',email_invalid:'Format email tidak valid',reg_success:'Akun berhasil dibuat! Cek email untuk aktivasi.',login_success:'Selamat datang kembali!',email_not_confirm:'Email belum diverifikasi. Cek inbox/spam kamu.',wrong_pw:'Email atau password salah.'},
+  en:{nav:['Dashboard','Revenue','Tournaments','Create','Participants','Bracket','🔴 Live','🏅 Ranking','Finance','Settings'],login:'Login',register:'Register',email:'Email',password:'Password',community:'Community Name',btn_login:'🔑 Login',btn_register:'🚀 Create Account',dash_title:'Dashboard',dash_sub:'Realtime esport tournament platform overview',active_t:'ACTIVE TOURNAMENTS',revenue_lbl:'REVENUE',quick:'QUICK ACTIONS',btn_create:'＋ Create Tournament',btn_comm:'📈 Revenue',btn_part:'👥 Participants',no_active:'No active tournaments',tourn_title:'Tournaments',btn_create_t:'＋ Create',no_tourn:'NO TOURNAMENTS',share:'🔗 Share',live_btn:'▶ Live',close_btn:'■ Close',activate:'✓ Activate',create_title:'＋ CREATE TOURNAMENT',edit_title:'✏ EDIT',tourn_name:'Tournament Name *',game:'Game',format:'Format',city:'City *',date:'Start Date *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slots',desc:'Description',btn_save:'💾 Save',btn_create2:'🚀 Create',btn_cancel:'Cancel',teams_title:'Participants & Teams',all:'All',btn_reg_team:'＋ Register Team',team_name:'Team Name *',captain:'Captain *',contact:'Phone No.',members:'Members',tournament:'Tournament *',paid_lbl:'Entry fee paid',btn_reg2:'Register',no_teams:'No teams yet',finance_title:'Finance',total_entry:'Total Entry',comm_lbl:'Commission 15%',done:'Done',settings_title:'Settings',account:'ORGANIZER ACCOUNT',connected:'✓ Connected to Supabase',bank_title:'💳 PAYMENT INFO',bank_desc:'This info will be shown to participants.',bank_name:'Bank Name',acc_num:'Account / Phone Number',acc_owner:'Account Owner Name',wa_confirm:'WhatsApp Confirmation',btn_save_bank:'💾 Save Payment Info',saved:'✓ Saved!',expansion:'SEA EXPANSION',prize_pool:'Total Prize Pool',slots_left:'Slots Left',slot_filled:'Slots Filled',about:'ABOUT',reg_teams:'REGISTERED TEAMS',full:'❌ Full',reg_now:'✅ Register Now →',closed_msg:'REGISTRATION CLOSED',reg_title:'REGISTER TEAM',pay_title:'HOW TO PAY',amount:'Entry Fee Amount',transfer_to:'Transfer to:',acc_no:'Acc No:',an:'Name:',confirm_wa:'Confirm via WA:',contact_org:'📱 Contact organizer',btn_submit:'🚀 Submit',registering:'Registering...',success_title:'SUCCESS!',success_msg:'registered in',back:'← Back',back_detail:'← View Detail',rev_title:'📈 REVENUE REPORT',rev_sub:'Realtime earnings',saldo:'AVAILABLE BALANCE',income:'Income:',withdrawn:'Withdrawn:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'BALANCE',amount_lbl:'Amount',acc_lbl:'Account',btn_wd:'💸 Withdraw',comm_per:'COMMISSION PER TOURNAMENT',no_tourn_yet:'Create your first tournament!',online:'ONLINE',logout:'Logout',select_bank:'-- Select Bank --',preview_lbl:'PARTICIPANT PREVIEW',lang_lbl:'Language',edit:'✏ Edit',profile_title:'ORGANIZER PROFILE',change_photo:'Click to change photo',name_lbl:'Organizer Name',save_profile:'💾 Save Profile',profile_saved:'✓ Profile Saved!',portal_peserta:'PARTICIPANT PORTAL',masuk_tim:'Team Login',cara_masuk:'How to Login',nama_tim_label:'TEAM NAME *',nohp_label:'PHONE NUMBER *',nama_tim_ph:'Team name at registration...',nohp_ph:'Phone number',btn_masuk_tim:'⚡ Enter Team Dashboard',belum_daftar:'Not registered?',portal_sub:'Access team dashboard & watch live',pd_beranda:'Home',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'TOURNAMENT INFO',pd_lunas:'✓ PAID',pd_blm_bayar:'⏳ UNPAID',pd_status_bayar:'Payment Status',pd_entry_unpaid:'⚠ ENTRY FEE UNPAID',pd_tap_bayar:'TAP TO PAY',pd_buka_wallet:'Open Wallet for payment info & send proof',pd_info_org:'🏦 ORGANIZER PAYMENT INFO',pd_bank:'Bank / E-Wallet',pd_norek:'Account / Phone Number',pd_atasnama:'Account Name',pd_salin:'COPY',pd_konfirm_wa:'📱 Confirm via WA',pd_keluar:'Exit Portal',pd_buka_wallet_btn:'💳 Open Wallet & Payment',reg_member:'Create Member Account',login_member:'Sign In',nama_lengkap:'Full Name *',email_member:'Email *',nohp_member:'Phone Number *',gameid_member:'Game ID (optional)',pw_member:'Password *',pw_confirm:'Confirm Password *',btn_buat_akun:'🚀 Create Account',btn_masuk_akun:'🔑 Sign In',verif_title:'CHECK YOUR EMAIL!',verif_msg:'Activation link sent to',verif_sub:'Click the link in your email to activate your account, then come back to sign in.',verif_resend:'Resend email',verif_back:'← Change Email',id_peserta_lbl:'MEMBER ID',sudah_akun:'Already have an account?',belum_akun:'Don\'t have an account?',masuk_skrg:'Sign in now',daftar_skrg:'Register now',all_tourn_tab:'All Tournaments',history_tab:'History',notif_tab:'Notifications',profil_tab:'Profile',open_reg:'Open Registration',ongoing:'Ongoing',no_tourn_member:'No tournaments available yet',join_now:'✅ Join This Tournament',my_history:'Tournaments you have participated in',no_history:'No tournament history yet',notif_empty:'No notifications',profil_member:'Member Profile',edit_profil:'Edit Profile',save_profil:'Save',logout_member:'Sign Out',member_since:'Member since',pw_min:'Password must be at least 6 characters',pw_not_match:'Passwords do not match',email_invalid:'Invalid email format',reg_success:'Account created! Check your email to activate.',login_success:'Welcome back!',email_not_confirm:'Email not verified. Check inbox/spam.',wrong_pw:'Wrong email or password.'},
+  fil:{nav:['Dashboard','Komisyon','Torneo','Gumawa','Kalahok','Bracket','🔴 Live','🏅 Ranking','Pananalapi','Setting'],login:'Mag-login',register:'Mag-register',email:'Email',password:'Password',community:'Pangalan ng Komunidad',btn_login:'🔑 Mag-login',btn_register:'🚀 Gumawa ng Account',dash_title:'Dashboard',dash_sub:'Real-time na pangkalahatang-ideya',active_t:'MGA AKTIBONG TORNEO',revenue_lbl:'KITA',quick:'MABILIS NA AKSYON',btn_create:'＋ Gumawa ng Torneo',btn_comm:'📈 Komisyon',btn_part:'👥 Kalahok',no_active:'Walang aktibong torneo',tourn_title:'Mga Torneo',btn_create_t:'＋ Gumawa',no_tourn:'WALANG TORNEO',share:'🔗 Ibahagi',live_btn:'▶ Live',close_btn:'■ Isara',activate:'✓ I-activate',create_title:'＋ GUMAWA NG TORNEO',edit_title:'✏ I-EDIT',tourn_name:'Pangalan ng Torneo *',game:'Laro',format:'Format',city:'Lungsod *',date:'Petsa *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Puwesto',desc:'Paglalarawan',btn_save:'💾 I-save',btn_create2:'🚀 Gumawa',btn_cancel:'Kanselahin',teams_title:'Mga Kalahok at Koponan',all:'Lahat',btn_reg_team:'＋ Mag-register',team_name:'Pangalan ng Koponan *',captain:'Kapitan *',contact:'Telepono',members:'Miyembro',tournament:'Torneo *',paid_lbl:'Nabayaran na',btn_reg2:'Mag-register',no_teams:'Walang koponan pa',finance_title:'Pananalapi',total_entry:'Kabuuang Entry',comm_lbl:'Komisyon 15%',done:'Tapos',settings_title:'Mga Setting',account:'ACCOUNT NG ORGANIZER',connected:'✓ Nakakonekta sa Supabase',bank_title:'💳 IMPORMASYON SA BAYAD',bank_desc:'Ipapakita sa mga kalahok.',bank_name:'Pangalan ng Bangko',acc_num:'Numero ng Account',acc_owner:'Pangalan ng May-ari',wa_confirm:'WhatsApp para sa Kumpirmasyon',btn_save_bank:'💾 I-save',saved:'✓ Na-save!',expansion:'PAGPAPALAWAK SA SEA',prize_pool:'Kabuuang Prize Pool',slots_left:'Natitirang Puwesto',slot_filled:'Napuno na Puwesto',about:'TUNGKOL SA',reg_teams:'MGA NAKAREHISTRONG KOPONAN',full:'❌ Puno na',reg_now:'✅ Mag-register Ngayon →',closed_msg:'SARADO NA',reg_title:'IREHISTRO ANG KOPONAN',pay_title:'PAANO MAGBAYAD',amount:'Halaga ng Entry Fee',transfer_to:'I-transfer sa:',acc_no:'Acc No:',an:'Pangalan:',confirm_wa:'Kumpirmahin sa WA:',contact_org:'📱 Makipag-ugnayan',btn_submit:'🚀 Isumite',registering:'Nagrerehistro...',success_title:'MATAGUMPAY!',success_msg:'nairehistro sa',back:'← Bumalik',back_detail:'← Tingnan',rev_title:'📈 ULAT NG KOMISYON',rev_sub:'Real-time na kita',saldo:'AVAILABLE NA BALANSE',income:'Kita:',withdrawn:'Na-withdraw:',withdraw_btn:'💸 I-withdraw',withdraw_title:'💸 I-WITHDRAW',saldo_lbl:'BALANSE',amount_lbl:'Halaga',acc_lbl:'Account',btn_wd:'💸 I-withdraw',comm_per:'KOMISYON BAWAT TORNEO',no_tourn_yet:'Gumawa ng iyong unang torneo!',online:'ONLINE',logout:'Mag-logout',select_bank:'-- Piliin ang Bangko --',preview_lbl:'PREVIEW NG KALAHOK',lang_lbl:'Wika',edit:'✏ I-edit',profile_title:'PROFILE NG ORGANIZER',change_photo:'I-click para palitan',name_lbl:'Pangalan ng Organizer',save_profile:'💾 I-save ang Profile',profile_saved:'✓ Na-save ang Profile!',portal_peserta:'PORTAL NG KALAHOK',masuk_tim:'Login ng Team',cara_masuk:'Paano Mag-login',nama_tim_label:'PANGALAN NG TEAM *',nohp_label:'NUMERO NG TELEPONO *',nama_tim_ph:'Pangalan ng team...',nohp_ph:'Numero ng telepono',btn_masuk_tim:'⚡ Pumasok sa Dashboard',belum_daftar:'Hindi pa nakarehistro?',portal_sub:'I-access ang dashboard ng team',pd_beranda:'Home',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'INFO NG TORNEO',pd_lunas:'✓ BAYAD NA',pd_blm_bayar:'⏳ HINDI PA BAYAD',pd_status_bayar:'Status ng Bayad',pd_entry_unpaid:'⚠ ENTRY FEE HINDI PA BAYAD',pd_tap_bayar:'I-TAP PARA BAYAD',pd_buka_wallet:'Buksan ang Wallet para sa impormasyon sa bayad',pd_info_org:'🏦 IMPORMASYON SA BAYAD NG ORGANIZER',pd_bank:'Bangko / E-Wallet',pd_norek:'Numero ng Account',pd_atasnama:'Pangalan ng Account',pd_salin:'KOPYAHIN',pd_konfirm_wa:'📱 Kumpirmahin sa WA',pd_keluar:'Umalis sa Portal',pd_buka_wallet_btn:'💳 Buksan ang Wallet',reg_member:'Gumawa ng Account',login_member:'Mag-login',nama_lengkap:'Buong Pangalan *',email_member:'Email *',nohp_member:'Numero ng Telepono *',gameid_member:'Game ID (opsyonal)',pw_member:'Password *',pw_confirm:'Kumpirmahin ang Password *',btn_buat_akun:'🚀 Gumawa ng Account',btn_masuk_akun:'🔑 Mag-login',verif_title:'TINGNAN ANG IYONG EMAIL!',verif_msg:'Link ng aktivasyon ay ipinadala sa',verif_sub:'I-click ang link sa email mo para i-activate ang account, pagkatapos bumalik at mag-login.',verif_resend:'Magpadala ulit ng email',verif_back:'← Baguhin ang Email',id_peserta_lbl:'ID NG MIYEMBRO',sudah_akun:'May account na?',belum_akun:'Wala pang account?',masuk_skrg:'Mag-login ngayon',daftar_skrg:'Mag-register ngayon',all_tourn_tab:'Lahat ng Torneo',history_tab:'Kasaysayan',notif_tab:'Mga Abiso',profil_tab:'Profil',open_reg:'Bukas ang Pagpaparehistro',ongoing:'Nagpapatuloy',no_tourn_member:'Walang available na torneo',join_now:'✅ Sumali sa Torneong Ito',my_history:'Mga torneong sinabutan mo',no_history:'Wala pang kasaysayan',notif_empty:'Walang mga abiso',profil_member:'Profil ng Miyembro',edit_profil:'I-edit ang Profil',save_profil:'I-save',logout_member:'Mag-logout',member_since:'Miyembro mula',pw_min:'Minimum 6 na karakter ang password',pw_not_match:'Hindi magkatugma ang password',email_invalid:'Di-wastong format ng email',reg_success:'Account nagawa na! Tingnan ang email para ma-activate.',login_success:'Maligayang pagbabalik!',email_not_confirm:'Hindi pa na-verify ang email. Tingnan ang inbox/spam.',wrong_pw:'Mali ang email o password.'},
+  vi:{nav:['Bảng điều khiển','Hoa hồng','Giải đấu','Tạo mới','Người tham gia','Bracket','🔴 Live','🏅 Xếp hạng','Tài chính','Cài đặt'],login:'Đăng nhập',register:'Đăng ký',email:'Email',password:'Mật khẩu',community:'Tên cộng đồng',btn_login:'🔑 Đăng nhập',btn_register:'🚀 Tạo tài khoản',dash_title:'Bảng điều khiển',dash_sub:'Tổng quan thời gian thực',active_t:'GIẢI ĐẤU ĐANG HOẠT ĐỘNG',revenue_lbl:'DOANH THU',quick:'THAO TÁC NHANH',btn_create:'＋ Tạo giải đấu',btn_comm:'📈 Hoa hồng',btn_part:'👥 Người tham gia',no_active:'Không có giải đấu',tourn_title:'Giải đấu',btn_create_t:'＋ Tạo',no_tourn:'KHÔNG CÓ GIẢI ĐẤU',share:'🔗 Chia sẻ',live_btn:'▶ Trực tiếp',close_btn:'■ Đóng',activate:'✓ Kích hoạt',create_title:'＋ TẠO GIẢI ĐẤU',edit_title:'✏ CHỈNH SỬA',tourn_name:'Tên giải đấu *',game:'Trò chơi',format:'Thể thức',city:'Thành phố *',date:'Ngày *',prize:'Tổng giải thưởng *',entry:'Phí tham gia *',slots:'Số suất',desc:'Mô tả',btn_save:'💾 Lưu',btn_create2:'🚀 Tạo',btn_cancel:'Hủy',teams_title:'Người tham gia & Đội',all:'Tất cả',btn_reg_team:'＋ Đăng ký đội',team_name:'Tên đội *',captain:'Đội trưởng *',contact:'Số điện thoại',members:'Thành viên',tournament:'Giải đấu *',paid_lbl:'Đã thanh toán',btn_reg2:'Đăng ký',no_teams:'Chưa có đội',finance_title:'Tài chính',total_entry:'Tổng phí',comm_lbl:'Hoa hồng 15%',done:'Hoàn thành',settings_title:'Cài đặt',account:'TÀI KHOẢN',connected:'✓ Đã kết nối',bank_title:'💳 THÔNG TIN THANH TOÁN',bank_desc:'Hiển thị cho người tham gia.',bank_name:'Tên ngân hàng',acc_num:'Số tài khoản',acc_owner:'Tên chủ tài khoản',wa_confirm:'WhatsApp xác nhận',btn_save_bank:'💾 Lưu',saved:'✓ Đã lưu!',expansion:'MỞ RỘNG ĐÔNG NAM Á',prize_pool:'Tổng giải thưởng',slots_left:'Suất còn lại',slot_filled:'Suất đã đăng ký',about:'GIỚI THIỆU',reg_teams:'ĐỘI ĐÃ ĐĂNG KÝ',full:'❌ Hết suất',reg_now:'✅ Đăng ký ngay →',closed_msg:'ĐÃ ĐÓNG',reg_title:'ĐĂNG KÝ ĐỘI',pay_title:'CÁCH THANH TOÁN',amount:'Số tiền phí',transfer_to:'Chuyển khoản:',acc_no:'Số TK:',an:'Tên:',confirm_wa:'Xác nhận qua WA:',contact_org:'📱 Liên hệ',btn_submit:'🚀 Gửi',registering:'Đang đăng ký...',success_title:'THÀNH CÔNG!',success_msg:'đã đăng ký tham gia',back:'← Quay lại',back_detail:'← Xem chi tiết',rev_title:'📈 BÁO CÁO HOA HỒNG',rev_sub:'Thu nhập thực',saldo:'SỐ DƯ',income:'Thu nhập:',withdrawn:'Đã rút:',withdraw_btn:'💸 Rút tiền',withdraw_title:'💸 RÚT TIỀN',saldo_lbl:'SỐ DƯ',amount_lbl:'Số tiền',acc_lbl:'Tài khoản',btn_wd:'💸 Rút',comm_per:'HOA HỒNG THEO GIẢI',no_tourn_yet:'Tạo giải đấu đầu tiên!',online:'TRỰC TUYẾN',logout:'Đăng xuất',select_bank:'-- Chọn ngân hàng --',preview_lbl:'XEM TRƯỚC',lang_lbl:'Ngôn ngữ',edit:'✏ Sửa',profile_title:'HỒ SƠ',change_photo:'Nhấn để đổi ảnh',name_lbl:'Tên ban tổ chức',save_profile:'💾 Lưu',profile_saved:'✓ Đã lưu!',portal_peserta:'CỔNG THÀNH VIÊN',masuk_tim:'Đăng nhập đội',cara_masuk:'Cách đăng nhập',nama_tim_label:'TÊN ĐỘI *',nohp_label:'SỐ ĐIỆN THOẠI *',nama_tim_ph:'Tên đội khi đăng ký...',nohp_ph:'Số điện thoại',btn_masuk_tim:'⚡ Vào Dashboard',belum_daftar:'Chưa đăng ký?',portal_sub:'Truy cập dashboard & xem trực tiếp',pd_beranda:'Trang chủ',pd_wallet:'Ví',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Thông tin',pd_prize:'Tổng giải thưởng',pd_entry:'Phí tham gia',pd_format:'Thể thức',pd_status:'Trạng thái',pd_info_tourn:'THÔNG TIN GIẢI ĐẤU',pd_lunas:'✓ ĐÃ THANH TOÁN',pd_blm_bayar:'⏳ CHƯA THANH TOÁN',pd_status_bayar:'Trạng thái thanh toán',pd_entry_unpaid:'⚠ CHƯA THANH TOÁN PHÍ',pd_tap_bayar:'NHẤN ĐỂ THANH TOÁN',pd_buka_wallet:'Mở Ví để xem thông tin thanh toán',pd_info_org:'🏦 THÔNG TIN THANH TOÁN CỦA BTC',pd_bank:'Ngân hàng / E-Wallet',pd_norek:'Số tài khoản',pd_atasnama:'Tên chủ tài khoản',pd_salin:'SAO CHÉP',pd_konfirm_wa:'📱 Xác nhận qua WA',pd_keluar:'Thoát Portal',pd_buka_wallet_btn:'💳 Mở Ví & Thanh Toán',reg_member:'Tạo tài khoản thành viên',login_member:'Đăng nhập',nama_lengkap:'Họ và tên *',email_member:'Email *',nohp_member:'Số điện thoại *',gameid_member:'ID Game (tùy chọn)',pw_member:'Mật khẩu *',pw_confirm:'Xác nhận mật khẩu *',btn_buat_akun:'🚀 Tạo tài khoản',btn_masuk_akun:'🔑 Đăng nhập',verif_title:'KIỂM TRA EMAIL CỦA BẠN!',verif_msg:'Link kích hoạt đã gửi đến',verif_sub:'Nhấp vào link trong email để kích hoạt tài khoản, sau đó quay lại đăng nhập.',verif_resend:'Gửi lại email',verif_back:'← Thay đổi email',id_peserta_lbl:'ID THÀNH VIÊN',sudah_akun:'Đã có tài khoản?',belum_akun:'Chưa có tài khoản?',masuk_skrg:'Đăng nhập ngay',daftar_skrg:'Đăng ký ngay',all_tourn_tab:'Tất cả giải đấu',history_tab:'Lịch sử',notif_tab:'Thông báo',profil_tab:'Hồ sơ',open_reg:'Mở đăng ký',ongoing:'Đang diễn ra',no_tourn_member:'Chưa có giải đấu nào',join_now:'✅ Tham gia giải đấu này',my_history:'Giải đấu bạn đã tham gia',no_history:'Chưa có lịch sử giải đấu',notif_empty:'Không có thông báo',profil_member:'Hồ sơ thành viên',edit_profil:'Chỉnh sửa hồ sơ',save_profil:'Lưu',logout_member:'Đăng xuất',member_since:'Thành viên từ',pw_min:'Mật khẩu tối thiểu 6 ký tự',pw_not_match:'Mật khẩu không khớp',email_invalid:'Định dạng email không hợp lệ',reg_success:'Tạo tài khoản thành công! Kiểm tra email để kích hoạt.',login_success:'Chào mừng trở lại!',email_not_confirm:'Email chưa được xác minh. Kiểm tra hộp thư.',wrong_pw:'Email hoặc mật khẩu sai.'},
+  th:{nav:['แดชบอร์ด','ค่าคอมมิชชัน','ทัวร์นาเมนต์','สร้าง','ผู้เข้าร่วม','แบร็กเก็ต','🔴 Live','🏅 อันดับ','การเงิน','ตั้งค่า'],login:'เข้าสู่ระบบ',register:'ลงทะเบียน',email:'อีเมล',password:'รหัสผ่าน',community:'ชื่อชุมชน',btn_login:'🔑 เข้าสู่ระบบ',btn_register:'🚀 สร้างบัญชี',dash_title:'แดชบอร์ด',dash_sub:'ภาพรวมแบบเรียลไทม์',active_t:'ทัวร์นาเมนต์ที่ใช้งาน',revenue_lbl:'รายได้',quick:'การดำเนินการด่วน',btn_create:'＋ สร้างทัวร์นาเมนต์',btn_comm:'📈 ค่าคอมมิชชัน',btn_part:'👥 ผู้เข้าร่วม',no_active:'ไม่มีทัวร์นาเมนต์',tourn_title:'ทัวร์นาเมนต์',btn_create_t:'＋ สร้าง',no_tourn:'ไม่มีทัวร์นาเมนต์',share:'🔗 แชร์',live_btn:'▶ ไลฟ์',close_btn:'■ ปิด',activate:'✓ เปิดใช้งาน',create_title:'＋ สร้างทัวร์นาเมนต์',edit_title:'✏ แก้ไข',tourn_name:'ชื่อ *',game:'เกม',format:'รูปแบบ',city:'เมือง *',date:'วันที่ *',prize:'รางวัล *',entry:'ค่าธรรมเนียม *',slots:'ที่นั่ง',desc:'คำอธิบาย',btn_save:'💾 บันทึก',btn_create2:'🚀 สร้าง',btn_cancel:'ยกเลิก',teams_title:'ผู้เข้าร่วมและทีม',all:'ทั้งหมด',btn_reg_team:'＋ ลงทะเบียนทีม',team_name:'ชื่อทีม *',captain:'กัปตัน *',contact:'โทรศัพท์',members:'สมาชิก',tournament:'ทัวร์นาเมนต์ *',paid_lbl:'ชำระแล้ว',btn_reg2:'ลงทะเบียน',no_teams:'ยังไม่มีทีม',finance_title:'การเงิน',total_entry:'ค่าธรรมเนียมรวม',comm_lbl:'ค่าคอมมิชชัน 15%',done:'เสร็จสิ้น',settings_title:'การตั้งค่า',account:'บัญชีผู้จัดงาน',connected:'✓ เชื่อมต่อแล้ว',bank_title:'💳 ข้อมูลการชำระเงิน',bank_desc:'แสดงให้ผู้เข้าร่วมเห็น',bank_name:'ชื่อธนาคาร',acc_num:'เลขบัญชี',acc_owner:'ชื่อเจ้าของบัญชี',wa_confirm:'WhatsApp ยืนยัน',btn_save_bank:'💾 บันทึก',saved:'✓ บันทึกแล้ว!',expansion:'การขยายตัวอาเซียน',prize_pool:'เงินรางวัลรวม',slots_left:'ที่นั่งที่เหลือ',slot_filled:'ที่นั่งที่จอง',about:'เกี่ยวกับ',reg_teams:'ทีมที่ลงทะเบียน',full:'❌ เต็มแล้ว',reg_now:'✅ ลงทะเบียน →',closed_msg:'ปิดรับสมัคร',reg_title:'ลงทะเบียนทีม',pay_title:'วิธีชำระ',amount:'จำนวนเงิน',transfer_to:'โอนไปที่:',acc_no:'เลขบัญชี:',an:'ชื่อ:',confirm_wa:'ยืนยันผ่าน WA:',contact_org:'📱 ติดต่อ',btn_submit:'🚀 ส่ง',registering:'กำลังลงทะเบียน...',success_title:'สำเร็จ!',success_msg:'ลงทะเบียนใน',back:'← กลับ',back_detail:'← ดูรายละเอียด',rev_title:'📈 รายงาน',rev_sub:'รายได้เรียลไทม์',saldo:'ยอดคงเหลือ',income:'รายรับ:',withdrawn:'ถอนออก:',withdraw_btn:'💸 ถอนเงิน',withdraw_title:'💸 ถอนเงิน',saldo_lbl:'ยอดคงเหลือ',amount_lbl:'จำนวน',acc_lbl:'บัญชี',btn_wd:'💸 ถอน',comm_per:'ค่าคอมมิชชันต่อทัวร์',no_tourn_yet:'สร้างทัวร์นาเมนต์แรก!',online:'ออนไลน์',logout:'ออกจากระบบ',select_bank:'-- เลือกธนาคาร --',preview_lbl:'ตัวอย่าง',lang_lbl:'ภาษา',edit:'✏ แก้ไข',profile_title:'โปรไฟล์',change_photo:'คลิกเพื่อเปลี่ยนรูป',name_lbl:'ชื่อผู้จัดงาน',save_profile:'💾 บันทึก',profile_saved:'✓ บันทึกแล้ว!',portal_peserta:'พอร์ทัลผู้แข่งขัน',masuk_tim:'เข้าสู่ระบบทีม',cara_masuk:'วิธีเข้าสู่ระบบ',nama_tim_label:'ชื่อทีม *',nohp_label:'หมายเลขโทรศัพท์ *',nama_tim_ph:'ชื่อทีมตอนลงทะเบียน...',nohp_ph:'หมายเลขโทรศัพท์',btn_masuk_tim:'⚡ เข้าสู่แดชบอร์ดทีม',belum_daftar:'ยังไม่ได้ลงทะเบียน?',portal_sub:'เข้าถึงแดชบอร์ดและดูสด',pd_beranda:'หน้าหลัก',pd_wallet:'กระเป๋า',pd_live:'คะแนนสด',pd_stream:'ถ่ายทอดสด',pd_chat:'แชท',pd_info:'ข้อมูล',pd_prize:'เงินรางวัล',pd_entry:'ค่าธรรมเนียม',pd_format:'รูปแบบ',pd_status:'สถานะ',pd_info_tourn:'ข้อมูลทัวร์นาเมนต์',pd_lunas:'✓ ชำระแล้ว',pd_blm_bayar:'⏳ ยังไม่ชำระ',pd_status_bayar:'สถานะการชำระ',pd_entry_unpaid:'⚠ ยังไม่ชำระค่าธรรมเนียม',pd_tap_bayar:'แตะเพื่อชำระ',pd_buka_wallet:'เปิดกระเป๋าเพื่อดูข้อมูลการชำระ',pd_info_org:'🏦 ข้อมูลการชำระของผู้จัด',pd_bank:'ธนาคาร / E-Wallet',pd_norek:'หมายเลขบัญชี',pd_atasnama:'ชื่อบัญชี',pd_salin:'คัดลอก',pd_konfirm_wa:'📱 ยืนยันผ่าน WA',pd_keluar:'ออกจากพอร์ทัล',pd_buka_wallet_btn:'💳 เปิดกระเป๋า',reg_member:'สร้างบัญชีสมาชิก',login_member:'เข้าสู่ระบบ',nama_lengkap:'ชื่อ-นามสกุล *',email_member:'อีเมล *',nohp_member:'เบอร์โทรศัพท์ *',gameid_member:'ID เกม (ไม่บังคับ)',pw_member:'รหัสผ่าน *',pw_confirm:'ยืนยันรหัสผ่าน *',btn_buat_akun:'🚀 สร้างบัญชี',btn_masuk_akun:'🔑 เข้าสู่ระบบ',verif_title:'ตรวจสอบอีเมลของคุณ!',verif_msg:'ลิงก์เปิดใช้งานส่งไปที่',verif_sub:'คลิกลิงก์ในอีเมลเพื่อเปิดใช้งานบัญชี จากนั้นกลับมาเข้าสู่ระบบ',verif_resend:'ส่งอีเมลอีกครั้ง',verif_back:'← เปลี่ยนอีเมล',id_peserta_lbl:'รหัสสมาชิก',sudah_akun:'มีบัญชีอยู่แล้ว?',belum_akun:'ยังไม่มีบัญชี?',masuk_skrg:'เข้าสู่ระบบเลย',daftar_skrg:'ลงทะเบียนเลย',all_tourn_tab:'ทัวร์นาเมนต์ทั้งหมด',history_tab:'ประวัติ',notif_tab:'การแจ้งเตือน',profil_tab:'โปรไฟล์',open_reg:'เปิดรับสมัคร',ongoing:'กำลังดำเนินการ',no_tourn_member:'ยังไม่มีทัวร์นาเมนต์',join_now:'✅ เข้าร่วมทัวร์นาเมนต์นี้',my_history:'ทัวร์นาเมนต์ที่คุณเคยเข้าร่วม',no_history:'ยังไม่มีประวัติ',notif_empty:'ไม่มีการแจ้งเตือน',profil_member:'โปรไฟล์สมาชิก',edit_profil:'แก้ไขโปรไฟล์',save_profil:'บันทึก',logout_member:'ออกจากระบบ',member_since:'สมาชิกตั้งแต่',pw_min:'รหัสผ่านอย่างน้อย 6 ตัวอักษร',pw_not_match:'รหัสผ่านไม่ตรงกัน',email_invalid:'รูปแบบอีเมลไม่ถูกต้อง',reg_success:'สร้างบัญชีสำเร็จ! ตรวจสอบอีเมลเพื่อเปิดใช้งาน',login_success:'ยินดีต้อนรับกลับ!',email_not_confirm:'อีเมลยังไม่ได้รับการยืนยัน ตรวจสอบกล่องจดหมาย',wrong_pw:'อีเมลหรือรหัสผ่านไม่ถูกต้อง'},
+  zh:{nav:['仪表板','佣金','锦标赛','创建','参与者','对阵表','🔴 Live','🏅 排名','财务','设置'],login:'登录',register:'注册',email:'邮箱',password:'密码',community:'社区名称',btn_login:'🔑 登录',btn_register:'🚀 创建账户',dash_title:'仪表板',dash_sub:'实时概览',active_t:'进行中的锦标赛',revenue_lbl:'收入',quick:'快速操作',btn_create:'＋ 创建锦标赛',btn_comm:'📈 佣金',btn_part:'👥 参与者',no_active:'暂无锦标赛',tourn_title:'锦标赛',btn_create_t:'＋ 创建',no_tourn:'暂无锦标赛',share:'🔗 分享',live_btn:'▶ 直播',close_btn:'■ 关闭',activate:'✓ 激活',create_title:'＋ 创建锦标赛',edit_title:'✏ 编辑',tourn_name:'名称 *',game:'游戏',format:'格式',city:'城市 *',date:'日期 *',prize:'奖金池 *',entry:'报名费 *',slots:'名额',desc:'描述',btn_save:'💾 保存',btn_create2:'🚀 创建',btn_cancel:'取消',teams_title:'参与者和队伍',all:'全部',btn_reg_team:'＋ 注册队伍',team_name:'队伍名称 *',captain:'队长 *',contact:'电话',members:'成员',tournament:'锦标赛 *',paid_lbl:'已支付',btn_reg2:'注册',no_teams:'暂无队伍',finance_title:'财务',total_entry:'总报名费',comm_lbl:'佣金 15%',done:'已完成',settings_title:'设置',account:'主办方账户',connected:'✓ 已连接',bank_title:'💳 支付信息',bank_desc:'显示给参与者。',bank_name:'银行名称',acc_num:'账号',acc_owner:'账户持有人',wa_confirm:'WhatsApp 确认',btn_save_bank:'💾 保存',saved:'✓ 已保存!',expansion:'东南亚扩张',prize_pool:'总奖金池',slots_left:'剩余名额',slot_filled:'已报名',about:'关于',reg_teams:'已注册队伍',full:'❌ 已满',reg_now:'✅ 立即报名 →',closed_msg:'已截止',reg_title:'注册队伍',pay_title:'如何支付',amount:'金额',transfer_to:'转账至:',acc_no:'账号:',an:'姓名:',confirm_wa:'通过WA确认:',contact_org:'📱 联系主办方',btn_submit:'🚀 提交',registering:'注册中...',success_title:'成功!',success_msg:'已报名参加',back:'← 返回',back_detail:'← 查看详情',rev_title:'📈 佣金报告',rev_sub:'实时收入',saldo:'可用余额',income:'收入:',withdrawn:'已提现:',withdraw_btn:'💸 提现',withdraw_title:'💸 提现',saldo_lbl:'余额',amount_lbl:'金额',acc_lbl:'账户',btn_wd:'💸 提现',comm_per:'各锦标赛佣金',no_tourn_yet:'创建第一个锦标赛!',online:'在线',logout:'退出',select_bank:'-- 选择银行 --',preview_lbl:'参与者预览',lang_lbl:'语言',edit:'✏ 编辑',profile_title:'主办方资料',change_photo:'点击更换头像',name_lbl:'名称',save_profile:'💾 保存',profile_saved:'✓ 已保存!',portal_peserta:'参赛者门户',masuk_tim:'队伍登录',cara_masuk:'登录方法',nama_tim_label:'队伍名称 *',nohp_label:'手机号码 *',nama_tim_ph:'注册时的队伍名称...',nohp_ph:'手机号码',btn_masuk_tim:'⚡ 进入队伍仪表板',belum_daftar:'还没注册？',portal_sub:'访问队伍仪表板并观看直播',pd_beranda:'主页',pd_wallet:'钱包',pd_live:'实时得分',pd_stream:'直播',pd_chat:'聊天',pd_info:'信息',pd_prize:'奖金池',pd_entry:'报名费',pd_format:'格式',pd_status:'状态',pd_info_tourn:'锦标赛信息',pd_lunas:'✓ 已付款',pd_blm_bayar:'⏳ 未付款',pd_status_bayar:'付款状态',pd_entry_unpaid:'⚠ 报名费未支付',pd_tap_bayar:'点击支付',pd_buka_wallet:'打开钱包查看付款信息',pd_info_org:'🏦 主办方付款信息',pd_bank:'银行 / 电子钱包',pd_norek:'账号',pd_atasnama:'账户姓名',pd_salin:'复制',pd_konfirm_wa:'📱 通过WA确认',pd_keluar:'退出门户',pd_buka_wallet_btn:'💳 打开钱包',reg_member:'创建会员账号',login_member:'登录',nama_lengkap:'全名 *',email_member:'邮箱 *',nohp_member:'手机号 *',gameid_member:'游戏ID（可选）',pw_member:'密码 *',pw_confirm:'确认密码 *',btn_buat_akun:'🚀 创建账号',btn_masuk_akun:'🔑 登录',verif_title:'查看你的邮箱！',verif_msg:'激活链接已发送至',verif_sub:'点击邮件中的链接激活账号，然后返回登录。',verif_resend:'重新发送邮件',verif_back:'← 更改邮箱',id_peserta_lbl:'会员ID',sudah_akun:'已有账号？',belum_akun:'还没有账号？',masuk_skrg:'立即登录',daftar_skrg:'立即注册',all_tourn_tab:'所有锦标赛',history_tab:'历史',notif_tab:'通知',profil_tab:'个人资料',open_reg:'开放报名',ongoing:'进行中',no_tourn_member:'暂无锦标赛',join_now:'✅ 加入此锦标赛',my_history:'你参加过的锦标赛',no_history:'暂无参赛历史',notif_empty:'没有通知',profil_member:'会员资料',edit_profil:'编辑资料',save_profil:'保存',logout_member:'退出登录',member_since:'会员自',pw_min:'密码至少6个字符',pw_not_match:'密码不匹配',email_invalid:'邮箱格式无效',reg_success:'账号创建成功！检查邮箱以激活。',login_success:'欢迎回来！',email_not_confirm:'邮箱未验证。检查收件箱/垃圾邮件。',wrong_pw:'邮箱或密码错误。'},
+  ms:{nav:['Papan Pemuka','Komisen','Kejohanan','Cipta','Peserta','Bracket','🔴 Live','🏅 Kedudukan','Kewangan','Tetapan'],login:'Log Masuk',register:'Daftar',email:'E-mel',password:'Kata Laluan',community:'Nama Komuniti',btn_login:'🔑 Log Masuk',btn_register:'🚀 Buat Akaun',dash_title:'Papan Pemuka',dash_sub:'Gambaran masa nyata',active_t:'KEJOHANAN AKTIF',revenue_lbl:'PENDAPATAN',quick:'TINDAKAN PANTAS',btn_create:'＋ Cipta Kejohanan',btn_comm:'📈 Komisen',btn_part:'👥 Peserta',no_active:'Tiada kejohanan aktif',tourn_title:'Kejohanan',btn_create_t:'＋ Cipta',no_tourn:'TIADA KEJOHANAN',share:'🔗 Kongsi',live_btn:'▶ Langsung',close_btn:'■ Tutup',activate:'✓ Aktifkan',create_title:'＋ CIPTA KEJOHANAN',edit_title:'✏ SUNTING',tourn_name:'Nama *',game:'Permainan',format:'Format',city:'Bandar *',date:'Tarikh *',prize:'Hadiah *',entry:'Yuran *',slots:'Slot',desc:'Penerangan',btn_save:'💾 Simpan',btn_create2:'🚀 Cipta',btn_cancel:'Batal',teams_title:'Peserta & Pasukan',all:'Semua',btn_reg_team:'＋ Daftar Pasukan',team_name:'Nama Pasukan *',captain:'Kapten *',contact:'Telefon',members:'Ahli',tournament:'Kejohanan *',paid_lbl:'Yuran dibayar',btn_reg2:'Daftar',no_teams:'Tiada pasukan',finance_title:'Kewangan',total_entry:'Jumlah Yuran',comm_lbl:'Komisen 15%',done:'Selesai',settings_title:'Tetapan',account:'AKAUN PENGANJUR',connected:'✓ Disambungkan',bank_title:'💳 MAKLUMAT BAYARAN',bank_desc:'Dipaparkan kepada peserta.',bank_name:'Nama Bank',acc_num:'Nombor Akaun',acc_owner:'Nama Pemilik',wa_confirm:'WhatsApp Pengesahan',btn_save_bank:'💾 Simpan',saved:'✓ Tersimpan!',expansion:'PENGEMBANGAN SEA',prize_pool:'Jumlah Hadiah',slots_left:'Slot Berbaki',slot_filled:'Slot Diisi',about:'TENTANG',reg_teams:'PASUKAN BERDAFTAR',full:'❌ Penuh',reg_now:'✅ Daftar Sekarang →',closed_msg:'PENDAFTARAN TUTUP',reg_title:'DAFTAR PASUKAN',pay_title:'CARA BAYAR',amount:'Jumlah Yuran',transfer_to:'Pindah ke:',acc_no:'No. Akaun:',an:'Nama:',confirm_wa:'Sahkan WA:',contact_org:'📱 Hubungi',btn_submit:'🚀 Hantar',registering:'Mendaftar...',success_title:'BERJAYA!',success_msg:'didaftarkan dalam',back:'← Kembali',back_detail:'← Lihat',rev_title:'📈 LAPORAN',rev_sub:'Pendapatan masa nyata',saldo:'BAKI',income:'Masuk:',withdrawn:'Keluar:',withdraw_btn:'💸 Keluarkan',withdraw_title:'💸 PENGELUARAN',saldo_lbl:'BAKI',amount_lbl:'Jumlah',acc_lbl:'Akaun',btn_wd:'💸 Keluarkan',comm_per:'KOMISEN PER KEJOHANAN',no_tourn_yet:'Cipta kejohanan pertama!',online:'DALAM TALIAN',logout:'Log Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PRATONTON',lang_lbl:'Bahasa',edit:'✏ Sunting',profile_title:'PROFIL PENGANJUR',change_photo:'Klik untuk tukar foto',name_lbl:'Nama Penganjur',save_profile:'💾 Simpan',profile_saved:'✓ Tersimpan!',portal_peserta:'PORTAL PESERTA',masuk_tim:'Log Masuk Pasukan',cara_masuk:'Cara Log Masuk',nama_tim_label:'NAMA PASUKAN *',nohp_label:'NO. TELEFON *',nama_tim_ph:'Nama pasukan semasa mendaftar...',nohp_ph:'Nombor telefon',btn_masuk_tim:'⚡ Masuk Dashboard Pasukan',belum_daftar:'Belum daftar?',portal_sub:'Akses dashboard pasukan & tonton perlawanan langsung',pd_beranda:'Laman Utama',pd_wallet:'Dompet',pd_live:'Skor Langsung',pd_stream:'Siaran Langsung',pd_chat:'Sembang',pd_info:'Maklumat',pd_prize:'Hadiah',pd_entry:'Yuran',pd_format:'Format',pd_status:'Status',pd_info_tourn:'MAKLUMAT KEJOHANAN',pd_lunas:'✓ SUDAH BAYAR',pd_blm_bayar:'⏳ BELUM BAYAR',pd_status_bayar:'Status Bayaran',pd_entry_unpaid:'⚠ YURAN BELUM DIBAYAR',pd_tap_bayar:'KETUK UNTUK BAYAR',pd_buka_wallet:'Buka Dompet untuk maklumat bayaran',pd_info_org:'🏦 MAKLUMAT BAYARAN PENGANJUR',pd_bank:'Bank / E-Wallet',pd_norek:'Nombor Akaun',pd_atasnama:'Nama Akaun',pd_salin:'SALIN',pd_konfirm_wa:'📱 Sahkan via WA',pd_keluar:'Keluar Portal',pd_buka_wallet_btn:'💳 Buka Dompet',reg_member:'Buat Akaun Ahli',login_member:'Log Masuk',nama_lengkap:'Nama Penuh *',email_member:'E-mel *',nohp_member:'No. Telefon *',gameid_member:'ID Permainan (pilihan)',pw_member:'Kata Laluan *',pw_confirm:'Sahkan Kata Laluan *',btn_buat_akun:'🚀 Buat Akaun',btn_masuk_akun:'🔑 Log Masuk',verif_title:'SEMAK E-MEL ANDA!',verif_msg:'Pautan pengaktifan dihantar ke',verif_sub:'Klik pautan dalam e-mel untuk aktifkan akaun, kemudian kembali & log masuk.',verif_resend:'Hantar semula e-mel',verif_back:'← Tukar E-mel',id_peserta_lbl:'ID AHLI',sudah_akun:'Sudah ada akaun?',belum_akun:'Belum ada akaun?',masuk_skrg:'Log masuk sekarang',daftar_skrg:'Daftar sekarang',all_tourn_tab:'Semua Kejohanan',history_tab:'Sejarah',notif_tab:'Pemberitahuan',profil_tab:'Profil',open_reg:'Buka Pendaftaran',ongoing:'Sedang Berlangsung',no_tourn_member:'Tiada kejohanan tersedia',join_now:'✅ Sertai Kejohanan Ini',my_history:'Kejohanan yang pernah anda sertai',no_history:'Tiada sejarah kejohanan',notif_empty:'Tiada pemberitahuan',profil_member:'Profil Ahli',edit_profil:'Edit Profil',save_profil:'Simpan',logout_member:'Log Keluar',member_since:'Ahli sejak',pw_min:'Kata laluan sekurang-kurangnya 6 aksara',pw_not_match:'Kata laluan tidak sepadan',email_invalid:'Format e-mel tidak sah',reg_success:'Akaun berjaya dibuat! Semak e-mel untuk pengaktifan.',login_success:'Selamat kembali!',email_not_confirm:'E-mel belum disahkan. Semak peti masuk/spam.',wrong_pw:'E-mel atau kata laluan salah.'},
 }
 
 const LANG_OPTIONS=[
@@ -1824,6 +1824,32 @@ function Leaderboard({tournaments,teams,lang}){
 
 const PARTICIPANT_KEY = 'arenagg_participant'
 
+const MEMBER_KEY = 'arenagg_member'
+
+function getMember(){
+  try{return JSON.parse(localStorage.getItem(MEMBER_KEY)||'null')}catch(e){return null}
+}
+function saveMember(m){
+  try{localStorage.setItem(MEMBER_KEY,JSON.stringify(m))}catch(e){}
+}
+function clearMember(){
+  try{localStorage.removeItem(MEMBER_KEY)}catch(e){}
+}
+function generateMemberId(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let id='AGG-'
+  for(let i=0;i<6;i++)id+=chars[Math.floor(Math.random()*chars.length)]
+  return id
+}
+function fmtMemberDate(ts){
+  if(!ts)return ''
+  try{
+    const d=new Date(ts)
+    return d.toLocaleDateString('id-ID',{year:'numeric',month:'long'})
+  }catch(e){return ''}
+}
+
+
 function getParticipant(){
   try{
     const p=JSON.parse(localStorage.getItem(PARTICIPANT_KEY)||'null')
@@ -1842,930 +1868,588 @@ function clearParticipant(){
   try{localStorage.removeItem(PARTICIPANT_KEY)}catch(e){}
 }
 
-// Auth peserta — login via nama tim + no HP (no email needed)
-function ParticipantAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA}){
+// ============================================================
+// MEMBER AUTH — Register + Login dengan Supabase Auth
+// ============================================================
+function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournaments=[]}){
   const[mode,setMode]=useState('login')
-  const[teamName,setTeamName]=useState('')
-  const[contact,setContact]=useState('')
-  const[captain,setCaptain]=useState('')
+  const[email,setEmail]=useState('')
+  const[password,setPassword]=useState('')
+  const[pwConfirm,setPwConfirm]=useState('')
+  const[nama,setNama]=useState('')
+  const[hp,setHp]=useState('')
+  const[gameId,setGameId]=useState('')
   const[loading,setL]=useState(false)
   const[err,setErr]=useState('')
-  // Gunakan langProp dari parent (ParticipantPortal) langsung — tidak perlu state sendiri
+  const[step,setStep]=useState('form') // 'form' | 'verif'
+  const[showPw,setShowPw]=useState(false)
   const lang=langPropPA||getLang()
   const setLangFn=setLangFnPA||(l=>{setLang(l)})
   const i=T[lang]||T.id
 
-  const login=async()=>{
-        // Read from DOM as fallback if React state not updated
-    const domTeamName = document.querySelector('input[type="text"]')?.value||teamName
-    const domContact = document.querySelector('input[type="tel"]')?.value||contact
-    const _teamName = domTeamName.trim()||teamName.trim()
-    const _contact = domContact.trim()||contact.trim()
-    if(!_teamName||!_contact){setErr('Isi nama tim dan no. HP');return}
-    setErr('');setL(true)
+  const validateEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)
+
+  const doRegister=async()=>{
+    setErr('')
+    if(!nama.trim()){setErr('Nama lengkap wajib diisi');return}
+    if(!validateEmail(email)){setErr(i.email_invalid||'Format email tidak valid');return}
+    if(!hp.trim()){setErr('No. HP wajib diisi');return}
+    if(password.length<6){setErr(i.pw_min||'Password minimal 6 karakter');return}
+    if(password!==pwConfirm){setErr(i.pw_not_match||'Password tidak cocok');return}
+    setL(true)
     try{
-      // Find team by name + contact
-      const{data,error}=await supabase.from('teams').select('*,tournaments(*)').ilike('name',_teamName).eq('contact',_contact).single()
-      if(error||!data){setErr('Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai saat pendaftaran.');setL(false);return}
-      const rawT=data.tournaments||{}
-      const normT={...rawT,prize:rawT.prize||rawT.prize_pool||rawT.prize_pool_idr||0,entry:rawT.entry||rawT.entry_fee||0}
-      const participant={
-        id:data.id,name:data.name,captain:data.captain,contact:data.contact,
-        members:data.members,photo:data.photo,paid:data.paid,
-        tournamentId:data.tournament_id,
-        tournament:normT,
-        loginAt:Date.now()
+      const memberId=generateMemberId()
+      const{data,error}=await supabase.auth.signUp({
+        email:email.trim(),
+        password,
+        options:{
+          data:{
+            full_name:nama.trim(),
+            phone:hp.trim(),
+            game_id:gameId.trim(),
+            member_id:memberId,
+            role:'member',
+            joined_at:new Date().toISOString()
+          },
+          emailRedirectTo:window.location.origin+'/#/peserta'
+        }
+      })
+      if(error){
+        if(error.message.includes('already registered')||error.message.includes('User already registered')){
+          setErr('Email sudah terdaftar. Silakan masuk.')
+        } else {
+          setErr(error.message)
+        }
+        setL(false);return
       }
-      saveParticipant(participant)
-      toast('✓ Selamat datang, '+data.name+'!','success')
-      onLogin(participant)
-    }catch(e){setErr('Error: '+e.message)}
+      // Save member data locally for display
+      const memberData={
+        id:data.user?.id,
+        member_id:memberId,
+        nama:nama.trim(),
+        email:email.trim(),
+        hp:hp.trim(),
+        game_id:gameId.trim(),
+        joined_at:new Date().toISOString(),
+        email_confirmed:false
+      }
+      saveMember(memberData)
+      toast(i.reg_success||'Akun berhasil dibuat! Cek email untuk aktivasi.','success')
+      setStep('verif')
+    }catch(e){setErr(e.message)}
     setL(false)
   }
 
-  return <div style={{minHeight:'100vh',background:'#050508',backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',display:'flex',alignItems:'center',justifyContent:'center',padding:20,backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)'}}>
-    <div style={{width:'100%',maxWidth:400}}>
-      {/* LOGO */}
-      <div style={{textAlign:'center',marginBottom:28}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
-          <div style={{width:40,height:40,borderRadius:10,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}>⚔</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
-        </div>
-        <div style={{fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:2,fontWeight:700}}>{i.portal_peserta||'PORTAL PESERTA'}</div>
-        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:2,marginTop:4}}>{i.portal_sub||'Akses dashboard tim & pantau pertandingan live'}</div>
-        <div style={{marginTop:12}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
-      </div>
-
-      {/* CARD */}
-      <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:14,padding:'28px 24px',boxShadow:'var(--shadow),0 0 40px rgba(255,107,0,0.05)',position:'relative',overflow:'hidden'}}>
-        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,var(--orange),var(--cyan),transparent)'}}/>
-
-        {/* TABS */}
-        <div style={{display:'flex',background:'rgba(255,255,255,0.04)',borderRadius:8,padding:4,marginBottom:22,gap:4}}>
-          {[{id:'login',label:i.masuk_tim||'Masuk Tim'},{id:'info',label:i.cara_masuk||'Cara Masuk'}].map(t=>(
-            <button key={t.id} onClick={()=>{setMode(t.id);setErr('')}} style={{flex:1,padding:9,border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,transition:'var(--trans)',background:mode===t.id?'var(--orange)':'transparent',color:mode===t.id?'#fff':'var(--muted)',fontWeight:700}}>{t.label}</button>
-          ))}
-        </div>
-
-        {mode==='login'&&<>
-          <div style={{marginBottom:12}}>
-            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>{`⚔ ${i.nama_tim_label||'NAMA TIM *'}`}</label>
-            <input value={teamName} onChange={e=>setTeamName(e.target.value)} placeholder={i.nama_tim_ph||"Nama tim saat daftar..."} onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
-          </div>
-          <div style={{marginBottom:20}}>
-            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>{`📱 ${i.nohp_label||'NO. HP (SAAT DAFTAR) *'}`}</label>
-            <input id="reg_contact" value={contact} onChange={e=>setContact(e.target.value)} placeholder={i.nohp_ph||"08xxxxxxxxxx"} type="tel" onKeyDown={e=>e.key==='Enter'&&login()} style={{fontSize:13}}/>
-          </div>
-          {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
-          <button className="btn btn-orange btn-full" onClick={login} disabled={loading} style={{fontSize:11,padding:13,borderRadius:8}}>
-            {loading?<><Spinner size={14} color="#fff"/> Mencari...</>:'⚡ Masuk ke Dashboard Tim'}
-          </button>
-          <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>{i.belum_daftar||'Belum daftar?'} <a href={window.location.origin} style={{color:'var(--cyan)',textDecoration:'none',fontWeight:600}}>Daftar tim →</a></div>
-        </>}
-
-        {mode==='info'&&<div style={{fontSize:12,lineHeight:1.9,color:'var(--muted)'}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--orange)',marginBottom:12,letterSpacing:1}}>CARA MASUK PORTAL PESERTA</div>
-          {[
-            {icon:'1️⃣',title:'Daftar Tim',desc:'Buka link turnamen → isi form pendaftaran tim'},
-            {icon:'2️⃣',title:'Simpan Data',desc:'Catat Nama Tim dan No. HP yang kamu daftarkan'},
-            {icon:'3️⃣',title:'Login di sini',desc:'Masukkan Nama Tim + No. HP → klik Masuk'},
-            {icon:'4️⃣',title:'Akses Dashboard',desc:'Lihat status tim, pantau jadwal & skor live'},
-            {icon:'5️⃣',title:'Saat Bertanding',desc:'Buka tab Live di dashboard untuk skor real-time & chat'},
-          ].map(s=>(
-            <div key={s.icon} style={{display:'flex',gap:10,padding:'7px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-              <span style={{fontSize:18,flexShrink:0}}>{s.icon}</span>
-              <div><b style={{color:'var(--text)'}}>{s.title}</b> — {s.desc}</div>
-            </div>
-          ))}
-        </div>}
-      </div>
-      <div style={{textAlign:'center',marginTop:14,fontSize:9,color:'rgba(255,255,255,0.12)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · PORTAL PESERTA</div>
-    </div>
-  </div>
-}
-
-// Dashboard Peserta — setelah login
-// ============================================================
-// STREAM TAB — Live stream peserta dari YouTube/Twitch/TikTok
-// ============================================================
-function getEmbedUrl(url){
-  if(!url)return null
-  try{
-    var u=url.trim()
-    var m
-    m=u.match(/youtube\.com\/live\/([a-zA-Z0-9_-]+)/)
-    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
-    m=u.match(/[?&]v=([a-zA-Z0-9_-]+)/)
-    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
-    m=u.match(/youtu\.be\/([a-zA-Z0-9_-]+)/)
-    if(m)return 'https://www.youtube.com/embed/'+m[1]+'?autoplay=0'
-    m=u.match(/twitch\.tv\/([a-zA-Z0-9_]+)/)
-    if(m)return 'https://player.twitch.tv/?channel='+m[1]+'&parent='+window.location.hostname
-    return null
-  }catch(e){return null}
-}
-
-function StreamTab({participant,tournamentId}){
-  const[teams,setTeams]=useState([])
-  const[loading,setLoading]=useState(true)
-  const[selected,setSelected]=useState(null)
-  const[myStreamUrl,setMyStreamUrl]=useState(participant.stream_url||'')
-  const[editing,setEditing]=useState(false)
-  const[saving,setSaving]=useState(false)
-
-  useEffect(()=>{
-    const load=async()=>{
-      if(!tournamentId){setLoading(false);return}
-      const{data}=await supabase.from('teams').select('id,name,captain,game_id,stream_url,photo').eq('tournament_id',tournamentId).order('name')
-      setTeams(data||[])
-      // Auto-select first team with stream
-      const first=(data||[]).find(t=>t.stream_url&&t.id!==participant.id)
-      if(first)setSelected(first.id)
-      setLoading(false)
-    }
-    load()
-    // Realtime update
-    const ch=supabase.channel('stream-tab-'+tournamentId)
-      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'teams',filter:`tournament_id=eq.${tournamentId}`},()=>load())
-      .subscribe()
-    return()=>supabase.removeChannel(ch)
-  },[tournamentId])
-
-  const saveStream=async()=>{
-    setSaving(true)
-    const url=myStreamUrl.trim()
-    await supabase.from('teams').update({stream_url:url}).eq('id',participant.id)
-    // Update participant in localStorage
+  const doLogin=async()=>{
+    setErr('')
+    if(!validateEmail(email)){setErr(i.email_invalid||'Format email tidak valid');return}
+    if(!password){setErr('Password wajib diisi');return}
+    setL(true)
     try{
-      const p=JSON.parse(localStorage.getItem('arenagg_participant')||'{}')
-      p.stream_url=url
-      localStorage.setItem('arenagg_participant',JSON.stringify(p))
-    }catch(e){}
-    // Refresh teams list
-    const{data}=await supabase.from('teams').select('id,name,captain,game_id,stream_url,photo').eq('tournament_id',tournamentId).order('name')
-    setTeams(data||[])
-    setSaving(false)
-    setEditing(false)
-  }
-
-  const teamsWithStream=teams.filter(t=>t.stream_url&&getEmbedUrl(t.stream_url))
-  const selectedTeam=teams.find(t=>t.id===selected)||teamsWithStream[0]
-  const embedUrl=selectedTeam?getEmbedUrl(selectedTeam.stream_url):null
-
-  if(loading)return<div style={{textAlign:'center',padding:'40px 0',color:'var(--muted)'}}><Spinner size={20}/></div>
-
-  return<div>
-    {/* My stream setup */}
-    <div className="card" style={{marginBottom:14,borderColor:'rgba(0,229,255,0.2)'}}>
-      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:1}}>📡 STREAM SAYA</div>
-        {!editing&&<button onClick={()=>setEditing(true)} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'3px 8px',color:'var(--muted)',fontSize:10,cursor:'pointer'}}>✏ Edit</button>}
-      </div>
-      {editing
-        ?<div style={{display:'flex',gap:8,alignItems:'center'}}>
-          <input value={myStreamUrl} onChange={e=>setMyStreamUrl(e.target.value)} placeholder="https://youtube.com/live/... atau https://twitch.tv/..." style={{flex:1,background:'var(--bg2)',border:'1px solid var(--border2)',borderRadius:6,padding:'8px 10px',color:'var(--text)',fontSize:11}} onKeyDown={e=>e.key==='Enter'&&saveStream()}/>
-          <button onClick={saveStream} disabled={saving} className="btn btn-cyan" style={{padding:'7px 12px',fontSize:10}}>{saving?'..':'💾'}</button>
-          <button onClick={()=>setEditing(false)} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'7px 10px',color:'var(--muted)',fontSize:10,cursor:'pointer'}}>✕</button>
-        </div>
-        :<div>
-          {participant.stream_url||myStreamUrl
-            ?<div>
-              <div style={{fontSize:11,color:'var(--green)',wordBreak:'break-all'}}>{participant.stream_url||myStreamUrl}</div>
-              {getEmbedUrl(participant.stream_url||myStreamUrl)
-                ?<div style={{fontSize:9,color:'var(--muted)',marginTop:3}}>✅ Link valid — bisa ditonton peserta lain</div>
-                :<div style={{fontSize:9,color:'var(--yellow)',marginTop:3}}>⚠ Format tidak dikenali. Gunakan link YouTube/Twitch.</div>}
-            </div>
-            :<div style={{fontSize:11,color:'var(--muted)'}}>Belum ada link stream. Klik Edit untuk tambahkan.</div>}
-        </div>}
-    </div>
-
-    {/* Pilih peserta */}
-    {teamsWithStream.length>0&&<div>
-      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>🎮 TONTON STREAM PESERTA LAIN</div>
-      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:12}}>
-        {teamsWithStream.map(tm=>(
-          <button key={tm.id} onClick={()=>setSelected(tm.id)}
-            style={{padding:'5px 10px',borderRadius:6,border:`1px solid ${selected===tm.id?'var(--cyan)':'var(--border)'}`,background:selected===tm.id?'rgba(0,229,255,0.1)':'var(--bg2)',color:selected===tm.id?'var(--cyan)':'var(--text)',fontSize:11,cursor:'pointer',fontWeight:selected===tm.id?700:400}}>
-            {tm.name}
-          </button>
-        ))}
-      </div>
-      {embedUrl&&selectedTeam&&<div>
-        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8}}>
-          <div style={{width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
-          <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--red)',letterSpacing:1}}>LIVE</span>
-          <span style={{fontSize:12,fontWeight:600}}>{selectedTeam.name}</span>
-          {selectedTeam.game_id&&<span style={{fontSize:10,color:'var(--muted)'}}>ID: {selectedTeam.game_id}</span>}
-        </div>
-        <div style={{borderRadius:8,overflow:'hidden',border:'1px solid var(--border)',aspectRatio:'16/9',background:'#000'}}>
-          <iframe src={embedUrl} width="100%" height="100%" style={{border:'none',display:'block'}} allowFullScreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" title={'Stream '+selectedTeam.name}/>
-        </div>
-        <div style={{fontSize:9,color:'var(--muted)',marginTop:6,textAlign:'center'}}>Stream dari {selectedTeam.captain} · Klik fullscreen untuk tampilan lebih besar</div>
-      </div>}
-    </div>}
-
-    {teamsWithStream.length===0&&<div className="card" style={{textAlign:'center',padding:'36px 20px',color:'var(--muted)'}}>
-      <div style={{fontSize:40,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>📺</div>
-      <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:6}}>BELUM ADA STREAM</div>
-      <div style={{fontSize:11}}>Peserta belum menambahkan link stream.<br/>Tambahkan link stream kamu di atas!</div>
-    </div>}
-  </div>
-}
-
-
-// FloatingChat untuk ParticipantDashboard (peserta)
-function ParticipantFloatingChat({participant}){
-  const[open,setOpen]=React.useState(false)
-  const[msg,setMsg]=React.useState('')
-  const[messages,setMessages]=React.useState([])
-  const[unread,setUnread]=React.useState(0)
-  const[sending,setSending]=React.useState(false)
-  const chatEndRef=React.useRef(null)
-  const inputRef=React.useRef(null)
-  const tid=participant?.tournamentId||participant?.tournament_id||''
-
-  React.useEffect(()=>{
-    if(!tid)return
-    fetchChatFromSupabase(tid).then(msgs=>{
-      if(msgs&&msgs.length>0){setMessages(msgs);saveChatHistory(tid,msgs)}
-      else setMessages(getChatHistory(tid))
-    })
-    // Supabase realtime
-    const ch=supabase.channel('pfc-'+tid)
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
-        const m=payload.new
-        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
-        setMessages(h=>{
-          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-          return[...h,newMsg]
-        })
-        if(!open)setUnread(u=>u+1)
-      })
-      .subscribe()
-    // BroadcastChannel sync antar tab
-    const onBC=(e)=>{
-      if(e.data?.tournId!==tid)return
-      const newMsg=e.data.msg
-      setMessages(h=>{
-        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-        if(!open)setUnread(u=>u+1)
-        return[...h,newMsg]
-      })
-    }
-    if(_bc)_bc.addEventListener('message',onBC)
-    // Supabase Broadcast (cross-device)
-    const sbCh2=getSBChannel(tid)
-    sbCh2.on('broadcast',{event:'chat_msg'},(payload)=>{
-      const p=payload.payload
-      if(!p||p.tournId!==tid)return
-      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
-      setMessages(h=>{
-        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-        if(!open)setUnread(u=>u+1)
-        return[...h,newMsg]
-      })
-    })
-    // localStorage polling 2s
-    const poll=setInterval(()=>{
-      const stored=getChatHistory(tid)
-      setMessages(h=>{
-        if(stored.length<=h.length)return h
-        const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
-        if(newMsgs.length===0)return h
-        if(!open)setUnread(u=>u+newMsgs.length)
-        return[...h,...newMsgs]
-      })
-    },3000)
-    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(poll)}
-  },[tid])
-
-  React.useEffect(()=>{if(open){setUnread(0);setTimeout(()=>inputRef.current?.focus(),200)}},[open])
-  React.useEffect(()=>{if(open&&chatEndRef.current)chatEndRef.current.scrollIntoView({behavior:'smooth'})},[messages,open])
-
-  const sendMsg=async()=>{
-    if(!msg.trim()||!tid||sending)return
-    const newMsg={id:Date.now(),name:participant.name,text:msg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false}
-    setSending(true);setMsg('')
-    // Optimistic update sekali, BC listener akan skip jika sudah ada
-    setMessages(h=>h.find(x=>String(x.id)===String(newMsg.id))?h:[...h,newMsg])
-    await sendChatToSupabase(tid,newMsg,false)
-    setSending(false)
-  }
-
-  return<>
-    <button onClick={()=>setOpen(o=>!o)} style={{
-      position:'fixed',bottom:open?'calc(380px + 16px)':80,right:16,
-      width:48,height:48,borderRadius:'50%',
-      background:open?'var(--border)':'linear-gradient(135deg,var(--orange),#ff6600)',
-      border:'none',cursor:'pointer',zIndex:9999,
-      display:'flex',alignItems:'center',justifyContent:'center',
-      boxShadow:open?'0 2px 8px rgba(0,0,0,0.3)':'0 4px 20px rgba(255,107,0,0.5)',
-      transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-    }}>
-      {open
-        ?<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        :<svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-          <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/>
-          <circle cx="8" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
-          <circle cx="12" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
-          <circle cx="16" cy="11" r="1.1" fill="rgba(0,0,0,0.4)"/>
-        </svg>
+      const{data,error}=await supabase.auth.signInWithPassword({email:email.trim(),password})
+      if(error){
+        if(error.message.includes('Email not confirmed')){
+          setErr(i.email_not_confirm||'Email belum diverifikasi. Cek inbox/spam kamu.')
+        } else if(error.message.includes('Invalid login')||error.message.includes('invalid_credentials')){
+          setErr(i.wrong_pw||'Email atau password salah.')
+        } else {
+          setErr(error.message)
+        }
+        setL(false);return
       }
-      {!open&&unread>0&&<div style={{position:'absolute',top:-3,right:-3,width:18,height:18,borderRadius:'50%',background:'var(--red)',color:'#fff',fontFamily:'var(--fm)',fontSize:9,fontWeight:700,display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid var(--bg)',animation:'pulse 1s infinite'}}>{unread>9?'9+':unread}</div>}
-    </button>
-    {open&&<div style={{position:'fixed',bottom:80,right:12,width:320,height:380,background:'var(--bg2)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:16,boxShadow:'0 8px 40px rgba(0,0,0,0.5)',zIndex:9998,display:'flex',flexDirection:'column',overflow:'hidden',animation:'slide-in 0.25s ease'}}>
-      <div style={{background:'linear-gradient(135deg,#cc4400,var(--orange))',padding:'10px 14px',display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2Z"/></svg>
-        <div style={{flex:1,minWidth:0}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'#fff',letterSpacing:1}}>💬 OBROLAN TIM</div>
-          <div style={{fontSize:9,color:'rgba(255,255,255,0.7)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{participant.name} · {participant.tournament?.name||'Turnamen'}</div>
-        </div>
-        <div style={{display:'flex',alignItems:'center',gap:4}}>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'#00ff88',animation:'pulse 1.5s infinite'}}/>
-          <span style={{fontSize:9,color:'rgba(255,255,255,0.8)'}}>LIVE</span>
-        </div>
-      </div>
-      <div style={{flex:1,overflow:'auto',padding:'8px 10px',display:'flex',flexDirection:'column',gap:7}}>
-        {messages.length===0&&<div style={{textAlign:'center',padding:'24px 14px',color:'var(--muted)'}}>
-          <div style={{fontSize:32,marginBottom:8}}>💬</div>
-          <div style={{fontSize:10}}>Belum ada pesan. Mulai obrolan!</div>
-        </div>}
-        {messages.map((m,idx2)=>{
-          const isOrg=m.isOrg||m.name.includes('[ORG]')
-          const isMe=m.name===participant.name
-          const dispName=m.name.replace('[ORG]','')
-          return<div key={m.id||idx2} style={{display:'flex',gap:6,alignItems:'flex-end',flexDirection:isMe?'row-reverse':'row'}}>
-            <div style={{width:24,height:24,borderRadius:'50%',flexShrink:0,background:isOrg?'linear-gradient(135deg,#0088ff,#0044aa)':isMe?'linear-gradient(135deg,var(--orange),#660022)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,fontWeight:900,color:'#fff',border:isOrg?'1.5px solid #0088ff':'none'}}>{dispName[0]?.toUpperCase()||'?'}</div>
-            <div style={{maxWidth:'80%'}}>
-              <div style={{display:'flex',alignItems:'center',gap:3,marginBottom:2,flexDirection:isMe?'row-reverse':'row'}}>
-                {isOrg&&<span style={{background:'#0088ff',color:'#fff',fontSize:7,fontFamily:'var(--fm)',padding:'1px 5px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORG</span>}
-                {isMe&&!isOrg&&<span style={{fontSize:7,color:'var(--orange)',fontFamily:'var(--fm)',letterSpacing:1}}>KAMU</span>}
-                <span style={{fontSize:9,fontWeight:700,color:isOrg?'#0088ff':isMe?'var(--orange)':'var(--text)'}}>{dispName}</span>
-                <span style={{fontSize:7,color:'var(--muted)'}}>{m.time}</span>
-              </div>
-              <div style={{fontSize:11,lineHeight:1.5,background:isOrg?'rgba(0,136,255,0.1)':isMe?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:isMe?'10px 2px 10px 10px':'2px 10px 10px 10px',padding:'6px 9px',border:`1px solid ${isOrg?'rgba(0,136,255,0.2)':isMe?'rgba(255,107,0,0.2)':'var(--border)'}`}}>
-                {isOrg&&<div style={{fontSize:8,color:'#0088ff',fontFamily:'var(--fm)',marginBottom:2,letterSpacing:1}}>📢 INFO</div>}
-                {m.text}
-              </div>
-            </div>
-          </div>
-        })}
-        <div ref={chatEndRef} style={{height:1}}/>
-      </div>
-      <div style={{padding:'7px 9px',borderTop:'1px solid rgba(255,255,255,0.06)',display:'flex',gap:6,alignItems:'center',background:'rgba(0,0,0,0.2)',flexShrink:0}}>
-        <input ref={inputRef} value={msg} onChange={e=>setMsg(e.target.value)} onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg()} placeholder="Pesan ke semua peserta..." style={{flex:1,fontSize:11,borderRadius:20,padding:'7px 12px',background:'rgba(255,255,255,0.06)',border:'1px solid rgba(255,255,255,0.1)',color:'var(--text)'}}/>
-        <button onClick={sendMsg} disabled={!msg.trim()||sending} style={{width:30,height:30,borderRadius:'50%',flexShrink:0,background:msg.trim()?'linear-gradient(135deg,var(--orange),#ff6600)':'rgba(255,255,255,0.08)',border:'none',cursor:msg.trim()?'pointer':'default',display:'flex',alignItems:'center',justifyContent:'center'}}>
-          {sending?<Spinner size={11} color="white"/>:<svg width="14" height="14" viewBox="0 0 24 24" fill={msg.trim()?'white':'gray'}><path d="M2 21L23 12 2 3v7l15 2-15 2z"/></svg>}
-        </button>
-      </div>
-    </div>}
-  </>
-}
-
-
-function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:langProp,setLangFn:setLangFnProp}){
-  const t=participant.tournament||{}
-  // Normalisasi prize & entry: handle berbagai nama kolom Supabase
-  t.prize=Number(t.prize||t.prize_pool||t.prize_pool_idr||0)
-  t.entry=Number(t.entry||t.entry_fee||0)
-  const[activeTab,setActiveTab]=useState('home')
-  const[chatMsg,setChatMsg]=useState('')
-  const[chatHistory,setChatHistory]=useState(()=>getChatHistory(participant.tournamentId||''))
-  const[chatName]=useState(participant.name)
-  const[scores,setScores]=useState(()=>{const s=getScores();return s[participant.tournamentId]||{}})
-  // Gunakan langProp dari parent (ParticipantPortal) langsung — tidak perlu state sendiri
-  const lang=langProp||getLang()
-  const setLangFn=setLangFnProp||(l=>{setLang(l)})
-  const i=T[lang]||T.id
-  const fmtRp2=n=>'Rp '+Number(n).toLocaleString('id-ID')
-
-  // Bank info organizer (tersimpan di localStorage oleh organizer)
-  const bank=(()=>{try{return JSON.parse(localStorage.getItem('arenagg_bank_info')||'{}')}catch(e){return{}}})()
-
-  // Wallet state
-  const WALLET_KEY='arenagg_wallet_'+participant.id
-  const getWallet=()=>{try{return JSON.parse(localStorage.getItem(WALLET_KEY)||'{}')}catch(e){return{}}}
-  const saveWallet=w=>{try{localStorage.setItem(WALLET_KEY,JSON.stringify(w))}catch(e){}}
-  const[wallet,setWallet]=useState(()=>getWallet())
-  const[payProof,setPayProof]=useState('')
-  const[payNote,setPayNote]=useState('')
-  const[payMethod,setPayMethod]=useState(bank.bankName||'Transfer Bank')
-  const[submitting,setSubmitting]=useState(false)
-  const entryFee=Number(participant.tournament?.entry||participant.tournament?.entry_fee||0)
-
-  // Submit bukti bayar (ke Supabase + localStorage backup)
-  const submitPayment=async()=>{
-    if(!payProof.trim()){toast('Isi nomor bukti transfer / referensi pembayaran','error');return}
-    setSubmitting(true)
-    const payload={amount:entryFee,method:payMethod,proof:payProof,note:payNote}
-    // Try Supabase first
-    const ok = await submitPaymentSupa(participant.id, participant.tournamentId, payload)
-    // Also save locally as backup
-    const rec={id:'pay_'+Date.now(),amount:entryFee,method:payMethod,proof:payProof,note:payNote,submittedAt:new Date().toLocaleString('id-ID'),status:'pending',syncedToSupabase:ok}
-    const updated={...wallet,payments:[...(wallet.payments||[]),rec],lastSubmit:Date.now()}
-    setWallet(updated);saveWallet(updated)
-    setPayProof('');setPayNote('')
-    toast(ok?'✓ Bukti bayar terkirim ke sistem! Tunggu konfirmasi organizer.':'✓ Bukti bayar tersimpan! Hubungi organizer untuk konfirmasi.','success')
-    setSubmitting(false)
+      const user=data.user
+      const meta=user.user_metadata||{}
+      // Check if member_id exists, generate if not
+      let memberId=meta.member_id
+      if(!memberId){
+        memberId=generateMemberId()
+        await supabase.auth.updateUser({data:{member_id:memberId}})
+      }
+      const memberData={
+        id:user.id,
+        member_id:memberId,
+        nama:meta.full_name||meta.name||email.split('@')[0],
+        email:user.email,
+        hp:meta.phone||'',
+        game_id:meta.game_id||'',
+        joined_at:meta.joined_at||user.created_at,
+        email_confirmed:!!user.email_confirmed_at
+      }
+      saveMember(memberData)
+      toast((i.login_success||'Selamat datang kembali!')+' '+memberData.nama,'success')
+      onLogin(memberData)
+    }catch(e){setErr(e.message)}
+    setL(false)
   }
 
-  // Poll for updates every 5s (scores from Supabase, chat from localStorage)
-  useEffect(()=>{
-    const tid=participant.tournamentId||''
-    if(!tid)return
-    // Load chat
-    fetchChatFromSupabase(tid).then(msgs=>{
-      if(msgs&&msgs.length>0){setChatHistory(msgs);saveChatHistory(tid,msgs)}
-      else setChatHistory(getChatHistory(tid))
-    })
-    // Supabase realtime
-    const ch=supabase.channel('pd-chat-'+tid)
-      .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`tournament_id=eq.${tid}`},(payload)=>{
-        const m=payload.new
-        const newMsg={id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}
-        setChatHistory(h=>{
-          if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-          const updated=[...h,newMsg]
-          saveChatHistory(tid,updated)
-          return updated
-        })
-      })
-      .subscribe()
-    // BroadcastChannel — sync real-time antar tab/window
-    const onBC=(e)=>{
-      if(e.data?.tournId!==tid)return
-      const newMsg=e.data.msg
-      setChatHistory(h=>{
-        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-        const updated=[...h,newMsg]
-        saveChatHistory(tid,updated)
-        return updated
-      })
-    }
-    if(_bc)_bc.addEventListener('message',onBC)
-    // Supabase Broadcast (cross-device)
-    const sbCh3=getSBChannel(tid)
-    sbCh3.on('broadcast',{event:'chat_msg'},(payload)=>{
-      const p=payload.payload
-      if(!p||p.tournId!==tid)return
-      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
-      setChatHistory(h=>{
-        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
-        const updated=[...h,newMsg]
-        saveChatHistory(tid,updated)
-        return updated
-      })
-    })
-    // localStorage polling 2s
-    const chatPoll=setInterval(()=>{
-      const stored=getChatHistory(tid)
-      setChatHistory(h=>{
-        if(stored.length<=h.length)return h
-        const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
-        return newMsgs.length?[...h,...newMsgs]:h
-      })
-    },2000)
-    // Score poll 5s
-    const poll=setInterval(async()=>{
-      const supScores = await loadScoresFromSupabase(tid)
-      if(supScores && Object.keys(supScores).length>0) setScores({...supScores})
-      else{ const s=getScores();if(s[tid])setScores({...s[tid]}) }
-    },5000)
-    return()=>{supabase.removeChannel(ch);if(_bc)_bc.removeEventListener('message',onBC);clearInterval(chatPoll);clearInterval(poll)}
-  },[])
-
-  const sendChat=async()=>{
-    if(!chatMsg.trim()||!chatName)return
-    const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false,isPlayer:true}
-    setChatMsg('')
-    // Optimistic update HANYA sekali — cegah duplikat
-    setChatHistory(h=>h.find(x=>String(x.id)===String(msg.id))?h:[...h,msg])
-    // Kirim ke Supabase + broadcast (BC listener di tab lain akan update mereka)
-    await sendChatToSupabase(participant.tournamentId,msg,false)
+  const resendVerif=async()=>{
+    setL(true)
+    const{error}=await supabase.auth.resend({type:'signup',email:email.trim()})
+    if(error){toast('Gagal kirim ulang: '+error.message,'error')}
+    else{toast('Email verifikasi dikirim ulang!','success')}
+    setL(false)
   }
 
-  // Build match data for this team
-  const matchScores=Object.entries(scores)
-  const fmtRpLocal=n=>'Rp '+Number(n).toLocaleString('id-ID')
+  const bgStyle={minHeight:'100vh',background:'#050508',backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}
+  const inputStyle={fontSize:13,marginBottom:0}
 
-  const TABS=[
-    {id:'home',icon:'🏠',label:i.pd_beranda||'Beranda'},
-    {id:'wallet',icon:'💳',label:i.pd_wallet||'Wallet'},
-    {id:'live',icon:'🔴',label:i.pd_live||'Live Score'},
-    {id:'stream',icon:'📺',label:i.pd_stream||'Live Stream'},
-    {id:'chat',icon:'💬',label:(i.pd_chat||'Chat')+(chatHistory.length>0?` (${chatHistory.length})`:'')},
-    {id:'info',icon:'ℹ',label:i.pd_info||'Info'},
-  ]
-
-  // Sidebar peserta — sama struktur dengan owner
-  const PD_SIDEBAR_W = 200
-  return (
-    <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}>
-      {/* ── SIDEBAR KIRI ── */}
-      <div style={{width:PD_SIDEBAR_W,minWidth:PD_SIDEBAR_W,background:'linear-gradient(180deg,rgba(8,8,20,0.98) 0%,rgba(5,5,15,0.99) 100%)',borderRight:'1px solid rgba(0,229,255,0.12)',display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0,zIndex:100,flexShrink:0,overflowY:'auto'}}>
-        {/* Logo */}
-        <div style={{padding:'14px 13px 11px',borderBottom:'1px solid var(--border)'}}>
-          <div style={{fontFamily:'var(--fh)',fontWeight:900,fontSize:13,color:'var(--cyan)',letterSpacing:2,animation:'glow-pulse 3s infinite'}}>⚔ ARENAGG</div>
-          <div style={{fontSize:7,color:'var(--orange)',fontFamily:'var(--fm)',marginTop:2,letterSpacing:2}}>PORTAL PESERTA</div>
-          {t?.status==='live'&&<div style={{marginTop:7,display:'flex',alignItems:'center',gap:6,padding:'4px 8px',background:'rgba(255,45,85,0.1)',borderRadius:4,border:'1px solid rgba(255,45,85,0.25)'}}>
-            <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>
-            <span style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--red)',letterSpacing:1,fontWeight:700}}>🔴 LIVE NOW</span>
-          </div>}
-        </div>
-        {/* Nav menu */}
-        <nav style={{flex:1,padding:'8px 7px'}}>
-          {TABS.map(tab=>(
-            <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
-              className={`nav-item ${activeTab===tab.id?'active':''}`}
-              style={{width:'100%',marginBottom:2}}>
-              <span style={{fontSize:15,width:20,textAlign:'center',flexShrink:0}}>{tab.icon}</span>
-              <span>{tab.label}</span>
-              {tab.id==='chat'&&chatHistory.length>0&&<span style={{marginLeft:'auto',fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',background:'rgba(255,255,255,0.05)',padding:'1px 5px',borderRadius:8}}>{chatHistory.length}</span>}
-            </button>
-          ))}
-        </nav>
-        {/* Bottom: tim info + lang + logout */}
-        <div style={{padding:'10px 13px',borderTop:'1px solid var(--border)'}}>
-          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8,padding:'6px 8px',borderRadius:8,background:'rgba(255,107,0,0.06)',border:'1px solid rgba(255,107,0,0.15)'}}>
-            <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,var(--orange),var(--cyan))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:13,color:'#000',flexShrink:0,overflow:'hidden',border:'2px solid rgba(255,107,0,0.3)'}}>
-              {participant.photo?<img src={participant.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>⚔</span>}
-            </div>
-            <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:10,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--text)'}}>{participant.name}</div>
-              <div style={{fontSize:8,color:'var(--green)',fontFamily:'var(--fm)',display:'flex',alignItems:'center',gap:3}}><span className="live-dot"/>ONLINE</div>
-            </div>
-          </div>
-          <div style={{marginBottom:6}}>
-            <div style={{fontSize:7,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:1,marginBottom:4}}>🌐 BAHASA</div>
-            <div style={{display:'flex',gap:3,flexWrap:'wrap'}}>
-              {[['id','🇮🇩','ID'],['en','🇬🇧','EN'],['fil','🇵🇭','FIL'],['vi','🇻🇳','VI'],['zh','🇨🇳','ZH'],['ms','🇲🇾','MS'],['th','🇹🇭','TH']].map(([code,flag,label])=>(
-                <button key={code} onClick={()=>setLangFn(code)}
-                  style={{padding:'2px 5px',borderRadius:5,border:`1px solid ${lang===code?'var(--cyan)':'var(--border)'}`,background:lang===code?'rgba(0,229,255,0.15)':'transparent',color:lang===code?'var(--cyan)':'var(--muted)',fontSize:8,cursor:'pointer',fontFamily:'var(--fm)'}}>
-                  {flag} {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <button className="btn btn-dark btn-full btn-sm" onClick={onLogout} style={{fontSize:9}}>{i.pd_keluar||'Keluar'}</button>
+  if(step==='verif') return(
+    <div style={bgStyle}>
+      <div style={{width:'100%',maxWidth:400,textAlign:'center'}}>
+        <div style={{fontSize:48,marginBottom:12}}>📧</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--cyan)',letterSpacing:2,marginBottom:8}}>{i.verif_title||'CEK EMAIL KAMU!'}</div>
+        <div style={{fontSize:13,color:'var(--muted)',marginBottom:4}}>{i.verif_msg||'Link aktivasi dikirim ke'}</div>
+        <div style={{fontSize:14,color:'var(--text)',fontWeight:700,marginBottom:16,padding:'8px 16px',background:'rgba(0,229,255,0.08)',borderRadius:8,display:'inline-block'}}>{email}</div>
+        <div style={{fontSize:12,color:'var(--muted)',marginBottom:28,lineHeight:1.8}}>{i.verif_sub||'Klik link di email untuk aktifkan akun, lalu kembali & masuk.'}</div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <button className="btn btn-cyan btn-full" onClick={resendVerif} disabled={loading} style={{fontSize:11,padding:12}}>
+            {loading?<><Spinner size={12} color="var(--cyan)"/> Mengirim...</>:(i.verif_resend||'Kirim ulang email')}
+          </button>
+          <button className="btn btn-full" onClick={()=>{setStep('form');setMode('login')}} style={{fontSize:11,padding:12,opacity:0.7}}>
+            {i.verif_back||'← Ganti Email'} / {i.masuk_skrg||'Masuk sekarang'}
+          </button>
         </div>
       </div>
-      {/* ── MAIN CONTENT KANAN ── */}
-      <div style={{flex:1,minWidth:0,overflowY:'auto'}}>
-        <LiveBanner tournaments={tournaments}/>
-        {t?.status==='live'&&<div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'8px 16px',display:'flex',alignItems:'center',gap:8}}>
-          <span style={{width:8,height:8,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
-          <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 TURNAMEN SEDANG LIVE!</span>
-          <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
-        </div>}
-        {/* Ad Banner */}
-        <div style={{padding:'18px 24px 0'}}>
-          <div style={{marginBottom:6}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-              <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2}}>📺 IKLAN LIVE</span>
-            </div>
-            <AdBanner/>
+    </div>
+  )
+
+  return(
+    <div style={bgStyle}>
+      <div style={{width:'100%',maxWidth:420}}>
+        {/* LOGO */}
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
+            <div style={{width:40,height:40,borderRadius:10,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}>⚔</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
           </div>
-        </div>
-        {/* Tab content */}
-        <div style={{padding:'10px 24px 24px'}}>
-      {/* HOME TAB */}
-      {activeTab==='home'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
-        {/* Tim Card */}
-        <div style={{background:'linear-gradient(135deg,rgba(255,107,0,0.1),rgba(0,229,255,0.06))',border:'1px solid rgba(255,107,0,0.25)',borderRadius:14,padding:'18px',marginBottom:14,display:'flex',gap:14,alignItems:'center'}}>
-          <div style={{width:56,height:56,borderRadius:14,background:'linear-gradient(135deg,var(--orange),var(--cyan))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:20,color:'#000',flexShrink:0,overflow:'hidden',border:'2px solid rgba(255,107,0,0.3)'}}>
-            {participant.photo?<img src={participant.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>⚔</span>}
-          </div>
-          <div style={{flex:1}}>
-            <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,marginBottom:3}}>{participant.name}</div>
-            <div style={{fontSize:11,color:'var(--muted)',marginBottom:5}}>👤 Kapten: {participant.captain} · 👥 {participant.members} orang</div>
-            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-              <span className={`tag tag-${participant.paid?'active':'pending'}`} style={{fontSize:8}}>{participant.paid?'✓ LUNAS':'⏳ BELUM BAYAR'}</span>
-              {t&&<span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',background:'rgba(0,229,255,0.08)',padding:'2px 7px',borderRadius:3,border:'1px solid rgba(0,229,255,0.15)'}}>{t.game}</span>}
-            </div>
-          </div>
+          <div style={{fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:2,fontWeight:700}}>{i.portal_peserta||'PORTAL PESERTA'}</div>
+          <div style={{marginTop:10}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
         </div>
 
-        {/* Tournament Info */}
-        {t&&<div className="card" style={{marginBottom:14}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>{'🏆 '+(i.pd_info_tourn||'INFO TURNAMEN')}</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:700,marginBottom:4}}>{t.name}</div>
-          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>{getGameEmoji(t.game)} {t.game} · 📍 {t.city} · 📅 {t.date}{t.time&&<span style={{color:'var(--cyan)'}}> · ⏰ {t.time} WIB</span>}</div>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
-            {[
-              {label:i.pd_prize||'Prize Pool',val:fmtRpLocal(t.prize),color:'var(--yellow)'},
-              {label:i.pd_entry||'Entry Fee',val:fmtRpLocal(t.entry)+'/tim',color:'var(--text)'},
-              {label:i.pd_format||'Format',val:t.format,color:'var(--text)'},
-              {label:i.pd_status||'Status',val:t.status,color:t.status==='live'?'var(--red)':t.status==='active'?'var(--green)':'var(--muted)'},
-            ].map(s=><div key={s.label} style={{background:'rgba(255,255,255,0.03)',borderRadius:6,padding:'8px 10px'}}>
-              <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{s.label}</div>
-              <div style={{fontSize:12,fontWeight:600,color:s.color,marginTop:2}}>{s.val}</div>
-            </div>)}
-          </div>
-          {t.status==='live'&&<button className="btn btn-danger btn-full" onClick={()=>setActiveTab('live')} style={{fontSize:10,animation:'pulse 2s infinite'}}>🔴 Lihat Pertandingan Live →</button>}
-        </div>}
+        {/* CARD */}
+        <div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:14,padding:'28px 24px',boxShadow:'var(--shadow)',position:'relative',overflow:'hidden'}}>
+          <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,var(--orange),var(--cyan),transparent)'}}/>
 
-        {/* Payment reminder */}
-        {!participant.paid&&<div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.25)',borderRadius:10,padding:'14px',marginBottom:14,cursor:'pointer',transition:'var(--trans)'}} onClick={()=>setActiveTab('wallet')} onMouseEnter={e=>e.currentTarget.style.borderColor='rgba(255,215,0,0.5)'} onMouseLeave={e=>e.currentTarget.style.borderColor='rgba(255,215,0,0.25)'}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1}}>{i.pd_entry_unpaid||'⚠ ENTRY FEE BELUM DIBAYAR'}</div>
-            <span className="tag tag-pending" style={{fontSize:8,animation:'pulse 2s infinite'}}>{i.pd_tap_bayar||'TAP UNTUK BAYAR'}</span>
-          </div>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <div style={{fontSize:11,color:'var(--muted)'}}>{i.pd_buka_wallet||'Buka Wallet untuk info rekening & kirim bukti bayar'}</div>
-            <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--yellow)'}}>{fmtRp2(entryFee)}</div>
-          </div>
-        </div>}
-      </div>}
-
-      {/* WALLET TAB */}
-      {activeTab==='wallet'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:16}}>💳 WALLET PESERTA</div>
-
-        {/* STATUS PEMBAYARAN */}
-        <div style={{background:participant.paid?'linear-gradient(135deg,rgba(0,255,136,0.1),rgba(0,229,255,0.06))':'linear-gradient(135deg,rgba(255,215,0,0.1),rgba(255,107,0,0.06))',border:`1px solid ${participant.paid?'rgba(0,255,136,0.3)':'rgba(255,215,0,0.3)'}`,borderRadius:14,padding:'18px',marginBottom:14}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12}}>
-            <div>
-              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:4}}>{participant.paid?'✓ STATUS PEMBAYARAN':'⏳ STATUS PEMBAYARAN'}</div>
-              <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:participant.paid?'var(--green)':'var(--yellow)'}}>{participant.paid?'LUNAS':'BELUM BAYAR'}</div>
-            </div>
-            <div style={{textAlign:'right'}}>
-              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:3}}>ENTRY FEE</div>
-              <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--yellow)'}}>{fmtRp2(entryFee)}</div>
-            </div>
-          </div>
-          {participant.paid
-            ?<div style={{display:'flex',alignItems:'center',gap:8,padding:'8px 12px',background:'rgba(0,255,136,0.08)',borderRadius:7,border:'1px solid rgba(0,255,136,0.2)'}}>
-              <span style={{fontSize:20}}>✅</span>
-              <div>
-                <div style={{fontSize:12,fontWeight:700,color:'var(--green)'}}>Pembayaran Terkonfirmasi</div>
-                <div style={{fontSize:10,color:'var(--muted)'}}>Slot kamu di turnamen sudah terjamin. Semangat bertanding!</div>
-              </div>
-            </div>
-            :<div>
-              <div style={{fontSize:11,color:'var(--muted)',marginBottom:10}}>Segera lakukan pembayaran entry fee untuk mengonfirmasi keikutsertaan timmu.</div>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                {bank.waNumber&&<a href={`https://wa.me/${bank.waNumber.replace(/[^0-9]/g,'').replace(/^0/,'62')}?text=${encodeURIComponent('Halo, saya ingin konfirmasi pembayaran entry fee\nNama Tim: '+participant.name+'\nKapten: '+participant.captain+'\nTurnamen: '+(participant.tournament?.name||''))}`} target="_blank" rel="noreferrer" style={{display:'inline-flex',alignItems:'center',gap:5,padding:'8px 14px',background:'#25D366',borderRadius:6,color:'#fff',textDecoration:'none',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,letterSpacing:1}}>{i.pd_konfirm_wa||'📱 Konfirmasi via WA'}</a>}
-              </div>
-            </div>
-          }
-        </div>
-
-        {/* INFO REKENING ORGANIZER */}
-        {(bank.bankName||bank.accNumber)&&<div className="card" style={{marginBottom:14,borderColor:'rgba(255,215,0,0.2)',background:'rgba(255,215,0,0.03)'}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:12}}>{i.pd_info_org||'🏦 INFO PEMBAYARAN ORGANIZER'}</div>
-          <div style={{display:'flex',flexDirection:'column',gap:0}}>
-            {[
-              {label:i.pd_bank||'Bank / E-Wallet',val:bank.bankName,icon:'🏦'},
-              {label:i.pd_norek||'Nomor Rekening / HP',val:bank.accNumber,icon:'💳',copy:true},
-              {label:i.pd_atasnama||'Atas Nama',val:bank.accName,icon:'👤'},
-              {label:'WhatsApp',val:bank.waNumber,icon:'📱'},
-            ].filter(s=>s.val).map(s=>(
-              <div key={s.label} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'9px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-                <span style={{fontSize:11,color:'var(--muted)'}}>{s.icon} {s.label}</span>
-                <div style={{display:'flex',alignItems:'center',gap:8}}>
-                  <span style={{fontFamily:s.copy?'var(--fm)':'inherit',fontSize:13,fontWeight:700,color:s.copy?'var(--cyan)':'var(--text)',letterSpacing:s.copy?1:0}}>{s.val}</span>
-                  {s.copy&&<button onClick={()=>{if(navigator.clipboard)navigator.clipboard.writeText(s.val).then(()=>toast('✓ Disalin!','success')).catch(()=>{})}} style={{background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:4,padding:'2px 7px',cursor:'pointer',fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)'}}>{i.pd_salin||'SALIN'}</button>}
-                </div>
-              </div>
+          {/* TABS */}
+          <div style={{display:'flex',background:'rgba(255,255,255,0.04)',borderRadius:8,padding:4,marginBottom:22,gap:4}}>
+            {[{id:'login',label:i.login_member||'Masuk Akun'},{id:'register',label:i.reg_member||'Buat Akun'}].map(t=>(
+              <button key={t.id} onClick={()=>{setMode(t.id);setErr('')}} style={{flex:1,padding:9,border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,transition:'var(--trans)',background:mode===t.id?'var(--orange)':'transparent',color:mode===t.id?'#fff':'var(--muted)',fontWeight:700}}>{t.label}</button>
             ))}
           </div>
-          <div style={{marginTop:12,padding:'10px 12px',background:'rgba(0,229,255,0.04)',borderRadius:7,border:'1px solid rgba(0,229,255,0.1)',fontSize:11,color:'var(--muted)'}}>
-            💡 Transfer <b style={{color:'var(--yellow)'}}>{fmtRp2(entryFee)}</b> ke rekening di atas, lalu submit bukti bayar di bawah.
-          </div>
-        </div>}
 
-        {/* METODE PEMBAYARAN */}
-        {!bank.bankName&&!bank.accNumber&&<div className="card" style={{marginBottom:14,borderColor:'rgba(255,215,0,0.2)'}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:8}}>💳 CARA PEMBAYARAN</div>
-          <div style={{fontSize:11,color:'var(--muted)',lineHeight:1.8}}>Hubungi organizer untuk info rekening pembayaran entry fee.<br/>Gunakan tombol WA di atas atau tanyakan langsung ke panitia.</div>
-        </div>}
-
-        {/* FORM SUBMIT BUKTI BAYAR */}
-        {!participant.paid&&<div className="card" style={{marginBottom:14,borderColor:'rgba(0,229,255,0.2)',background:'rgba(0,229,255,0.02)'}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>📤 SUBMIT BUKTI PEMBAYARAN</div>
-          <div style={{marginBottom:12}}>
-            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>METODE PEMBAYARAN</label>
-            <select value={payMethod} onChange={e=>setPayMethod(e.target.value)} style={{fontSize:13}}>
-              {['Transfer Bank','DANA','OVO','GoPay','ShopeePay','QRIS','Tunai'].map(m=><option key={m}>{m}</option>)}
-            </select>
-          </div>
-          <div style={{marginBottom:12}}>
-            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>NO. REFERENSI / BUKTI TRANSFER *</label>
-            <input value={payProof} onChange={e=>setPayProof(e.target.value)} placeholder="Contoh: REF1234567890 atau nomor transaksi" style={{fontSize:13}}/>
-            <div style={{fontSize:9,color:'var(--muted)',marginTop:4,fontFamily:'var(--fm)'}}>Masukkan nomor referensi / kode unik transaksi dari bukti pembayaran</div>
-          </div>
-          <div style={{marginBottom:14}}>
-            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>CATATAN (opsional)</label>
-            <input value={payNote} onChange={e=>setPayNote(e.target.value)} placeholder="Keterangan tambahan..." style={{fontSize:13}}/>
-          </div>
-          <button className="btn btn-cyan btn-full" onClick={submitPayment} disabled={!payProof.trim()||submitting} style={{fontSize:11,padding:12}}>
-            {submitting?<><Spinner size={13} color="#000"/> Mengirim...</>:'📤 Kirim Bukti Pembayaran'}
-          </button>
-          <div style={{fontSize:10,color:'var(--muted)',marginTop:8,textAlign:'center'}}>Setelah dikirim, organizer akan mengonfirmasi pembayaran kamu</div>
-        </div>}
-
-        {/* RIWAYAT PEMBAYARAN */}
-        {(wallet.payments||[]).length>0&&<div className="card">
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:14}}>📋 RIWAYAT PENGIRIMAN BUKTI</div>
-          {(wallet.payments||[]).slice().reverse().map((p,idx)=>(
-            <div key={p.id} style={{padding:'10px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}}>
-                <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,color:'var(--cyan)'}}>{fmtRp2(p.amount)}</div>
-                <span className={`tag ${p.status==='confirmed'?'tag-active':'tag-pending'}`} style={{fontSize:8}}>{p.status==='confirmed'?'✓ KONFIRMASI':'⏳ MENUNGGU'}</span>
-              </div>
-              <div style={{fontSize:11,color:'var(--muted)'}}>💳 {p.method} · Ref: <b style={{color:'var(--text)',fontFamily:'var(--fm)'}}>{p.proof}</b></div>
-              {p.note&&<div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>📝 {p.note}</div>}
-              <div style={{fontSize:9,color:'var(--muted)',marginTop:3,fontFamily:'var(--fm)'}}>📅 {p.submittedAt}</div>
+          {/* LOGIN */}
+          {mode==='login'&&<>
+            <div style={{marginBottom:12}}>
+              <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📧 {(i.email_member||'EMAIL *').toUpperCase()}</label>
+              <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="email@contoh.com" onKeyDown={e=>e.key==='Enter'&&doLogin()} style={inputStyle}/>
             </div>
-          ))}
-        </div>}
-      </div>}
-
-      {/* LIVE TAB */}
-      {activeTab==='live'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
-        <div style={{marginBottom:14}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>🔴 Live Pertandingan</div>
-          <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
-        </div>
-        {t?.status!=='live'&&t?.status!=='active'
-          ?<div className="card" style={{textAlign:'center',padding:'36px 20px',color:'var(--muted)'}}>
-            <div style={{fontSize:48,marginBottom:12,animation:'float 3s ease-in-out infinite'}}>📡</div>
-            <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2,marginBottom:6}}>BELUM DIMULAI</div>
-            <div style={{fontSize:11}}>Pertandingan akan dimulai saat turnamen aktif. Pantau terus halaman ini!</div>
-          </div>
-          :<div>
-            {Object.keys(scores).length===0
-              ?<div className="card" style={{textAlign:'center',padding:'32px 20px',color:'var(--muted)'}}>
-                <div style={{fontSize:40,marginBottom:8,animation:'float 3s ease-in-out infinite'}}>⚡</div>
-                <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:2}}>MENUNGGU SKOR</div>
-                <div style={{fontSize:11,marginTop:6}}>Skor akan muncul saat organizer mulai update pertandingan</div>
-                <div style={{fontSize:9,color:'var(--muted)',marginTop:8,fontFamily:'var(--fm)'}}>🔄 Auto-refresh setiap 5 detik</div>
+            <div style={{marginBottom:20}}>
+              <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🔒 {(i.pw_member||'PASSWORD *').toUpperCase()}</label>
+              <div style={{position:'relative'}}>
+                <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••" onKeyDown={e=>e.key==='Enter'&&doLogin()} style={{...inputStyle,paddingRight:40}}/>
+                <button onClick={()=>setShowPw(p=>!p)} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:14,padding:0}}>{showPw?'🙈':'👁'}</button>
               </div>
-              :<div style={{display:'flex',flexDirection:'column',gap:10}}>
-                {Array.from({length:Math.ceil(Object.keys(scores).filter(k=>k.includes('_a')).length)}).map((_,idx)=>{
-                  const sA=scores['m'+idx*2+'_a']||scores['m'+idx+'_a']||0
-                  const sB=scores['m'+idx*2+'_b']||scores['m'+idx+'_b']||0
-                  return <div key={idx} style={{background:'var(--panel)',border:`1px solid ${sA!==sB?'rgba(0,229,255,0.2)':'var(--border)'}`,borderRadius:12,padding:'16px'}}>
-                    <div style={{textAlign:'center',fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',marginBottom:10,letterSpacing:1}}>MATCH {idx+1}</div>
-                    <div style={{display:'grid',gridTemplateColumns:'1fr auto 1fr',gap:8,alignItems:'center',textAlign:'center'}}>
-                      <div style={{fontSize:14,fontWeight:700,color:sA>sB?'var(--green)':'var(--text)'}}>Tim A</div>
-                      <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900}}>{sA} <span style={{color:'var(--muted)',fontSize:14}}>:</span> {sB}</div>
-                      <div style={{fontSize:14,fontWeight:700,color:sB>sA?'var(--cyan)':'var(--text)'}}>Tim B</div>
-                    </div>
-                  </div>
-                })}
-                <div style={{textAlign:'center',fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>🔄 Skor auto-refresh setiap 5 detik</div>
-              </div>
-            }
-          </div>
-        }
-      </div>}
+            </div>
+            {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
+            <button className="btn btn-orange btn-full" onClick={doLogin} disabled={loading} style={{fontSize:11,padding:13,borderRadius:8}}>
+              {loading?<><Spinner size={14} color="#fff"/> Memproses...</>:(i.btn_masuk_akun||'🔑 Masuk')}
+            </button>
+            <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>{i.belum_akun||'Belum punya akun?'} <span onClick={()=>{setMode('register');setErr('')}} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>{i.daftar_skrg||'Daftar sekarang'} →</span></div>
+          </>}
 
-      {/* STREAM TAB */}
-      {activeTab==='stream'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
-        <div style={{marginBottom:14}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:700,marginBottom:4}}>📺 Live Stream Peserta</div>
-          <div style={{fontSize:11,color:'var(--muted)'}}>{t?.name} · {t?.game}</div>
-        </div>
-        <StreamTab participant={participant} tournamentId={participant.tournamentId}/>
-      </div>}
-
-      {/* CHAT TAB */}
-      {activeTab==='chat'&&<div className="animate-in" style={{display:'flex',flexDirection:'column',height:'65vh'}}>
-        {/* Chat Header */}
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,padding:'0 0 10px',borderBottom:'1px solid var(--border)'}}>
-          <div>
-            <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700}}>💬 Obrolan Live</div>
-            <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>Semua peserta & organizer terhubung real-time</div>
-          </div>
-          <div style={{display:'flex',alignItems:'center',gap:5,background:'rgba(0,255,136,0.08)',border:'1px solid rgba(0,255,136,0.2)',borderRadius:6,padding:'4px 8px'}}>
-            <div style={{width:6,height:6,borderRadius:'50%',background:'var(--green)',animation:'pulse 1.5s infinite'}}/>
-            <span style={{fontSize:9,color:'var(--green)',fontFamily:'var(--fm)'}}>LIVE</span>
-          </div>
-        </div>
-        {/* Messages */}
-        <div id="pd-chat-box" style={{flex:1,overflow:'auto',display:'flex',flexDirection:'column',gap:8,marginBottom:10,paddingRight:2}}>
-          {chatHistory.length===0&&<div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)'}}>
-            <div style={{fontSize:40,marginBottom:10}}>💬</div>
-            <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:1}}>BELUM ADA PESAN</div>
-            <div style={{fontSize:11,marginTop:6,lineHeight:1.6}}>Mulai obrolan — semua peserta & organizer<br/>bisa saling berkomunikasi di sini</div>
-          </div>}
-          {chatHistory.map((msg,idx)=>{
-            const isMe=msg.name===participant.name||msg.name===participant.name+'[ORG]'
-            const isOrg=msg.isOrg||msg.name.includes('[ORG]')
-            const dispName=msg.name.replace('[ORG]','')
-            return<div key={msg.id||idx} style={{display:'flex',gap:8,alignItems:'flex-end',flexDirection:isMe?'row-reverse':'row'}}>
-              <div style={{width:30,height:30,borderRadius:'50%',background:isOrg?'linear-gradient(135deg,#00e5ff,#0044aa)':isMe?'linear-gradient(135deg,var(--orange),#991100)':'linear-gradient(135deg,var(--green),#003322)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:12,color:'#fff',flexShrink:0,border:isOrg?'2px solid var(--cyan)':isMe?'2px solid var(--orange)':'none'}}>
-                {dispName[0]?.toUpperCase()||'?'}
+          {/* REGISTER */}
+          {mode==='register'&&<>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:10}}>
+              <div style={{gridColumn:'1/-1'}}>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>👤 {(i.nama_lengkap||'NAMA LENGKAP *').toUpperCase()}</label>
+                <input value={nama} onChange={e=>setNama(e.target.value)} placeholder="Nama Lengkap" style={inputStyle}/>
               </div>
-              <div style={{maxWidth:'78%'}}>
-                <div style={{display:'flex',alignItems:'center',gap:4,marginBottom:3,flexDirection:isMe?'row-reverse':'row'}}>
-                  {isOrg&&<span style={{background:'linear-gradient(90deg,var(--cyan),#0066aa)',color:'#fff',fontSize:8,fontFamily:'var(--fm)',padding:'1px 6px',borderRadius:10,letterSpacing:1,fontWeight:700}}>👑 ORGANIZER</span>}
-                  {isMe&&!isOrg&&<span style={{fontSize:8,color:'var(--orange)',fontFamily:'var(--fm)',letterSpacing:1}}>KAMU</span>}
-                  <span style={{fontWeight:700,fontSize:11,color:isOrg?'var(--cyan)':isMe?'var(--orange)':'var(--text)'}}>{dispName}</span>
-                  <span style={{fontSize:8,color:'var(--muted)'}}>{msg.time}</span>
-                </div>
-                <div style={{fontSize:12,lineHeight:1.5,background:isOrg?'rgba(0,229,255,0.1)':isMe?'rgba(255,107,0,0.12)':'rgba(255,255,255,0.05)',borderRadius:isMe?'12px 2px 12px 12px':'2px 12px 12px 12px',padding:'8px 12px',border:`1px solid ${isOrg?'rgba(0,229,255,0.25)':isMe?'rgba(255,107,0,0.2)':'var(--border)'}`}}>
-                  {isOrg&&<div style={{fontSize:9,color:'var(--cyan)',fontFamily:'var(--fm)',marginBottom:3,letterSpacing:1}}>📢 INFO ORGANIZER</div>}
-                  {msg.text}
+              <div style={{gridColumn:'1/-1'}}>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📧 {(i.email_member||'EMAIL *').toUpperCase()}</label>
+                <input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="email@contoh.com" style={inputStyle}/>
+              </div>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>📱 {(i.nohp_member||'NO. HP *').toUpperCase()}</label>
+                <input type="tel" value={hp} onChange={e=>setHp(e.target.value)} placeholder="08xxxxxxxxxx" style={inputStyle}/>
+              </div>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🎮 {(i.gameid_member||'ID GAME').toUpperCase()}</label>
+                <input value={gameId} onChange={e=>setGameId(e.target.value)} placeholder="ID in-game (opsional)" style={inputStyle}/>
+              </div>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🔒 {(i.pw_member||'PASSWORD *').toUpperCase()}</label>
+                <div style={{position:'relative'}}>
+                  <input type={showPw?'text':'password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Min. 6 karakter" style={{...inputStyle,paddingRight:40}}/>
+                  <button onClick={()=>setShowPw(p=>!p)} style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:14,padding:0}}>{showPw?'🙈':'👁'}</button>
                 </div>
               </div>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>🔒 {(i.pw_confirm||'KONFIRMASI PW *').toUpperCase()}</label>
+                <input type={showPw?'text':'password'} value={pwConfirm} onChange={e=>setPwConfirm(e.target.value)} placeholder="Ulangi password" onKeyDown={e=>e.key==='Enter'&&doRegister()} style={inputStyle}/>
+              </div>
             </div>
-          })}
-          <div ref={el=>{if(el)el.scrollIntoView({behavior:'smooth'})}} style={{height:1}}/>
+            {err&&<div style={{color:'var(--red)',fontSize:11,marginBottom:14,padding:'9px 12px',background:'rgba(255,45,85,0.07)',borderRadius:7,border:'1px solid rgba(255,45,85,0.2)',display:'flex',gap:6}}><span>⚠</span><span>{err}</span></div>}
+            <button className="btn btn-orange btn-full" onClick={doRegister} disabled={loading} style={{fontSize:11,padding:13,borderRadius:8,marginTop:4}}>
+              {loading?<><Spinner size={14} color="#fff"/> Membuat akun...</>:(i.btn_buat_akun||'🚀 Buat Akun')}
+            </button>
+            <div style={{textAlign:'center',marginTop:14,fontSize:11,color:'var(--muted)'}}>{i.sudah_akun||'Sudah punya akun?'} <span onClick={()=>{setMode('login');setErr('')}} style={{color:'var(--cyan)',cursor:'pointer',fontWeight:600}}>{i.masuk_skrg||'Masuk sekarang'} →</span></div>
+          </>}
         </div>
-        {/* Input */}
-        <div style={{borderTop:'1px solid var(--border)',paddingTop:10}}>
-          <div style={{display:'flex',gap:8}}>
-            <input value={chatMsg} onChange={e=>setChatMsg(e.target.value)} placeholder={'💬 '+participant.name+': tulis pesan...'} onKeyDown={e=>e.key==='Enter'&&sendChat()} style={{flex:1,fontSize:12,borderRadius:20,padding:'9px 14px'}}/>
-            <button onClick={sendChat} disabled={!chatMsg.trim()} className="btn btn-orange" style={{padding:'9px 16px',fontSize:11,borderRadius:20}}>→</button>
-          </div>
-          <div style={{fontSize:8,color:'var(--muted)',textAlign:'center',marginTop:5,fontFamily:'var(--fm)'}}>⚡ Pesan dikirim real-time ke semua peserta & organizer</div>
-        </div>
-      </div>}
-
-      {/* INFO TAB */}
-      {activeTab==='info'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,marginBottom:14}}>ℹ Info & Bantuan</div>
-        <div className="card" style={{marginBottom:12}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1,marginBottom:12}}>DATA TIM KAMU</div>
-          {[
-            {label:'Nama Tim',val:participant.name},
-            {label:'Kapten',val:participant.captain},
-            {label:'No. HP',val:participant.contact},
-            {label:'🎮 Game ID',val:participant.game_id||'—'},
-            {label:'Jumlah Member',val:participant.members+' orang'},
-            {label:i.pd_status_bayar||'Status Bayar',val:participant.paid?(i.pd_lunas||'✓ Lunas'):(i.pd_blm_bayar||'⏳ Belum Bayar')},
-          ].map(s=>(
-            <div key={s.label} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-              <span style={{fontSize:10,color:'var(--muted)',fontFamily:'var(--fm)'}}>{s.label}</span>
-              <span style={{fontSize:12,fontWeight:600}}>{s.val}</span>
-            </div>
-          ))}
-        </div>
-        <div className="card">
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:12}}>PANDUAN PORTAL PESERTA</div>
-          {[
-            {icon:'🏠',title:'Beranda',desc:'Lihat info tim & turnamen, status pembayaran'},
-            {icon:'🔴',title:'Live',desc:'Pantau skor pertandingan real-time saat turnamen berlangsung'},
-            {icon:'💬',title:'Chat',desc:'Obrolan langsung dengan sesama peserta & organizer'},
-            {icon:'🔄',title:'Auto-refresh',desc:'Skor & chat diperbarui otomatis setiap 5 detik'},
-          ].map(s=>(
-            <div key={s.icon} style={{display:'flex',gap:10,padding:'7px 0',borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-              <span style={{fontSize:18,flexShrink:0}}>{s.icon}</span>
-              <div><b style={{fontSize:12}}>{s.title}</b><div style={{fontSize:11,color:'var(--muted)'}}>{s.desc}</div></div>
-            </div>
-          ))}
-        </div>
-        <button className="btn btn-dark btn-full" onClick={onLogout} style={{marginTop:12,fontSize:10,color:'var(--red)',borderColor:'rgba(255,45,85,0.2)'}}>{i.pd_keluar||'Keluar dari Portal'}</button>
-        <button className="btn btn-cyan btn-full" onClick={()=>setActiveTab('wallet')} style={{marginTop:8,fontSize:10}}>{i.pd_buka_wallet_btn||'💳 Buka Wallet & Pembayaran'}</button>
-      </div>}
-        <ParticipantFloatingChat participant={participant}/>
-        </div>
+        <div style={{textAlign:'center',marginTop:14,fontSize:9,color:'rgba(255,255,255,0.12)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · PORTAL MEMBER</div>
       </div>
     </div>
   )
 }
 
-// ============================================================
-// BROWSER NOTIFICATION HELPER
-// ============================================================
-async function requestNotifPermission(){
-  if(!('Notification' in window)) return false
-  if(Notification.permission==='granted') return true
-  const perm = await Notification.requestPermission()
-  return perm==='granted'
-}
-function sendBrowserNotif(title, body, icon='⚔'){
-  if(Notification.permission==='granted'){
-    try{ new Notification(title, {body, icon:'/favicon.ico', badge:'/favicon.ico'}) }catch(e){}
-  }
-}
 
-// Main Participant Portal wrapper
+// ============================================================
+// MEMBER PORTAL — Container: cek session Supabase, tampilkan Auth atau Dashboard
+// ============================================================
 function ParticipantPortal({toast,tournaments=[]}){
-  const[participant,setParticipant]=useState(()=>getParticipant())
-  // Lang state terpusat di sini agar PA dan PD berbagi bahasa yang sama
+  const[member,setMember]=useState(()=>getMember())
+  const[authLoading,setAuthL]=useState(true)
   const[lang,setLangState]=useState(getLang())
   const setLangFn=l=>{
-    setLangState(l)
-    setLang(l)
-    // Dispatch storage event agar komponen lain di tab yang sama juga sync
+    setLangState(l);setLang(l)
     try{window.dispatchEvent(new StorageEvent('storage',{key:'arenagg_lang',newValue:l}))}catch(e){}
   }
-
-  // Sync bahasa dari tab lain atau komponen lain
   React.useEffect(()=>{
     const onSt=(e)=>{if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)}
     window.addEventListener('storage',onSt)
     return()=>window.removeEventListener('storage',onSt)
   },[])
 
-  const login=p=>{setParticipant(p)}
-  const logout=()=>{clearParticipant();setParticipant(null)}
+  // Cek session Supabase auth saat mount
+  React.useEffect(()=>{
+    supabase.auth.getSession().then(({data:{session}})=>{
+      if(session?.user){
+        const user=session.user
+        const meta=user.user_metadata||{}
+        let memberId=meta.member_id
+        if(!memberId){memberId=generateMemberId()}
+        const m={
+          id:user.id,
+          member_id:memberId,
+          nama:meta.full_name||meta.name||user.email.split('@')[0],
+          email:user.email,
+          hp:meta.phone||'',
+          game_id:meta.game_id||'',
+          joined_at:meta.joined_at||user.created_at,
+          email_confirmed:!!user.email_confirmed_at
+        }
+        saveMember(m)
+        setMember(m)
+      } else {
+        clearMember()
+        setMember(null)
+      }
+      setAuthL(false)
+    })
+    const{data:{subscription}}=supabase.auth.onAuthStateChange((_,session)=>{
+      if(session?.user){
+        const user=session.user
+        const meta=user.user_metadata||{}
+        let memberId=meta.member_id||generateMemberId()
+        const m={
+          id:user.id,member_id:memberId,
+          nama:meta.full_name||meta.name||user.email.split('@')[0],
+          email:user.email,hp:meta.phone||'',
+          game_id:meta.game_id||'',
+          joined_at:meta.joined_at||user.created_at,
+          email_confirmed:!!user.email_confirmed_at
+        }
+        saveMember(m)
+        setMember(m)
+      } else {
+        clearMember()
+        setMember(null)
+      }
+      setAuthL(false)
+    })
+    return()=>subscription.unsubscribe()
+  },[])
 
-  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast} tournaments={tournaments} lang={lang} setLangFn={setLangFn}/>
-  return <ParticipantAuth onLogin={login} toast={toast} lang={lang} setLangFn={setLangFn}/>
+  const login=m=>{setMember(m)}
+  const logout=async()=>{
+    await supabase.auth.signOut()
+    clearMember()
+    setMember(null)
+  }
+
+  if(authLoading) return(
+    <div style={{minHeight:'100vh',background:'#050508',display:'flex',alignItems:'center',justifyContent:'center',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:12,letterSpacing:3}}>
+      MEMUAT...
+    </div>
+  )
+  if(member) return <MemberDashboard member={member} onLogout={logout} toast={toast} tournaments={tournaments} lang={lang} setLangFn={setLangFn}/>
+  return <MemberAuth onLogin={login} toast={toast} lang={lang} setLangFn={setLangFn} tournaments={tournaments}/>
+}
+
+// ============================================================
+// MEMBER DASHBOARD — Dashboard peserta terintegrasi
+// Tab: Semua Turnamen | Riwayat | Notifikasi | Profil
+// ============================================================
+function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,setLangFn:setLangFnProp}){
+  const[activeTab,setActiveTab]=useState('tournaments')
+  const[allTournaments,setAllTourn]=useState([])
+  const[loadingTourn,setLoadT]=useState(true)
+  const[editMode,setEditMode]=useState(false)
+  const[editNama,setEditNama]=useState(member.nama||'')
+  const[editHp,setEditHp]=useState(member.hp||'')
+  const[editGameId,setEditGameId]=useState(member.game_id||'')
+  const[savingProfile,setSavingP]=useState(false)
+  const lang=langProp||getLang()
+  const setLangFn=setLangFnProp||(l=>{setLang(l)})
+  const i=T[lang]||T.id
+
+  // Load semua turnamen yang tersedia (bukan hanya milik organizer tertentu)
+  React.useEffect(()=>{
+    const load=async()=>{
+      setLoadT(true)
+      try{
+        const{data}=await supabase.from('tournaments')
+          .select('id,name,game,format,city,date,time,prize,prize_pool,entry,entry_fee,slots,status,description,organizer_id')
+          .in('status',['open','upcoming','live'])
+          .order('date',{ascending:true})
+          .limit(50)
+        setAllTourn(data||[])
+      }catch(e){console.error(e)}
+      setLoadT(false)
+    }
+    load()
+    // Realtime update
+    const ch=supabase.channel('member-tournaments')
+      .on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},load)
+      .subscribe()
+    return()=>supabase.removeChannel(ch)
+  },[])
+
+  // Load riwayat turnamen yang pernah diikuti member
+  const[myTeams,setMyTeams]=useState([])
+  React.useEffect(()=>{
+    const load=async()=>{
+      if(!member?.id)return
+      try{
+        const{data}=await supabase.from('teams')
+          .select('id,name,captain,contact,paid,tournament_id,tournaments(id,name,game,date,status,prize,prize_pool,entry,entry_fee,city)')
+          .eq('contact',member.hp)
+          .order('created_at',{ascending:false})
+          .limit(30)
+        setMyTeams(data||[])
+      }catch(e){console.error(e)}
+    }
+    load()
+  },[member])
+
+  const saveProfile=async()=>{
+    if(!editNama.trim()){toast('Nama tidak boleh kosong','error');return}
+    setSavingP(true)
+    try{
+      await supabase.auth.updateUser({data:{full_name:editNama.trim(),phone:editHp.trim(),game_id:editGameId.trim()}})
+      const updated={...member,nama:editNama.trim(),hp:editHp.trim(),game_id:editGameId.trim()}
+      saveMember(updated)
+      toast('✓ Profil disimpan!','success')
+      setEditMode(false)
+    }catch(e){toast('Gagal simpan: '+e.message,'error')}
+    setSavingP(false)
+  }
+
+  const fmtRp=n=>'Rp '+Number(n||0).toLocaleString('id-ID')
+  const fmtDate=d=>{if(!d)return '';try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
+
+  const statusColor={open:'var(--green)',upcoming:'var(--cyan)',live:'var(--orange)',closed:'var(--muted)'}
+  const statusLabel={open:i.open_reg||'Buka Daftar',upcoming:'Segera',live:'🔴 LIVE',closed:'Selesai'}
+
+  const tabs=[
+    {id:'tournaments',label:i.all_tourn_tab||'Semua Turnamen',icon:'🏆'},
+    {id:'history',label:i.history_tab||'Riwayat',icon:'📋'},
+    {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
+    {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
+  ]
+
+  return(
+    <div style={{minHeight:'100vh',background:'#050508',backgroundImage:'radial-gradient(ellipse at 10% 20%,rgba(0,229,255,0.04) 0%,transparent 50%)'}}>
+      {/* HEADER */}
+      <div style={{background:'var(--panel)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--cyan)',letterSpacing:2}}>⚔ ARENAGG</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5,paddingTop:1}}>MEMBER PORTAL</div>
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <div style={{textAlign:'right'}}>
+            <div style={{fontSize:11,fontWeight:600,color:'var(--text)'}}>{member.nama}</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1}}>{member.member_id}</div>
+          </div>
+          <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700,color:'#000'}}>
+            {(member.nama||'?')[0].toUpperCase()}
+          </div>
+        </div>
+      </div>
+
+      {/* TAB NAV */}
+      <div style={{background:'var(--panel)',borderBottom:'1px solid var(--border)',display:'flex',overflowX:'auto',padding:'0 4px'}}>
+        {tabs.map(t=>(
+          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap'}}>
+            {t.icon} {t.label}
+          </button>
+        ))}
+        <div style={{flex:1}}/>
+        <div style={{padding:'6px 8px',display:'flex',alignItems:'center'}}>
+          <LangSelector lang={lang} setLangFn={setLangFn}/>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px'}}>
+
+        {/* TAB: SEMUA TURNAMEN */}
+        {activeTab==='tournaments'&&<>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>🏆 {(i.all_tourn_tab||'SEMUA TURNAMEN').toUpperCase()}</div>
+          {loadingTourn
+            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}><Spinner size={20} color="var(--cyan)"/><div style={{marginTop:8}}>Memuat turnamen...</div></div>
+            :allTournaments.length===0
+              ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.no_tourn_member||'Belum ada turnamen tersedia'}</div>
+              :allTournaments.map(t=>(
+                <div key={t.id} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,padding:'14px 16px',marginBottom:10,position:'relative',overflow:'hidden'}}>
+                  <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:statusColor[t.status]||'var(--muted)',borderRadius:'0 0 0 0'}}/>
+                  <div style={{paddingLeft:10}}>
+                    <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:6}}>
+                      <div>
+                        <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'var(--text)',marginBottom:2}}>{t.name}</div>
+                        <div style={{fontSize:10,color:'var(--muted)'}}>{t.game} · {t.format} · {t.city}</div>
+                      </div>
+                      <span style={{fontFamily:'var(--fm)',fontSize:9,color:statusColor[t.status]||'var(--muted)',border:`1px solid ${statusColor[t.status]||'var(--muted)'}`,padding:'2px 8px',borderRadius:4,whiteSpace:'nowrap'}}>{statusLabel[t.status]||t.status}</span>
+                    </div>
+                    <div style={{display:'flex',gap:16,fontSize:10,color:'var(--muted)',marginBottom:10}}>
+                      <span>📅 {fmtDate(t.date)}</span>
+                      <span>🏅 {fmtRp(t.prize||t.prize_pool)}</span>
+                      <span>💰 {fmtRp(t.entry||t.entry_fee)}</span>
+                    </div>
+                    {t.status==='open'&&<a href={`${window.location.origin}/#/daftar/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--green)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>{i.join_now||'✅ Daftar ke Turnamen Ini'}</a>}
+                    {t.status==='live'&&<a href={`${window.location.origin}/#/live/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--orange)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>🔴 Tonton Live</a>}
+                  </div>
+                </div>
+              ))
+          }
+        </>}
+
+        {/* TAB: RIWAYAT */}
+        {activeTab==='history'&&<>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>📋 {(i.history_tab||'RIWAYAT').toUpperCase()}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:14}}>{i.my_history||'Turnamen yang pernah kamu ikuti'}</div>
+          {myTeams.length===0
+            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.no_history||'Belum pernah ikut turnamen'}<div style={{marginTop:8,fontSize:10}}>Ikut turnamen dari tab Semua Turnamen!</div></div>
+            :myTeams.map(tm=>{
+              const tt=tm.tournaments||{}
+              return(
+                <div key={tm.id} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)',marginBottom:2}}>⚔ {tm.name}</div>
+                    <div style={{fontSize:10,color:'var(--muted)'}}>{tt.game||''} · {tt.city||''} · {fmtDate(tt.date||'')}</div>
+                    <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>Turnamen: {tt.name||'-'}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontFamily:'var(--fm)',fontSize:9,color:tm.paid?'var(--green)':'var(--yellow)',border:`1px solid ${tm.paid?'var(--green)':'var(--yellow)'}`,padding:'2px 8px',borderRadius:4,marginBottom:4}}>{tm.paid?'✓ LUNAS':'⏳ BELUM BAYAR'}</div>
+                    <div style={{fontSize:9,color:'var(--muted)'}}>{statusLabel[tt.status]||tt.status||''}</div>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </>}
+
+        {/* TAB: NOTIFIKASI */}
+        {activeTab==='notif'&&<>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>🔔 {(i.notif_tab||'NOTIFIKASI').toUpperCase()}</div>
+          {myTeams.length===0
+            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.notif_empty||'Tidak ada notifikasi'}</div>
+            :myTeams.filter(tm=>tm.tournaments).map(tm=>{
+              const tt=tm.tournaments||{}
+              const notifs=[]
+              if(tt.status==='live')notifs.push({icon:'🔴',msg:`${tt.name} sedang LIVE!`,link:`#/live/${tt.id}`,color:'var(--orange)'})
+              if(!tm.paid&&(tt.status==='open'||tt.status==='upcoming'))notifs.push({icon:'⚠',msg:`Entry fee ${tm.name} di ${tt.name} belum dibayar`,link:`#/daftar/${tt.id}`,color:'var(--yellow)'})
+              if(tt.status==='closed'||tt.status==='done')notifs.push({icon:'🏁',msg:`${tt.name} sudah selesai`,link:null,color:'var(--muted)'})
+              return notifs.map((n,idx)=>(
+                <div key={tm.id+'-'+idx} style={{background:'var(--panel)',border:'1px solid var(--border)',borderLeft:`3px solid ${n.color}`,borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',gap:12,alignItems:'center'}}>
+                  <span style={{fontSize:20}}>{n.icon}</span>
+                  <div style={{flex:1,fontSize:12,color:'var(--text)'}}>{n.msg}</div>
+                  {n.link&&<a href={window.location.origin+'/'+n.link} style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--cyan)',textDecoration:'none',border:'1px solid var(--cyan)',padding:'4px 10px',borderRadius:4,whiteSpace:'nowrap'}}>BUKA →</a>}
+                </div>
+              ))
+            })
+          }
+        </>}
+
+        {/* TAB: PROFIL */}
+        {activeTab==='profil'&&<>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:16}}>👤 {(i.profil_member||'PROFIL MEMBER').toUpperCase()}</div>
+
+          {/* ID Card */}
+          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.3)',borderRadius:14,padding:'20px',marginBottom:16,textAlign:'center'}}>
+            <div style={{width:60,height:60,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:700,color:'#000',margin:'0 auto 12px'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'var(--text)',marginBottom:4}}>{member.nama}</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--cyan)',letterSpacing:2,marginBottom:4}}>{i.id_peserta_lbl||'ID PESERTA'}: {member.member_id}</div>
+            <div style={{fontSize:10,color:'var(--muted)'}}>{i.member_since||'Member sejak'} {fmtMemberDate(member.joined_at)}</div>
+          </div>
+
+          {/* Stats */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:16}}>
+            {[
+              {label:'Total Tim',value:myTeams.length,color:'var(--cyan)'},
+              {label:'Lunas',value:myTeams.filter(t=>t.paid).length,color:'var(--green)'},
+              {label:'Aktif',value:myTeams.filter(t=>['open','upcoming','live'].includes(t.tournaments?.status)).length,color:'var(--orange)'},
+            ].map(s=>(
+              <div key={s.label} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:8,padding:'12px 8px',textAlign:'center'}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:s.color}}>{s.value}</div>
+                <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Edit form */}
+          {!editMode
+            ?<div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,padding:'16px'}}>
+              {[
+                {icon:'📧',label:'Email',value:member.email},
+                {icon:'📱',label:'No. HP',value:member.hp||'-'},
+                {icon:'🎮',label:'ID Game',value:member.game_id||'-'},
+              ].map(f=>(
+                <div key={f.label} style={{display:'flex',justifyContent:'space-between',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+                  <span style={{fontSize:11,color:'var(--muted)'}}>{f.icon} {f.label}</span>
+                  <span style={{fontSize:11,color:'var(--text)',fontWeight:500}}>{f.value}</span>
+                </div>
+              ))}
+              <button onClick={()=>setEditMode(true)} style={{marginTop:14,width:'100%',padding:10,background:'rgba(0,229,255,0.08)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:8,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>✏ {i.edit_profil||'Edit Profil'}</button>
+            </div>
+            :<div style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,padding:'16px'}}>
+              {[
+                {label:i.nama_lengkap||'Nama Lengkap',val:editNama,set:setEditNama,type:'text'},
+                {label:i.nohp_member||'No. HP',val:editHp,set:setEditHp,type:'tel'},
+                {label:i.gameid_member||'ID Game',val:editGameId,set:setEditGameId,type:'text'},
+              ].map(f=>(
+                <div key={f.label} style={{marginBottom:10}}>
+                  <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:4}}>{f.label.toUpperCase()}</label>
+                  <input type={f.type} value={f.val} onChange={e=>f.set(e.target.value)} style={{fontSize:12}}/>
+                </div>
+              ))}
+              <div style={{display:'flex',gap:8,marginTop:4}}>
+                <button onClick={saveProfile} disabled={savingProfile} className="btn btn-cyan" style={{flex:1,padding:10,fontSize:9}}>
+                  {savingProfile?<><Spinner size={12} color="var(--cyan)"/> Menyimpan...</>:`💾 ${i.save_profil||'Simpan'}`}
+                </button>
+                <button onClick={()=>setEditMode(false)} className="btn" style={{flex:1,padding:10,fontSize:9}}>✕ Batal</button>
+              </div>
+            </div>
+          }
+
+          {/* Logout */}
+          <button onClick={onLogout} style={{marginTop:16,width:'100%',padding:12,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
+            🚪 {i.logout_member||'Keluar'}
+          </button>
+        </>}
+
+      </div>
+    </div>
+  )
 }
 
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
