@@ -1307,7 +1307,7 @@ function PublicLivePage({tid,onBack,toast}){
       <div style={{display:'flex',alignItems:'center',gap:8}}>
         <SeaExpansionBtn/>
         <SeaExpansionBtn/>
-        <LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/>
+        <LangSelector lang={lang} setLangFn={setLangFn}/>
         <button onClick={()=>{window.location.hash='#/peserta'}} style={{background:'rgba(255,107,0,0.1)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:5,padding:'5px 11px',color:'var(--orange)',cursor:'pointer',fontSize:9,fontFamily:'var(--fh)',letterSpacing:1,fontWeight:700}}>⚡ Portal Peserta</button>
         <button onClick={onBack} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'4px 10px',color:'var(--muted)',cursor:'pointer',fontSize:10,fontFamily:'var(--fm)'}}>{i.back}</button>
       </div>
@@ -1811,22 +1811,21 @@ function clearParticipant(){
 }
 
 // Auth peserta — login via nama tim + no HP (no email needed)
-function ParticipantAuth({onLogin,toast}){
+function ParticipantAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA}){
   const[mode,setMode]=useState('login')
   const[teamName,setTeamName]=useState('')
   const[contact,setContact]=useState('')
   const[captain,setCaptain]=useState('')
   const[loading,setL]=useState(false)
   const[err,setErr]=useState('')
-  const[lang,setLangState]=useState(getLang())
-  // Sync bahasa saat berubah dari tab/komponen lain
+  const[lang,setLangState]=useState(()=>langPropPA||getLang())
+  useEffect(()=>{if(langPropPA)setLangState(langPropPA)},[langPropPA])
   useEffect(()=>{
-    const onStorage=(e)=>{
-      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
-    }
+    const onStorage=(e)=>{if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)}
     window.addEventListener('storage',onStorage)
     return()=>window.removeEventListener('storage',onStorage)
   },[])
+  const setLangFn=setLangFnPA||(l=>{setLangState(l);setLang(l)})
   const i=T[lang]||T.id
 
   const login=async()=>{
@@ -1865,7 +1864,7 @@ function ParticipantAuth({onLogin,toast}){
         </div>
         <div style={{fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:2,fontWeight:700}}>{i.portal_peserta||'PORTAL PESERTA'}</div>
         <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:2,marginTop:4}}>{i.portal_sub||'Akses dashboard tim & pantau pertandingan live'}</div>
-        <div style={{marginTop:12}}><LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/></div>
+        <div style={{marginTop:12}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
       </div>
 
       {/* CARD */}
@@ -2195,7 +2194,7 @@ function ParticipantFloatingChat({participant}){
 }
 
 
-function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
+function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:langProp,setLangFn:setLangFnProp}){
   const t=participant.tournament||{}
   // Ensure numeric fields tidak NaN
   if(t.prize===undefined) t.prize=0
@@ -2205,15 +2204,15 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const[chatHistory,setChatHistory]=useState(()=>getChatHistory(participant.tournamentId||''))
   const[chatName]=useState(participant.name)
   const[scores,setScores]=useState(()=>{const s=getScores();return s[participant.tournamentId]||{}})
-  const[lang,setLangState]=useState(getLang())
-  // Sync bahasa saat berubah dari tab/komponen lain
+  // Gunakan lang dari ParticipantPortal parent, fallback ke localStorage
+  const[lang,setLangState]=useState(langProp||getLang())
+  useEffect(()=>{if(langProp)setLangState(langProp)},[langProp])
   useEffect(()=>{
-    const onStorage=(e)=>{
-      if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)
-    }
+    const onStorage=(e)=>{if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)}
     window.addEventListener('storage',onStorage)
     return()=>window.removeEventListener('storage',onStorage)
   },[])
+  const setLangFn=setLangFnProp||(l=>{setLangState(l);setLang(l)})
   const i=T[lang]||T.id
   const fmtRp2=n=>'Rp '+Number(n).toLocaleString('id-ID')
 
@@ -2347,7 +2346,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
       </div>
       <div style={{display:'flex',alignItems:'center',gap:8}}>
         <div style={{fontFamily:'var(--fh)',fontSize:10,fontWeight:700,color:'var(--cyan)'}}>{participant.name}</div>
-        <LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/>
+        <LangSelector lang={lang} setLangFn={setLangFn}/>
         <button onClick={onLogout} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'3px 9px',color:'var(--muted)',cursor:'pointer',fontSize:9,fontFamily:'var(--fm)'}}>Keluar</button>
       </div>
     </div>
@@ -2685,12 +2684,27 @@ function sendBrowserNotif(title, body, icon='⚔'){
 // Main Participant Portal wrapper
 function ParticipantPortal({toast,tournaments=[]}){
   const[participant,setParticipant]=useState(()=>getParticipant())
+  // Lang state terpusat di sini agar PA dan PD berbagi bahasa yang sama
+  const[lang,setLangState]=useState(getLang())
+  const setLangFn=l=>{
+    setLangState(l)
+    setLang(l)
+    // Dispatch storage event agar komponen lain di tab yang sama juga sync
+    try{window.dispatchEvent(new StorageEvent('storage',{key:'arenagg_lang',newValue:l}))}catch(e){}
+  }
+
+  // Sync bahasa dari tab lain atau komponen lain
+  React.useEffect(()=>{
+    const onSt=(e)=>{if(e.key==='arenagg_lang'&&e.newValue)setLangState(e.newValue)}
+    window.addEventListener('storage',onSt)
+    return()=>window.removeEventListener('storage',onSt)
+  },[])
 
   const login=p=>{setParticipant(p)}
   const logout=()=>{clearParticipant();setParticipant(null)}
 
-  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast} tournaments={tournaments}/>
-  return <ParticipantAuth onLogin={login} toast={toast}/>
+  if(participant)return <ParticipantDashboard participant={participant} onLogout={logout} toast={toast} tournaments={tournaments} lang={lang} setLangFn={setLangFn}/>
+  return <ParticipantAuth onLogin={login} toast={toast} lang={lang} setLangFn={setLangFn}/>
 }
 
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
@@ -3531,7 +3545,7 @@ function PublicPage({tid,onBack,toast}){
     <div style={{background:'rgba(10,10,18,0.95)',borderBottom:'1px solid var(--border)',padding:'10px 18px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)',boxShadow:'0 4px 20px rgba(0,0,0,0.3)'}}>
       <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:2,fontWeight:900}}>⚔ ARENAGG</div>
       <div style={{display:'flex',alignItems:'center',gap:8}}>
-        <LangSelector lang={lang} setLangFn={l=>{setLangState(l);setLang(l)}}/>
+        <LangSelector lang={lang} setLangFn={setLangFn}/>
         <button onClick={()=>{window.location.hash='#/peserta'}} style={{background:'rgba(255,107,0,0.1)',border:'1px solid rgba(255,107,0,0.3)',borderRadius:5,padding:'5px 11px',color:'var(--orange)',cursor:'pointer',fontSize:9,fontFamily:'var(--fh)',letterSpacing:1,fontWeight:700}}>⚡ Portal Peserta</button>
         <button onClick={onBack} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'4px 10px',color:'var(--muted)',cursor:'pointer',fontSize:10,fontFamily:'var(--fm)'}}>{i.back}</button>
       </div>
