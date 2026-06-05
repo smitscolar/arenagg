@@ -2038,7 +2038,7 @@ function ParticipantFloatingChat({participant}){
   const[sending,setSending]=React.useState(false)
   const chatEndRef=React.useRef(null)
   const inputRef=React.useRef(null)
-  const tid=participant.tournamentId
+  const tid=participant?.tournamentId||participant?.tournament_id||''
 
   React.useEffect(()=>{
     if(!tid)return
@@ -2180,7 +2180,10 @@ function ParticipantFloatingChat({participant}){
 
 
 function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
-  const t=participant.tournament
+  const t=participant.tournament||{}
+  // Ensure numeric fields tidak NaN
+  if(t.prize===undefined) t.prize=0
+  if(t.entry===undefined) t.entry=0
   const[activeTab,setActiveTab]=useState('home')
   const[chatMsg,setChatMsg]=useState('')
   const[chatHistory,setChatHistory]=useState(()=>getChatHistory(participant.tournamentId||''))
@@ -2202,7 +2205,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
   const[payNote,setPayNote]=useState('')
   const[payMethod,setPayMethod]=useState(bank.bankName||'Transfer Bank')
   const[submitting,setSubmitting]=useState(false)
-  const entryFee=Number(participant.tournament?.entry||0)
+  const entryFee=Number(participant.tournament?.entry||participant.tournament?.entry_fee||0)
 
   // Submit bukti bayar (ke Supabase + localStorage backup)
   const submitPayment=async()=>{
