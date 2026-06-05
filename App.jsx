@@ -2356,50 +2356,77 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:la
     {id:'info',icon:'ℹ',label:i.pd_info||'Info'},
   ]
 
-  return <div style={{minHeight:'100vh',background:'var(--bg)'}}>
-    {/* LIVE BANNER */}
-    <LiveBanner tournaments={tournaments}/>
-    {/* TOP NAV */}
-    <div style={{background:'rgba(5,5,8,0.97)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50,backdropFilter:'blur(10px)'}}>
-      <div style={{display:'flex',alignItems:'center',gap:10}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--cyan)',letterSpacing:2,fontWeight:900}}>⚔ ARENAGG</div>
-        <div style={{width:1,height:16,background:'var(--border)'}}/>
-        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1}}>PORTAL PESERTA</div>
-      </div>
-      <div style={{display:'flex',alignItems:'center',gap:8}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:10,fontWeight:700,color:'var(--cyan)'}}>{participant.name}</div>
-        <LangSelector lang={lang} setLangFn={setLangFn}/>
-        <button onClick={onLogout} style={{background:'none',border:'1px solid var(--border)',borderRadius:4,padding:'3px 9px',color:'var(--muted)',cursor:'pointer',fontSize:9,fontFamily:'var(--fm)'}}>Keluar</button>
-      </div>
-    </div>
-
-    {/* LIVE BANNER */}
-    {t?.status==='live'&&<div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'8px 16px',display:'flex',alignItems:'center',gap:8}}>
-      <span style={{width:8,height:8,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
-      <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 TURNAMEN SEDANG LIVE!</span>
-      <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
-    </div>}
-
-    {/* ── AD BANNER FULL — sama persis susunan dengan owner dashboard ── */}
-    <div style={{maxWidth:1000,margin:'0 auto',padding:'18px 20px 0'}}>
-      <div style={{marginBottom:6}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
-          <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2}}>📺 IKLAN LIVE</span>
+  // Sidebar peserta — sama struktur dengan owner
+  const PD_SIDEBAR_W = 200
+  return (
+    <div style={{display:'flex',minHeight:'100vh',background:'var(--bg)'}}>
+      {/* ── SIDEBAR KIRI ── */}
+      <div style={{width:PD_SIDEBAR_W,minWidth:PD_SIDEBAR_W,background:'linear-gradient(180deg,rgba(8,8,20,0.98) 0%,rgba(5,5,15,0.99) 100%)',borderRight:'1px solid rgba(0,229,255,0.12)',display:'flex',flexDirection:'column',height:'100vh',position:'sticky',top:0,zIndex:100,flexShrink:0,overflowY:'auto'}}>
+        {/* Logo */}
+        <div style={{padding:'14px 13px 11px',borderBottom:'1px solid var(--border)'}}>
+          <div style={{fontFamily:'var(--fh)',fontWeight:900,fontSize:13,color:'var(--cyan)',letterSpacing:2,animation:'glow-pulse 3s infinite'}}>⚔ ARENAGG</div>
+          <div style={{fontSize:7,color:'var(--orange)',fontFamily:'var(--fm)',marginTop:2,letterSpacing:2}}>PORTAL PESERTA</div>
+          {t?.status==='live'&&<div style={{marginTop:7,display:'flex',alignItems:'center',gap:6,padding:'4px 8px',background:'rgba(255,45,85,0.1)',borderRadius:4,border:'1px solid rgba(255,45,85,0.25)'}}>
+            <span style={{width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 0.8s infinite',display:'inline-block',flexShrink:0}}/>
+            <span style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--red)',letterSpacing:1,fontWeight:700}}>🔴 LIVE NOW</span>
+          </div>}
         </div>
-        <AdBanner/>
+        {/* Nav menu */}
+        <nav style={{flex:1,padding:'8px 7px'}}>
+          {TABS.map(tab=>(
+            <button key={tab.id} onClick={()=>setActiveTab(tab.id)}
+              className={`nav-item ${activeTab===tab.id?'active':''}`}
+              style={{width:'100%',marginBottom:2}}>
+              <span style={{fontSize:15,width:20,textAlign:'center',flexShrink:0}}>{tab.icon}</span>
+              <span>{tab.label}</span>
+              {tab.id==='chat'&&chatHistory.length>0&&<span style={{marginLeft:'auto',fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',background:'rgba(255,255,255,0.05)',padding:'1px 5px',borderRadius:8}}>{chatHistory.length}</span>}
+            </button>
+          ))}
+        </nav>
+        {/* Bottom: tim info + lang + logout */}
+        <div style={{padding:'10px 13px',borderTop:'1px solid var(--border)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8,padding:'6px 8px',borderRadius:8,background:'rgba(255,107,0,0.06)',border:'1px solid rgba(255,107,0,0.15)'}}>
+            <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,var(--orange),var(--cyan))',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:900,fontSize:13,color:'#000',flexShrink:0,overflow:'hidden',border:'2px solid rgba(255,107,0,0.3)'}}>
+              {participant.photo?<img src={participant.photo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span>⚔</span>}
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:10,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--text)'}}>{participant.name}</div>
+              <div style={{fontSize:8,color:'var(--green)',fontFamily:'var(--fm)',display:'flex',alignItems:'center',gap:3}}><span className="live-dot"/>ONLINE</div>
+            </div>
+          </div>
+          <div style={{marginBottom:6}}>
+            <div style={{fontSize:7,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:1,marginBottom:4}}>🌐 BAHASA</div>
+            <div style={{display:'flex',gap:3,flexWrap:'wrap'}}>
+              {[['id','🇮🇩','ID'],['en','🇬🇧','EN'],['fil','🇵🇭','FIL'],['vi','🇻🇳','VI'],['zh','🇨🇳','ZH'],['ms','🇲🇾','MS'],['th','🇹🇭','TH']].map(([code,flag,label])=>(
+                <button key={code} onClick={()=>setLangFn(code)}
+                  style={{padding:'2px 5px',borderRadius:5,border:`1px solid ${lang===code?'var(--cyan)':'var(--border)'}`,background:lang===code?'rgba(0,229,255,0.15)':'transparent',color:lang===code?'var(--cyan)':'var(--muted)',fontSize:8,cursor:'pointer',fontFamily:'var(--fm)'}}>
+                  {flag} {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <button className="btn btn-dark btn-full btn-sm" onClick={onLogout} style={{fontSize:9}}>{i.pd_keluar||'Keluar'}</button>
+        </div>
       </div>
-    </div>
-    <div style={{maxWidth:600,margin:'0 auto',padding:'10px 14px 16px'}}>
-      {/* TABS */}
-      <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',marginBottom:16}}>
-        {TABS.map(tab=>(
-          <button key={tab.id} onClick={()=>setActiveTab(tab.id)} className='pd-nav-tab' style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',gap:2,padding:'7px 4px',border:'none',borderRadius:6,cursor:'pointer',fontFamily:'var(--fh)',fontSize:8,letterSpacing:0.8,transition:'var(--trans)',background:activeTab===tab.id?'var(--orange)':'transparent',color:activeTab===tab.id?'#fff':'var(--muted)',fontWeight:700}}>
-            <span style={{fontSize:16}}>{tab.icon}</span>
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-
+      {/* ── MAIN CONTENT KANAN ── */}
+      <div style={{flex:1,minWidth:0,overflowY:'auto'}}>
+        <LiveBanner tournaments={tournaments}/>
+        {t?.status==='live'&&<div style={{background:'linear-gradient(90deg,rgba(255,45,85,0.95),rgba(255,107,0,0.9))',padding:'8px 16px',display:'flex',alignItems:'center',gap:8}}>
+          <span style={{width:8,height:8,borderRadius:'50%',background:'#fff',animation:'pulse 0.8s infinite',display:'inline-block'}}/>
+          <span style={{fontFamily:'var(--fh)',fontSize:10,color:'#fff',letterSpacing:2,fontWeight:900}}>🔴 TURNAMEN SEDANG LIVE!</span>
+          <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
+        </div>}
+        {/* Ad Banner */}
+        <div style={{padding:'18px 24px 0'}}>
+          <div style={{marginBottom:6}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+              <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2}}>📺 IKLAN LIVE</span>
+            </div>
+            <AdBanner/>
+          </div>
+        </div>
+        {/* Tab content */}
+        <div style={{padding:'10px 24px 24px'}}>
       {/* HOME TAB */}
       {activeTab==='home'&&<div className="animate-in pd-content" style={{padding:'0 4px'}}>
         {/* Tim Card */}
@@ -2692,9 +2719,11 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:la
         <button className="btn btn-dark btn-full" onClick={onLogout} style={{marginTop:12,fontSize:10,color:'var(--red)',borderColor:'rgba(255,45,85,0.2)'}}>{i.pd_keluar||'Keluar dari Portal'}</button>
         <button className="btn btn-cyan btn-full" onClick={()=>setActiveTab('wallet')} style={{marginTop:8,fontSize:10}}>{i.pd_buka_wallet_btn||'💳 Buka Wallet & Pembayaran'}</button>
       </div>}
-    <ParticipantFloatingChat participant={participant}/>
+        <ParticipantFloatingChat participant={participant}/>
+        </div>
+      </div>
     </div>
-  </div>
+  )
 }
 
 // ============================================================
