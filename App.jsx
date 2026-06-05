@@ -825,23 +825,42 @@ async function fetchChatFromSupabase(tournId){
     return data.map(m=>({id:m.id,name:m.sender_name,text:m.message,time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:m.is_organizer||false}))
   }catch(e){return null}
 }
+// Supabase Broadcast channels (cross-device tanpa tabel)
+const _sbBroadcast={}
+function getSBChannel(tournId){
+  if(!_sbBroadcast[tournId]){
+    const ch=supabase.channel('arenagg-chat-'+tournId)
+    ch.subscribe()
+    _sbBroadcast[tournId]=ch
+  }
+  return _sbBroadcast[tournId]
+}
+
 async function sendChatToSupabase(tournId,msg,isOrg=false){
-  // Selalu broadcast dulu (sync antar tab)
+  // 1. BroadcastChannel browser (same device, cross-tab)
   broadcastMsg(tournId, msg)
-  // Update localStorage
+  // 2. localStorage backup
   const existing=getChatHistory(tournId)
   if(!existing.find(x=>String(x.id)===String(msg.id))){
-    const updated=[...existing,msg]
-    saveChatHistory(tournId,updated)
+    saveChatHistory(tournId,[...existing,msg])
   }
-  // Coba Supabase jika tersedia
+  // 3. Supabase Broadcast (CROSS-DEVICE tanpa butuh tabel!)
+  try{
+    await getSBChannel(tournId).send({
+      type:'broadcast',event:'chat_msg',
+      payload:{id:msg.id,name:msg.name,text:msg.text,time:msg.time,isOrg:isOrg,tournId}
+    })
+  }catch(e){}
+  // 4. Coba insert ke tabel chat_messages (jika sudah dibuat)
   if(_supabaseHasChat===false) return false
   try{
     const{error}=await supabase.from('chat_messages').insert({
       tournament_id:tournId,sender_name:msg.name,message:msg.text,is_organizer:isOrg
     })
     if(error){
-      if(error.code==='42P01'||error.message?.includes('does not exist')){_supabaseHasChat=false}
+      if(error.code==='42P01'||error.message?.includes('does not exist')||error.code==='PGRST200'){
+        _supabaseHasChat=false
+      }
       return false
     }
     _supabaseHasChat=true
@@ -958,14 +977,9 @@ function LiveMatchView({tournament,teams,toast,onBack}){
     if(!chatMsg.trim()||!chatName)return
     const msg={id:Date.now(),name:chatName+'[ORG]',text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:true}
     setChatMsg('')
-    // Kirim ke Supabase (broadcast ke semua peserta)
-    const ok=await sendChatToSupabase(t.id,msg,true)
-    if(!ok){
-      const updated=[...chatHistory,msg]
-      setChatHistory(updated)
-      saveChatHistory(t.id,updated)
-    }
-    setChatHistory(h=>[...h,msg])
+    // Optimistic update sekali saja
+    setChatHistory(h=>h.find(x=>String(x.id)===String(msg.id))?h:[...h,msg])
+    await sendChatToSupabase(t.id,msg,true)
   }
 
   // Share link
@@ -1223,7 +1237,20 @@ function PublicLivePage({tid,onBack,toast}){
       })
     }
     if(_bc)_bc.addEventListener('message',onBC)
-    // localStorage polling 3s
+    // Supabase Broadcast (cross-device)
+    const sbCh4=getSBChannel(tid)
+    sbCh4.on('broadcast',{event:'chat_msg'},(payload)=>{
+      const p=payload.payload
+      if(!p||p.tournId!==tid)return
+      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
+      setChatHistory(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        const updated=[...h,newMsg]
+        saveChatHistory(tid,updated)
+        return updated
+      })
+    })
+    // localStorage polling 2s
     const chatPoll=setInterval(()=>{
       const stored=getChatHistory(tid)
       setChatHistory(h=>{
@@ -1231,7 +1258,7 @@ function PublicLivePage({tid,onBack,toast}){
         const n=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
         return n.length?[...h,...n]:h
       })
-    },3000)
+    },2000)
     // Score poll 5s
     const poll=setInterval(async()=>{
       const supScores = await loadScoresFromSupabase(tid.trim())
@@ -1247,9 +1274,8 @@ function PublicLivePage({tid,onBack,toast}){
     if(!chatMsg.trim()||!chatName)return
     const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false}
     setChatMsg('')
-    const ok=await sendChatToSupabase(tid,msg,false)
-    if(!ok){const updated=[...chatHistory,msg];setChatHistory(updated);saveChatHistory(tid,updated)}
-    setChatHistory(h=>[...h,msg])
+    setChatHistory(h=>h.find(x=>String(x.id)===String(msg.id))?h:[...h,msg])
+    await sendChatToSupabase(tid,msg,false)
   }
 
   const tTeams = teams
@@ -2043,7 +2069,19 @@ function ParticipantFloatingChat({participant}){
       })
     }
     if(_bc)_bc.addEventListener('message',onBC)
-    // localStorage polling 3s
+    // Supabase Broadcast (cross-device)
+    const sbCh2=getSBChannel(tid)
+    sbCh2.on('broadcast',{event:'chat_msg'},(payload)=>{
+      const p=payload.payload
+      if(!p||p.tournId!==tid)return
+      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
+      setMessages(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        if(!open)setUnread(u=>u+1)
+        return[...h,newMsg]
+      })
+    })
+    // localStorage polling 2s
     const poll=setInterval(()=>{
       const stored=getChatHistory(tid)
       setMessages(h=>{
@@ -2064,7 +2102,8 @@ function ParticipantFloatingChat({participant}){
     if(!msg.trim()||!tid||sending)return
     const newMsg={id:Date.now(),name:participant.name,text:msg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false}
     setSending(true);setMsg('')
-    setMessages(h=>[...h,newMsg])
+    // Optimistic update sekali, BC listener akan skip jika sudah ada
+    setMessages(h=>h.find(x=>String(x.id)===String(newMsg.id))?h:[...h,newMsg])
     await sendChatToSupabase(tid,newMsg,false)
     setSending(false)
   }
@@ -2215,7 +2254,20 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
       })
     }
     if(_bc)_bc.addEventListener('message',onBC)
-    // localStorage polling 3s — fallback sinkronisasi
+    // Supabase Broadcast (cross-device)
+    const sbCh3=getSBChannel(tid)
+    sbCh3.on('broadcast',{event:'chat_msg'},(payload)=>{
+      const p=payload.payload
+      if(!p||p.tournId!==tid)return
+      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
+      setChatHistory(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        const updated=[...h,newMsg]
+        saveChatHistory(tid,updated)
+        return updated
+      })
+    })
+    // localStorage polling 2s
     const chatPoll=setInterval(()=>{
       const stored=getChatHistory(tid)
       setChatHistory(h=>{
@@ -2223,7 +2275,7 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
         const newMsgs=stored.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
         return newMsgs.length?[...h,...newMsgs]:h
       })
-    },3000)
+    },2000)
     // Score poll 5s
     const poll=setInterval(async()=>{
       const supScores = await loadScoresFromSupabase(tid)
@@ -2237,16 +2289,10 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[]}){
     if(!chatMsg.trim()||!chatName)return
     const msg={id:Date.now(),name:chatName,text:chatMsg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:false,isPlayer:true}
     setChatMsg('')
-    // Try Supabase first
-    const ok=await sendChatToSupabase(participant.tournamentId,msg,false)
-    if(!ok){
-      // Fallback localStorage
-      const updated=[...chatHistory,msg]
-      setChatHistory(updated)
-      saveChatHistory(participant.tournamentId,updated)
-    }
-    // Optimistic update
-    setChatHistory(h=>[...h,msg])
+    // Optimistic update HANYA sekali — cegah duplikat
+    setChatHistory(h=>h.find(x=>String(x.id)===String(msg.id))?h:[...h,msg])
+    // Kirim ke Supabase + broadcast (BC listener di tab lain akan update mereka)
+    await sendChatToSupabase(participant.tournamentId,msg,false)
   }
 
   // Build match data for this team
@@ -4927,7 +4973,19 @@ function FloatingChat({user,tournaments=[]}){
       })
     }
     if(_bc)_bc.addEventListener('message',onBC)
-    // localStorage polling 3s — sync jika tidak ada BroadcastChannel
+    // Supabase Broadcast (cross-device)
+    const sbCh=getSBChannel(currentTid)
+    sbCh.on('broadcast',{event:'chat_msg'},(payload)=>{
+      const p=payload.payload
+      if(!p||p.tournId!==currentTid)return
+      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
+      setMessages(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        if(!open)setUnread(u=>u+1)
+        return[...h,newMsg]
+      })
+    })
+    // localStorage polling 2s
     const poll=setInterval(()=>{
       const stored=getChatHistory(currentTid)
       setMessages(h=>{
@@ -4963,8 +5021,8 @@ function FloatingChat({user,tournaments=[]}){
     const newMsg={id:Date.now(),name:name+'[ORG]',text:msg.trim(),time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),isOrg:true}
     setSending(true)
     setMsg('')
-    // Optimistic update
-    setMessages(h=>[...h,newMsg])
+    // Optimistic update sekali — BC listener skip jika id sudah ada
+    setMessages(h=>h.find(x=>String(x.id)===String(newMsg.id))?h:[...h,newMsg])
     await sendChatToSupabase(currentTid,newMsg,true)
     setSending(false)
   }
