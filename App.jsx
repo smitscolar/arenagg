@@ -1973,7 +1973,8 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
         hp:meta.phone||'',
         game_id:meta.game_id||'',
         joined_at:meta.joined_at||user.created_at,
-        email_confirmed:!!user.email_confirmed_at
+        email_confirmed:!!user.email_confirmed_at,
+        avatar_url:meta.avatar_url||null
       }
       saveMember(memberData)
       toast((i.login_success||'Selamat datang kembali!')+' '+memberData.nama,'success')
@@ -2135,7 +2136,8 @@ function ParticipantPortal({toast,tournaments=[]}){
           hp:meta.phone||'',
           game_id:meta.game_id||'',
           joined_at:meta.joined_at||user.created_at,
-          email_confirmed:!!user.email_confirmed_at
+          email_confirmed:!!user.email_confirmed_at,
+          avatar_url:meta.avatar_url||null
         }
         saveMember(m)
         setMember(m)
@@ -2156,7 +2158,8 @@ function ParticipantPortal({toast,tournaments=[]}){
           email:user.email,hp:meta.phone||'',
           game_id:meta.game_id||'',
           joined_at:meta.joined_at||user.created_at,
-          email_confirmed:!!user.email_confirmed_at
+          email_confirmed:!!user.email_confirmed_at,
+          avatar_url:meta.avatar_url||null
         }
         saveMember(m)
         setMember(m)
@@ -2209,7 +2212,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
       try{
         const{data}=await supabase.from('tournaments')
           .select('id,name,game,format,city,date,time,prize,prize_pool,entry,entry_fee,slots,status,description,organizer_id,created_at')
-          .in('status',['open','upcoming','live'])
+          .not('status','in','("deleted","hidden")')
           .order('date',{ascending:true})
           .limit(50)
         setAllTourn(data||[])
@@ -2268,8 +2271,9 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     if(!editNama.trim()){toast('Nama tidak boleh kosong','error');return}
     setSavingP(true)
     try{
+      const existingMeta=getMember()||{}
       await supabase.auth.updateUser({data:{full_name:editNama.trim(),phone:editHp.trim(),game_id:editGameId.trim()}})
-      const updated={...member,nama:editNama.trim(),hp:editHp.trim(),game_id:editGameId.trim()}
+      const updated={...existingMeta,...member,nama:editNama.trim(),hp:editHp.trim(),game_id:editGameId.trim()}
       saveMember(updated)
       toast('✓ Profil disimpan!','success')
       setEditMode(false)
@@ -2280,8 +2284,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const fmtRp=n=>'Rp '+Number(n||0).toLocaleString('id-ID')
   const fmtDate=d=>{if(!d)return '';try{return new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d}}
 
-  const statusColor={open:'var(--green)',upcoming:'var(--cyan)',live:'var(--orange)',closed:'var(--muted)'}
-  const statusLabel={open:i.open_reg||'Buka Daftar',upcoming:'Segera',live:'🔴 LIVE',closed:'Selesai'}
+  const statusColor={open:'var(--green)',upcoming:'var(--cyan)',live:'var(--orange)',closed:'var(--muted)',pending:'var(--yellow)',active:'var(--green)'}
+  const statusLabel={open:i.open_reg||'Buka Daftar',upcoming:'Segera',live:'🔴 LIVE',closed:'Selesai',pending:'⏳ Segera',active:'✅ Open',done:'Selesai'}
 
   const tabs=[
     {id:'tournaments',label:i.all_tourn_tab||'Semua Turnamen',icon:'🏆'},
@@ -2292,7 +2296,28 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   ]
 
   return(
-    <div style={{minHeight:'100vh',background:'#050508',backgroundImage:'radial-gradient(ellipse at 10% 20%,rgba(0,229,255,0.04) 0%,transparent 50%)'}}>
+    <div style={{minHeight:'100vh',background:'#03030d',position:'relative',overflow:'hidden'}}>
+      {/* Animated background */}
+      <style>{`
+        @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
+        @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,30px) scale(1.08)}}
+        @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(15px,15px)}66%{transform:translate(-10px,-15px)}}
+        @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+        @keyframes gridpulse{0%,100%{opacity:0.03}50%{opacity:0.07}}
+        @keyframes particlefloat{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-80px) scale(0.3);opacity:0}}
+        .mbg-orb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.08) 0%,transparent 70%);top:-100px;left:-100px;animation:drift1 12s ease-in-out infinite;pointer-events:none}
+        .mbg-orb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.07) 0%,transparent 70%);bottom:-80px;right:-80px;animation:drift2 15s ease-in-out infinite;pointer-events:none}
+        .mbg-orb3{position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,0.05) 0%,transparent 70%);top:40%;left:40%;animation:drift3 18s ease-in-out infinite;pointer-events:none}
+        .mbg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px);background-size:40px 40px;animation:gridpulse 6s ease-in-out infinite;pointer-events:none}
+        .mbg-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}.mbg-scan::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.15),transparent);animation:scanline 8s linear infinite}
+        .mbg-particle{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--cyan);animation:particlefloat 4s ease-out infinite;pointer-events:none}
+      `}</style>
+      <div className="mbg-orb1"/><div className="mbg-orb2"/><div className="mbg-orb3"/>
+      <div className="mbg-grid"/><div className="mbg-scan"/>
+      {/* Floating particles */}
+      {[...Array(8)].map((_,n)=>(
+        <div key={n} className="mbg-particle" style={{left:`${10+n*12}%`,bottom:'10%',animationDelay:`${n*0.6}s`,animationDuration:`${3+n*0.4}s`,opacity:0.4+n*0.05,background:n%3===0?'var(--cyan)':n%3===1?'var(--orange)':'var(--green)'}}/>
+      ))}
       {/* HEADER */}
       <div style={{background:'var(--panel)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
@@ -2300,12 +2325,18 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
           <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5,paddingTop:1}}>MEMBER PORTAL</div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <LangSelector lang={lang} setLangFn={setLangFn}/>
           <div style={{textAlign:'right'}}>
             <div style={{fontSize:11,fontWeight:600,color:'var(--text)'}}>{member.nama}</div>
             <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1}}>{member.member_id}</div>
           </div>
-          <div style={{width:32,height:32,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700,color:'#000'}}>
-            {(member.nama||'?')[0].toUpperCase()}
+          <div onClick={()=>setActiveTab('profil')} style={{width:36,height:36,borderRadius:'50%',cursor:'pointer',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
+            {member.avatar_url
+              ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
+              :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700,color:'#000'}}>
+                {(member.nama||'?')[0].toUpperCase()}
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -2319,12 +2350,14 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         ))}
         <div style={{flex:1}}/>
         <div style={{padding:'6px 8px',display:'flex',alignItems:'center'}}>
-          <LangSelector lang={lang} setLangFn={setLangFn}/>
+          <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>ID {member.member_id}</span>
         </div>
       </div>
 
       {/* CONTENT */}
       <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px'}}>
+        {/* Ad banner live */}
+        <MemberAdBanner/>
 
         {/* TAB: SEMUA TURNAMEN */}
         {activeTab==='tournaments'&&<>
@@ -2365,14 +2398,15 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
                         </div>
                         <div style={{fontSize:10,color:'var(--muted)'}}>{t.game} · {t.format} · {t.city}</div>
                       </div>
-                      <span style={{fontFamily:'var(--fm)',fontSize:9,color:statusColor[t.status]||'var(--muted)',border:`1px solid ${statusColor[t.status]||'var(--muted)'}`,padding:'2px 8px',borderRadius:4,whiteSpace:'nowrap'}}>{statusLabel[t.status]||t.status}</span>
+                      <span style={{fontFamily:'var(--fm)',fontSize:9,color:statusColor[t.status]||'var(--cyan)',border:`1px solid ${statusColor[t.status]||'var(--cyan)'}`,padding:'2px 8px',borderRadius:4,whiteSpace:'nowrap'}}>{statusLabel[t.status]||t.status}</span>
                     </div>
                     <div style={{display:'flex',gap:16,fontSize:10,color:'var(--muted)',marginBottom:10}}>
                       <span>📅 {fmtDate(t.date)}</span>
                       <span>🏅 {fmtRp(t.prize||t.prize_pool)}</span>
                       <span>💰 {fmtRp(t.entry||t.entry_fee)}</span>
                     </div>
-                    {t.status==='open'&&<a href={`${window.location.origin}/#/daftar/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--green)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>{i.join_now||'✅ Daftar ke Turnamen Ini'}</a>}
+                    {(t.status==='open'||t.status==='active')&&<a href={`${window.location.origin}/#/daftar/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--green)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>{i.join_now||'✅ Daftar ke Turnamen Ini'}</a>}
+                    {t.status==='pending'&&<a href={`${window.location.origin}/#/daftar/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--yellow)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>👀 Lihat Detail Turnamen</a>}
                     {t.status==='live'&&<a href={`${window.location.origin}/#/live/${t.id}`} style={{display:'inline-block',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,color:'#000',background:'var(--orange)',padding:'6px 14px',borderRadius:6,textDecoration:'none',letterSpacing:1}}>🔴 Tonton Live</a>}
                   </div>
                 </div>
@@ -2506,12 +2540,41 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         {activeTab==='profil'&&<>
           <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:16}}>👤 {(i.profil_member||'PROFIL MEMBER').toUpperCase()}</div>
 
-          {/* ID Card */}
-          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.3)',borderRadius:14,padding:'20px',marginBottom:16,textAlign:'center'}}>
-            <div style={{width:60,height:60,borderRadius:'50%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:700,color:'#000',margin:'0 auto 12px'}}>{(member.nama||'?')[0].toUpperCase()}</div>
-            <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'var(--text)',marginBottom:4}}>{member.nama}</div>
-            <div style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--cyan)',letterSpacing:2,marginBottom:4}}>{i.id_peserta_lbl||'ID PESERTA'}: {member.member_id}</div>
-            <div style={{fontSize:10,color:'var(--muted)'}}>{i.member_since||'Member sejak'} {fmtMemberDate(member.joined_at)}</div>
+          {/* ID Card dengan upload foto */}
+          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.1),rgba(255,107,0,0.06))',border:'1px solid rgba(0,229,255,0.35)',borderRadius:16,padding:'24px 20px',marginBottom:16,textAlign:'center',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:'linear-gradient(90deg,transparent,var(--cyan),var(--orange),var(--cyan),transparent)'}}/>
+            {/* Avatar upload */}
+            <div style={{position:'relative',display:'inline-block',marginBottom:14}}>
+              <div style={{width:76,height:76,borderRadius:'50%',overflow:'hidden',border:'3px solid var(--cyan)',boxShadow:'0 0 20px rgba(0,229,255,0.3)',cursor:'pointer'}} onClick={()=>document.getElementById('avatar-upload').click()}>
+                {member.avatar_url
+                  ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
+                  :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+                }
+              </div>
+              <div style={{position:'absolute',bottom:0,right:0,width:22,height:22,background:'var(--cyan)',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,cursor:'pointer',border:'2px solid var(--bg)'}} onClick={()=>document.getElementById('avatar-upload').click()}>📷</div>
+              <input id="avatar-upload" type="file" accept="image/*" style={{display:'none'}} onChange={async e=>{
+                const file=e.target.files?.[0]
+                if(!file)return
+                if(file.size>2*1024*1024){toast('Foto max 2MB','error');return}
+                const reader=new FileReader()
+                reader.onload=async ev=>{
+                  const b64=ev.target.result
+                  try{
+                    await supabase.auth.updateUser({data:{avatar_url:b64}})
+                    const updated={...getMember(),avatar_url:b64}
+                    saveMember(updated)
+                    // Update member state via profile re-render
+                    setSavingP(p=>!p);setSavingP(p=>!p)
+                    toast('✓ Foto profil diperbarui! Refresh untuk lihat di semua halaman.','success')
+                  }catch(err){toast('Gagal upload: '+err.message,'error')}
+                }
+                reader.readAsDataURL(file)
+              }}/>
+            </div>
+            <div style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:900,color:'var(--text)',marginBottom:4}}>{member.nama}</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:6,padding:'3px 12px',background:'rgba(0,229,255,0.1)',borderRadius:20,display:'inline-block'}}>{i.id_peserta_lbl||'ID'}: {member.member_id}</div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:4}}>{i.member_since||'Member sejak'} {fmtMemberDate(member.joined_at)}</div>
+            <div style={{fontSize:9,color:'var(--muted)',marginTop:4,fontFamily:'var(--fm)'}}>📷 Tap foto untuk ganti</div>
           </div>
 
           {/* Stats */}
@@ -3031,6 +3094,52 @@ function SubmitScoreCard({team, tournamentId, lang, toast}){
       <button onClick={submit} disabled={submitting} className="btn btn-cyan btn-full" style={{fontSize:10,padding:11}}>
         {submitting?<><Spinner size={12} color="var(--cyan)"/> Mengirim...</>:(i.submit_score_btn||'📤 Submit Skor')}
       </button>
+    </div>
+  )
+}
+
+
+// ============================================================
+// MEMBER AD BANNER — Template iklan live khusus portal peserta
+// Animasi: pulse live dot, scroll text, gaming aesthetic
+// ============================================================
+function MemberAdBanner(){
+  const ads=[
+    {id:'ml',game:'Mobile Legends',emoji:'⚔',tagline:'Season 35 • Tier Push • Join Now!',color:'#1a9fff',bg:'linear-gradient(135deg,#0d1a35,#0d2a4a)',cta:'DAFTAR'},
+    {id:'ff',game:'Free Fire',emoji:'🔥',tagline:'Garena Free Fire • MAX Server • Active',color:'#ff6b00',bg:'linear-gradient(135deg,#1a0d00,#3a1500)',cta:'JOIN'},
+    {id:'pubg',game:'PUBG Mobile',emoji:'🎯',tagline:'New Season • Erangel 3.0 • Play Now',color:'#ffd700',bg:'linear-gradient(135deg,#1a1400,#2a2000)',cta:'PLAY'},
+    {id:'cod',game:'Call of Duty',emoji:'💀',tagline:'Season 8 • Battle Pass Active • Win!',color:'#00ff88',bg:'linear-gradient(135deg,#001a0d,#002a15)',cta:'SQUAD UP'},
+    {id:'val',game:'Valorant',emoji:'🎮',tagline:'Episode 9 • Ranked Mode • Join Team',color:'#ff4655',bg:'linear-gradient(135deg,#1a0509,#2a0810)',cta:'COMPETE'},
+  ]
+  const[cur,setCur]=React.useState(0)
+  const[tick,setTick]=React.useState(0)
+  React.useEffect(()=>{
+    const t=setInterval(()=>{
+      setCur(c=>(c+1)%ads.length)
+      setTick(k=>k+1)
+    },4000)
+    return()=>clearInterval(t)
+  },[])
+  const ad=ads[cur]
+  return(
+    <div style={{background:ad.bg,border:`1px solid ${ad.color}33`,borderRadius:10,padding:'10px 14px',marginBottom:12,display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',transition:'background 0.5s'}}>
+      {/* Shimmer */}
+      <div style={{position:'absolute',top:0,left:'-40%',width:'35%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 3s ease-in-out infinite',pointerEvents:'none'}}/>
+      {/* Live dot */}
+      <div style={{width:8,height:8,borderRadius:'50%',background:ad.color,flexShrink:0,animation:'pulse 1s infinite',boxShadow:`0 0 8px ${ad.color}`}}/>
+      {/* Emoji */}
+      <span style={{fontSize:20,flexShrink:0}}>{ad.emoji}</span>
+      {/* Text */}
+      <div style={{flex:1,minWidth:0}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,fontWeight:700,color:ad.color,letterSpacing:1}}>{ad.game}</div>
+        <div style={{fontSize:9,color:'rgba(255,255,255,0.5)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ad.tagline}</div>
+      </div>
+      {/* Dots */}
+      <div style={{display:'flex',gap:3,flexShrink:0}}>
+        {ads.map((_,n)=><div key={n} onClick={()=>setCur(n)} style={{width:n===cur?14:4,height:4,borderRadius:2,background:n===cur?ad.color:'rgba(255,255,255,0.2)',cursor:'pointer',transition:'width 0.3s'}}/>)}
+      </div>
+      {/* CTA */}
+      <div style={{fontFamily:'var(--fh)',fontSize:8,color:'#000',background:ad.color,padding:'4px 10px',borderRadius:4,flexShrink:0,letterSpacing:1,fontWeight:700,cursor:'pointer'}}>{ad.cta}</div>
     </div>
   )
 }
