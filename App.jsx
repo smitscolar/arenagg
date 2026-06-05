@@ -2380,11 +2380,16 @@ function ParticipantDashboard({participant,onLogout,toast,tournaments=[],lang:la
       <button onClick={()=>setActiveTab('live')} style={{marginLeft:'auto',background:'rgba(255,255,255,0.2)',border:'none',borderRadius:4,padding:'3px 10px',color:'#fff',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1}}>LIHAT LIVE →</button>
     </div>}
 
-    {/* ── AD BANNER FULL (sync dengan owner, termasuk iklan sponsor) ── */}
-    <div style={{padding:'14px 16px 0',maxWidth:960,margin:'0 auto'}}>
-      <AdBanner/>
+    {/* ── AD BANNER FULL — sama persis susunan dengan owner dashboard ── */}
+    <div style={{maxWidth:1000,margin:'0 auto',padding:'18px 20px 0'}}>
+      <div style={{marginBottom:6}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+          <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2}}>📺 IKLAN LIVE</span>
+        </div>
+        <AdBanner/>
+      </div>
     </div>
-    <div style={{maxWidth:600,margin:'0 auto',padding:'16px 14px'}}>
+    <div style={{maxWidth:600,margin:'0 auto',padding:'10px 14px 16px'}}>
       {/* TABS */}
       <div style={{display:'flex',gap:4,background:'rgba(255,255,255,0.04)',padding:4,borderRadius:9,border:'1px solid var(--border)',marginBottom:16}}>
         {TABS.map(tab=>(
