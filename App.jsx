@@ -2297,38 +2297,45 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
   return(
     <div style={{minHeight:'100vh',background:'#03030d',position:'relative',overflow:'hidden'}}>
-      {/* Animated background */}
+      {/* Animated gaming background — no scanline */}
       <style>{`
-        @keyframes drift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.05)}}
-        @keyframes drift2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-20px,30px) scale(1.08)}}
-        @keyframes drift3{0%,100%{transform:translate(0,0)}33%{transform:translate(15px,15px)}66%{transform:translate(-10px,-15px)}}
-        @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
-        @keyframes gridpulse{0%,100%{opacity:0.03}50%{opacity:0.07}}
-        @keyframes particlefloat{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-80px) scale(0.3);opacity:0}}
-        .mbg-orb1{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.08) 0%,transparent 70%);top:-100px;left:-100px;animation:drift1 12s ease-in-out infinite;pointer-events:none}
-        .mbg-orb2{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.07) 0%,transparent 70%);bottom:-80px;right:-80px;animation:drift2 15s ease-in-out infinite;pointer-events:none}
-        .mbg-orb3{position:absolute;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,0.05) 0%,transparent 70%);top:40%;left:40%;animation:drift3 18s ease-in-out infinite;pointer-events:none}
-        .mbg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.04) 1px,transparent 1px);background-size:40px 40px;animation:gridpulse 6s ease-in-out infinite;pointer-events:none}
-        .mbg-scan{position:absolute;inset:0;overflow:hidden;pointer-events:none}.mbg-scan::after{content:'';position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(0,229,255,0.15),transparent);animation:scanline 8s linear infinite}
-        .mbg-particle{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--cyan);animation:particlefloat 4s ease-out infinite;pointer-events:none}
+        @keyframes mbOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
+        @keyframes mbOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
+        @keyframes mbOrb3{0%,100%{transform:translate(0,0)}33%{transform:translate(20px,20px)}66%{transform:translate(-15px,-20px)}}
+        @keyframes mbGrid{0%,100%{opacity:0.04}50%{opacity:0.08}}
+        @keyframes mbFloat{0%{transform:translateY(0) scale(1);opacity:0.5}100%{transform:translateY(-100px) scale(0.2);opacity:0}}
+        @keyframes mbGlow{0%,100%{opacity:0.5}50%{opacity:1}}
+        .mb-orb1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);top:-200px;left:-150px;animation:mbOrb1 14s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-orb2{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.06) 0%,transparent 70%);bottom:-150px;right:-100px;animation:mbOrb2 17s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-orb3{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);top:35%;left:35%;animation:mbOrb3 20s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;animation:mbGrid 7s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-star{position:absolute;border-radius:50%;animation:mbGlow 3s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-particle{position:absolute;width:2px;height:2px;border-radius:50%;animation:mbFloat 5s ease-out infinite;pointer-events:none;z-index:0}
+        .mb-content{position:relative;z-index:1}
       `}</style>
-      <div className="mbg-orb1"/><div className="mbg-orb2"/><div className="mbg-orb3"/>
-      <div className="mbg-grid"/><div className="mbg-scan"/>
-      {/* Floating particles */}
-      {[...Array(8)].map((_,n)=>(
-        <div key={n} className="mbg-particle" style={{left:`${10+n*12}%`,bottom:'10%',animationDelay:`${n*0.6}s`,animationDuration:`${3+n*0.4}s`,opacity:0.4+n*0.05,background:n%3===0?'var(--cyan)':n%3===1?'var(--orange)':'var(--green)'}}/>
+      <div className="mb-orb1"/><div className="mb-orb2"/><div className="mb-orb3"/>
+      <div className="mb-grid"/>
+      {/* Stars */}
+      {[...Array(12)].map((_,n)=>(
+        <div key={'s'+n} className="mb-star" style={{width:n%3===0?3:2,height:n%3===0?3:2,left:`${8+n*8}%`,top:`${5+n*7}%`,background:n%3===0?'rgba(0,229,255,0.6)':n%3===1?'rgba(255,107,0,0.5)':'rgba(255,255,255,0.4)',animationDelay:`${n*0.5}s`,animationDuration:`${2+n*0.3}s`}}/>
       ))}
+      {/* Rising particles */}
+      {[...Array(6)].map((_,n)=>(
+        <div key={'p'+n} className="mb-particle" style={{left:`${15+n*15}%`,bottom:'5%',animationDelay:`${n*0.8}s`,animationDuration:`${4+n*0.5}s`,background:n%2===0?'rgba(0,229,255,0.7)':'rgba(255,107,0,0.6)'}}/>
+      ))}
+      {/* MAIN CONTENT */}
+      <div className="mb-content">
       {/* HEADER */}
-      <div style={{background:'var(--panel)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100}}>
+      <div style={{background:'rgba(5,5,18,0.92)',backdropFilter:'blur(10px)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--cyan)',letterSpacing:2}}>⚔ ARENAGG</div>
-          <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5,paddingTop:1}}>MEMBER PORTAL</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 15px rgba(0,229,255,0.8)'}}>⚔ ARENAGG</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5,paddingTop:1,textShadow:'0 0 10px rgba(255,107,0,0.8)'}}>MEMBER PORTAL</div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:8}}>
           <LangSelector lang={lang} setLangFn={setLangFn}/>
           <div style={{textAlign:'right'}}>
-            <div style={{fontSize:11,fontWeight:600,color:'var(--text)'}}>{member.nama}</div>
-            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1}}>{member.member_id}</div>
+            <div style={{fontSize:11,fontWeight:600,color:'var(--text)',textShadow:'0 0 8px rgba(255,255,255,0.3)'}}>{member.nama}</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1,textShadow:'0 0 8px rgba(0,229,255,0.6)'}}>{member.member_id}</div>
           </div>
           <div onClick={()=>setActiveTab('profil')} style={{width:36,height:36,borderRadius:'50%',cursor:'pointer',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
             {member.avatar_url
@@ -2342,9 +2349,9 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
       </div>
 
       {/* TAB NAV */}
-      <div style={{background:'var(--panel)',borderBottom:'1px solid var(--border)',display:'flex',overflowX:'auto',padding:'0 4px'}}>
+      <div style={{background:'rgba(5,5,18,0.88)',backdropFilter:'blur(8px)',borderBottom:'1px solid rgba(0,229,255,0.15)',display:'flex',overflowX:'auto',padding:'0 4px'}}>
         {tabs.map(t=>(
-          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap'}}>
+          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap',textShadow:activeTab===t.id?'0 0 10px rgba(0,229,255,0.8)':'none'}}>
             {t.icon} {t.label}
           </button>
         ))}
@@ -2355,13 +2362,13 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
       </div>
 
       {/* CONTENT */}
-      <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px'}}>
+      <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px',position:'relative',zIndex:1}}>
         {/* Ad banner live */}
         <MemberAdBanner/>
 
         {/* TAB: SEMUA TURNAMEN */}
         {activeTab==='tournaments'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>🏆 {(i.all_tourn_tab||'SEMUA TURNAMEN').toUpperCase()}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>🏆 {(i.all_tourn_tab||'SEMUA TURNAMEN').toUpperCase()}</div>
           {/* Turnamen yang sudah kamu ikuti - highlight di atas */}
           {myTeams.filter(tm=>['open','upcoming','live'].includes(tm.tournaments?.status)).length>0&&(
             <div style={{marginBottom:14}}>
@@ -2387,7 +2394,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             :allTournaments.length===0
               ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.no_tourn_member||'Belum ada turnamen tersedia'}</div>
               :allTournaments.map(t=>(
-                <div key={t.id} style={{background:'var(--panel)',border:'1px solid var(--border)',borderRadius:10,padding:'14px 16px',marginBottom:10,position:'relative',overflow:'hidden'}}>
+                <div key={t.id} style={{background:'rgba(10,10,25,0.75)',backdropFilter:'blur(6px)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,padding:'14px 16px',marginBottom:10,position:'relative',overflow:'hidden'}}>
                   <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:statusColor[t.status]||'var(--muted)',borderRadius:'0 0 0 0'}}/>
                   <div style={{paddingLeft:10}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:6}}>
@@ -2416,7 +2423,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
         {/* TAB: RIWAYAT */}
         {activeTab==='history'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>📋 {(i.history_tab||'RIWAYAT').toUpperCase()}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>📋 {(i.history_tab||'RIWAYAT').toUpperCase()}</div>
           <div style={{fontSize:11,color:'var(--muted)',marginBottom:14}}>{i.my_history||'Turnamen yang pernah kamu ikuti'}</div>
           {myTeams.length===0
             ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.no_history||'Belum pernah ikut turnamen'}<div style={{marginTop:8,fontSize:10}}>Ikut turnamen dari tab Semua Turnamen!</div></div>
@@ -2445,7 +2452,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
         {/* TAB: LIVE SCORE */}
         {activeTab==='livescore'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>🔴 LIVE SCORE & BRACKET</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>🔴 LIVE SCORE & BRACKET</div>
           {/* Turnamen yang sedang live */}
           {allTournaments.filter(t=>t.status==='live').length===0&&myTeams.filter(tm=>tm.tournaments?.status==='live').length===0
             ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
@@ -2496,7 +2503,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
         {/* TAB: NOTIFIKASI */}
         {activeTab==='notif'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>🔔 {(i.notif_tab||'NOTIFIKASI').toUpperCase()}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>🔔 {(i.notif_tab||'NOTIFIKASI').toUpperCase()}</div>
           {/* Jadwal pertandingan */}
           {myTeams.filter(tm=>tm.tournaments&&['open','upcoming','live'].includes(tm.tournaments.status)).length>0&&(
             <div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:10,padding:'12px 14px',marginBottom:12}}>
@@ -2645,6 +2652,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         </>}
 
       </div>
+      </div>{/* end mb-content */}
     </div>
   )
 }
@@ -2957,7 +2965,7 @@ function BadgeGrid({myTeams=[], lang, toast}){
   ]
   return(
     <div style={{marginBottom:16}}>
-      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:10}}>{i.badge_title||'BADGE & PENCAPAIAN'}</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:10,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>{i.badge_title||'BADGE & PENCAPAIAN'}</div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8}}>
         {badges.map(bd=>(
           <div key={bd.key} style={{background:bd.unlocked?'rgba(255,255,255,0.05)':'rgba(255,255,255,0.02)',border:`1px solid ${bd.unlocked?bd.color:'rgba(255,255,255,0.06)'}`,borderRadius:10,padding:'12px',opacity:bd.unlocked?1:0.45}}>
@@ -3160,42 +3168,6 @@ function AuthPage({onLogin,lang,setLangFn}){
   const[loading,setL]=useState(false)
   const[err,setErr]=useState('')
   const[showPass,setShowPass]=useState(false)
-  // Fungsi login peserta
-  const doLogin=async()=>{
-    if(!loginName.trim()){setLoginErr('Isi nama tim');return}
-    if(loginMode==='contact'&&!loginContact.trim()){setLoginErr('Isi No. HP');return}
-    if(loginMode==='gameid'&&!loginGameId.trim()){setLoginErr('Isi Game Account ID');return}
-    setLoginErr('');setLoginL(true)
-    try{
-      let query=supabase.from('teams').select('*,tournaments(*)')
-        .ilike('name',loginName.trim())
-        .eq('tournament_id',tid.trim())
-      if(loginMode==='contact') query=query.eq('contact',loginContact.trim())
-      else query=query.ilike('game_id',loginGameId.trim())
-      const{data:teamData,error}=await query.single()
-      if(error||!teamData){
-        setLoginErr(loginMode==='contact'?'Tim tidak ditemukan. Pastikan nama tim dan no. HP sesuai.':'Tim tidak ditemukan. Pastikan nama tim dan Game ID sesuai saat pendaftaran.')
-        setLoginL(false);return
-      }
-      // Simpan ke localStorage dan redirect ke portal
-      const participant={
-        id:teamData.id,name:teamData.name,captain:teamData.captain,
-        contact:teamData.contact,members:teamData.members,
-        photo:teamData.photo,paid:teamData.paid,
-        game_id:teamData.game_id||'',
-        stream_url:teamData.stream_url||'',
-        tournamentId:teamData.tournament_id,
-        tournament:teamData.tournaments,
-        loginAt:Date.now()
-      }
-      try{localStorage.setItem('arenagg_participant',JSON.stringify(participant))}catch(e){}
-      // Redirect ke portal peserta
-      window.location.hash='#/peserta'
-      window.location.reload()
-    }catch(e){setLoginErr('Error: '+e.message)}
-    setLoginL(false)
-  }
-
   const submit=async()=>{
     setErr('');
     if(!email.includes('@')||!email.includes('.')){setErr('Format email tidak valid.');return}
