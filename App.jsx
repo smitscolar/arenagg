@@ -5,6 +5,12 @@ const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_KEY
 )
+// Public client untuk member reads - anon key explicit
+const supabasePublic = createClient(
+  'https://itxpjxnyhzsexvfvezre.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0eHBqeG55aHpzZXh2ZnZlenJlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDU5MjExNzgsImV4cCI6MjA2MTQ5NzE3OH0.btHD8bWBCPfNR_8TRj7hgFRRSIWlBQXjQVJp_P_hVP0',
+  {auth:{persistSession:false,autoRefreshToken:false}}
+)
 
 const T = {
   id:{nav:['Dashboard','Komisi','Turnamen','Buat','Peserta','Bracket','🔴 Live','🏅 Ranking','Keuangan','Setting'],login:'Masuk',register:'Daftar',email:'Email',password:'Password',community:'Nama Komunitas',btn_login:'🔑 Masuk',btn_register:'🚀 Buat Akun',dash_title:'Dashboard',dash_sub:'Overview realtime platform turnamen esport',active_t:'TURNAMEN AKTIF',revenue_lbl:'PENDAPATAN',quick:'AKSI CEPAT',btn_create:'＋ Buat Turnamen',btn_comm:'📈 Komisi',btn_part:'👥 Peserta',no_active:'Belum ada turnamen aktif',tourn_title:'Turnamen',btn_create_t:'＋ Buat',no_tourn:'TIDAK ADA TURNAMEN',share:'🔗 Bagikan',live_btn:'▶ Live',close_btn:'■ Tutup',activate:'✓ Aktif',create_title:'＋ BUAT TURNAMEN',edit_title:'✏ EDIT',tourn_name:'Nama Turnamen *',game:'Game',format:'Format',city:'Kota *',date:'Tanggal *',prize:'Prize Pool *',entry:'Entry Fee *',slots:'Slot',desc:'Deskripsi',btn_save:'💾 Simpan',btn_create2:'🚀 Buat',btn_cancel:'Batal',teams_title:'Peserta & Tim',all:'Semua',btn_reg_team:'＋ Daftarkan Tim',team_name:'Nama Tim *',captain:'Kapten *',contact:'No. HP',members:'Member',tournament:'Turnamen *',paid_lbl:'Sudah bayar entry fee',btn_reg2:'Daftarkan',no_teams:'Belum ada tim',finance_title:'Keuangan',total_entry:'Total Entry',comm_lbl:'Komisi 15%',done:'Selesai',settings_title:'Pengaturan',account:'AKUN ORGANIZER',connected:'✓ Terhubung ke Supabase',bank_title:'💳 INFO PEMBAYARAN',bank_desc:'Data ini akan ditampilkan ke peserta saat mendaftar.',bank_name:'Nama Bank',acc_num:'Nomor Rekening / Nomor HP',acc_owner:'Nama Pemilik Rekening',wa_confirm:'No. WhatsApp Konfirmasi',btn_save_bank:'💾 Simpan Info Bank',saved:'✓ Tersimpan!',expansion:'EKSPANSI SEA',prize_pool:'Total Prize Pool',slots_left:'Slot Tersisa',slot_filled:'Slot Terisi',about:'TENTANG',reg_teams:'TIM TERDAFTAR',full:'❌ Slot Penuh',reg_now:'✅ Daftar Tim Sekarang →',closed_msg:'PENDAFTARAN DITUTUP',reg_title:'DAFTARKAN TIM',pay_title:'CARA PEMBAYARAN',amount:'Jumlah Entry Fee',transfer_to:'Transfer ke:',acc_no:'No. Rek:',an:'A/N:',confirm_wa:'Konfirmasi ke WA:',contact_org:'📱 Hubungi organizer',btn_submit:'🚀 Kirim',registering:'Mendaftarkan...',success_title:'BERHASIL!',success_msg:'terdaftar di',back:'← Kembali',back_detail:'← Lihat Detail',rev_title:'📈 LAPORAN KOMISI',rev_sub:'Pendapatan realtime',saldo:'SALDO TERSEDIA',income:'Masuk:',withdrawn:'Dicairkan:',withdraw_btn:'💸 Withdraw',withdraw_title:'💸 WITHDRAW',saldo_lbl:'SALDO',amount_lbl:'Jumlah (Rp)',acc_lbl:'Rekening',btn_wd:'💸 Cairkan',comm_per:'KOMISI PER TURNAMEN',no_tourn_yet:'Buat turnamen pertamamu!',online:'ONLINE',logout:'Keluar',select_bank:'-- Pilih Bank --',preview_lbl:'PREVIEW PESERTA',lang_lbl:'Bahasa',edit:'✏ Edit',profile_title:'PROFIL ORGANIZER',change_photo:'Klik untuk ganti foto',name_lbl:'Nama Organizer',save_profile:'💾 Simpan Profil',profile_saved:'✓ Profil Tersimpan!',portal_peserta:'PORTAL PESERTA',masuk_tim:'Masuk Tim',cara_masuk:'Cara Masuk',nama_tim_label:'NAMA TIM *',nohp_label:'NO. HP (SAAT DAFTAR) *',nama_tim_ph:'Nama tim saat daftar...',nohp_ph:'08xxxxxxxxxx',btn_masuk_tim:'⚡ Masuk ke Dashboard Tim',belum_daftar:'Belum daftar?',portal_sub:'Akses dashboard tim & pantau pertandingan live',pd_beranda:'Beranda',pd_wallet:'Wallet',pd_live:'Live Score',pd_stream:'Live Stream',pd_chat:'Chat',pd_info:'Info',pd_prize:'Prize Pool',pd_entry:'Entry Fee',pd_format:'Format',pd_status:'Status',pd_info_tourn:'INFO TURNAMEN',pd_lunas:'✓ LUNAS',pd_blm_bayar:'⏳ BELUM BAYAR',pd_status_bayar:'Status Bayar',pd_entry_unpaid:'⚠ ENTRY FEE BELUM DIBAYAR',pd_tap_bayar:'TAP UNTUK BAYAR',pd_buka_wallet:'Buka Wallet untuk info rekening & kirim bukti bayar',pd_info_org:'🏦 INFO PEMBAYARAN ORGANIZER',pd_bank:'Bank / E-Wallet',pd_norek:'Nomor Rekening / HP',pd_atasnama:'Atas Nama',pd_salin:'SALIN',pd_konfirm_wa:'📱 Konfirmasi via WA',pd_keluar:'Keluar dari Portal',pd_buka_wallet_btn:'💳 Buka Wallet & Pembayaran',reg_member:'Buat Akun Member',login_member:'Masuk Akun',nama_lengkap:'Nama Lengkap *',email_member:'Email *',nohp_member:'No. HP *',gameid_member:'ID Game (opsional)',pw_member:'Password *',pw_confirm:'Konfirmasi Password *',btn_buat_akun:'🚀 Buat Akun',btn_masuk_akun:'🔑 Masuk',verif_title:'CEK EMAIL KAMU!',verif_msg:'Link aktivasi dikirim ke',verif_sub:'Klik link di email untuk aktifkan akun, lalu kembali & masuk.',verif_resend:'Kirim ulang email',verif_back:'← Ganti Email',id_peserta_lbl:'ID PESERTA',sudah_akun:'Sudah punya akun?',belum_akun:'Belum punya akun?',masuk_skrg:'Masuk sekarang',daftar_skrg:'Daftar sekarang',all_tourn_tab:'Semua Turnamen',history_tab:'Riwayat',notif_tab:'Notifikasi',profil_tab:'Profil',open_reg:'Buka Pendaftaran',ongoing:'Sedang Berlangsung',no_tourn_member:'Belum ada turnamen tersedia',join_now:'✅ Daftar ke Turnamen Ini',my_history:'Turnamen yang pernah kamu ikuti',no_history:'Belum pernah ikut turnamen',notif_empty:'Tidak ada notifikasi',profil_member:'Profil Member',edit_profil:'Edit Profil',save_profil:'Simpan',logout_member:'Keluar',member_since:'Member sejak',pw_min:'Password minimal 6 karakter',pw_not_match:'Password tidak cocok',email_invalid:'Format email tidak valid',reg_success:'Akun berhasil dibuat! Cek email untuk aktivasi.',login_success:'Selamat datang kembali!',email_not_confirm:'Email belum diverifikasi. Cek inbox/spam kamu.',wrong_pw:'Email atau password salah.',share_card:'📸 Share Card Pendaftaran',share_card_desc:'Simpan & bagikan ke media sosial',download_card:'💾 Simpan Gambar',share_wa_card:'📲 Share ke WA',cert_title:'SERTIFIKAT PESERTA',cert_download:'🏅 Unduh Sertifikat',cert_share_wa:'📲 Share Sertifikat',badge_title:'BADGE & PENCAPAIAN',badge_veteran:'Veteran',badge_veteran_desc:'Ikut 10+ turnamen',badge_juara:'Juara',badge_juara_desc:'Menang minimal 1x',badge_loyalis:'Loyalis',badge_loyalis_desc:'Daftar dalam 24 jam',badge_aktif:'Aktif',badge_aktif_desc:'3 turnamen berturut',badge_locked:'Belum terbuka',stats_title:'STATISTIK',stats_total:'Total Turnamen',stats_wins:'Kemenangan',stats_winrate:'Win Rate',stats_best:'Peringkat Terbaik',rating_title:'BERI RATING TURNAMEN',rating_label:'Pengalaman kamu di turnamen ini?',rating_submit:'Kirim Rating',rating_thanks:'Terima kasih atas rating kamu!',submit_score:'Submit Skor',submit_score_title:'SUBMIT HASIL PERTANDINGAN',your_score:'Skor Tim Kamu',opponent_score:'Skor Lawan',opponent_name:'Nama Tim Lawan',match_round:'Babak / Ronde',submit_score_btn:'📤 Submit Skor',score_submitted:'Skor berhasil disubmit! Menunggu konfirmasi organizer.',jadwal_title:'JADWAL PERTANDINGANMU',jadwal_empty:'Belum ada jadwal pertandingan',match_vs:'vs',match_time:'Waktu',match_round_lbl:'Babak',notif_match_soon:'Pertandinganmu segera dimulai!',slot_sisa:'Slot tersisa',slot_hampir_penuh:'Hampir penuh!',slot_penuh:'PENUH',autofill_member:'Isi otomatis dari akun member'},
@@ -2196,6 +2202,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const[activeTab,setActiveTab]=useState('tournaments')
   const[allTournaments,setAllTourn]=useState([])
   const[loadingTourn,setLoadT]=useState(true)
+  const[tournError,setTournError]=useState(null)
   const[editMode,setEditMode]=useState(false)
   const[editNama,setEditNama]=useState(member.nama||'')
   const[editHp,setEditHp]=useState(member.hp||'')
@@ -2210,21 +2217,33 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     const load=async()=>{
       setLoadT(true)
       try{
-        const{data}=await supabase.from('tournaments')
-          .select('id,name,game,format,city,date,time,prize,prize_pool,entry,entry_fee,slots,status,description,organizer_id,created_at')
-          .not('status','in','("deleted","hidden")')
-          .order('date',{ascending:true})
-          .limit(50)
-        setAllTourn(data||[])
-      }catch(e){console.error(e)}
+        const{data,error}=await supabase.from('tournaments')
+          .select('id,name,game,format,city,date,time,prize,prize_pool,entry,entry_fee,slots,status,description,organizer_id,created_at,registered')
+          .order('created_at',{ascending:false})
+          .limit(100)
+        if(error){
+          console.error('allTournaments error:',error.message)
+          // Fallback: coba tanpa filter
+        }
+        const results = data||[]
+        console.log('allTournaments loaded:',results.length,'records')
+        setAllTourn(results)
+      }catch(e){
+        console.error('tournaments catch:',e)
+        setTournError(e.message)
+      }
       setLoadT(false)
     }
     load()
-    // Realtime update
-    const ch=supabase.channel('member-tournaments')
-      .on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},load)
-      .subscribe()
-    return()=>supabase.removeChannel(ch)
+    // Realtime update setiap 10 detik juga
+    const interval=setInterval(load, 10000)
+    const ch=supabasePublic.channel('member-tournaments-'+Date.now())
+      .on('postgres_changes',{event:'*',schema:'public',table:'tournaments'},()=>{
+        console.log('Realtime: tournaments changed, reloading...')
+        load()
+      })
+      .subscribe((status)=>console.log('Member tournaments channel:',status))
+    return()=>{clearInterval(interval);supabasePublic.removeChannel(ch)}
   },[])
 
   // Load riwayat turnamen yang pernah diikuti member
@@ -2392,7 +2411,12 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
           {loadingTourn
             ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}><Spinner size={20} color="var(--cyan)"/><div style={{marginTop:8}}>Memuat turnamen...</div></div>
             :allTournaments.length===0
-              ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>{i.no_tourn_member||'Belum ada turnamen tersedia'}</div>
+              ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
+                  <div style={{fontSize:32,marginBottom:8}}>🏟</div>
+                  <div>{i.no_tourn_member||'Belum ada turnamen tersedia'}</div>
+                  {tournError&&<div style={{marginTop:8,fontSize:10,color:'var(--red)',padding:'6px 10px',background:'rgba(255,45,85,0.1)',borderRadius:6}}>⚠ {tournError}</div>}
+                  <div style={{marginTop:8,fontSize:10,color:'var(--muted)'}}>Organizer perlu membuat turnamen dulu</div>
+                </div>
               :allTournaments.map(t=>(
                 <div key={t.id} style={{background:'rgba(10,10,25,0.75)',backdropFilter:'blur(6px)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,padding:'14px 16px',marginBottom:10,position:'relative',overflow:'hidden'}}>
                   <div style={{position:'absolute',left:0,top:0,bottom:0,width:3,background:statusColor[t.status]||'var(--muted)',borderRadius:'0 0 0 0'}}/>
