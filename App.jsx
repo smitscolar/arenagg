@@ -2356,6 +2356,13 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             <div style={{fontSize:11,fontWeight:600,color:'var(--text)',textShadow:'0 0 8px rgba(255,255,255,0.3)'}}>{member.nama}</div>
             <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1,textShadow:'0 0 8px rgba(0,229,255,0.6)'}}>{member.member_id}</div>
           </div>
+          {/* Chat bubble */}
+          <div onClick={()=>setActiveTab('notif')} style={{width:32,height:32,borderRadius:'50%',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:14,flexShrink:0,position:'relative',transition:'all 0.2s'}} title="Notifikasi & Jadwal">
+            💬
+            {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0&&(
+              <div style={{position:'absolute',top:-2,right:-2,width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
+            )}
+          </div>
           <div onClick={()=>setActiveTab('profil')} style={{width:36,height:36,borderRadius:'50%',cursor:'pointer',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
             {member.avatar_url
               ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
@@ -2380,10 +2387,19 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         </div>
       </div>
 
+      {/* AD BANNER — sticky di bawah tab nav, muncul di semua menu */}
+      <div style={{background:'rgba(5,5,18,0.88)',backdropFilter:'blur(8px)',borderBottom:'1px solid rgba(255,107,0,0.12)',padding:'8px 12px 12px'}}>
+        <div style={{maxWidth:640,margin:'0 auto'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+            <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 8px rgba(255,107,0,0.5)'}}>📺 IKLAN LIVE</span>
+            <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{allTournaments.length} TURNAMEN TERSEDIA</span>
+          </div>
+          <MemberAdBanner/>
+        </div>
+      </div>
+
       {/* CONTENT */}
       <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px',position:'relative',zIndex:1}}>
-        {/* Ad banner live */}
-        <MemberAdBanner/>
 
         {/* TAB: SEMUA TURNAMEN */}
         {activeTab==='tournaments'&&<>
@@ -3132,49 +3148,98 @@ function SubmitScoreCard({team, tournamentId, lang, toast}){
 
 
 // ============================================================
-// MEMBER AD BANNER — Template iklan live khusus portal peserta
-// Animasi: pulse live dot, scroll text, gaming aesthetic
+// MEMBER AD BANNER — Full sync dengan AdBanner owner
+// Sama persis ukuran + animasi + custom ads dari localStorage
 // ============================================================
 function MemberAdBanner(){
-  const ads=[
-    {id:'ml',game:'Mobile Legends',emoji:'⚔',tagline:'Season 35 • Tier Push • Join Now!',color:'#1a9fff',bg:'linear-gradient(135deg,#0d1a35,#0d2a4a)',cta:'DAFTAR'},
-    {id:'ff',game:'Free Fire',emoji:'🔥',tagline:'Garena Free Fire • MAX Server • Active',color:'#ff6b00',bg:'linear-gradient(135deg,#1a0d00,#3a1500)',cta:'JOIN'},
-    {id:'pubg',game:'PUBG Mobile',emoji:'🎯',tagline:'New Season • Erangel 3.0 • Play Now',color:'#ffd700',bg:'linear-gradient(135deg,#1a1400,#2a2000)',cta:'PLAY'},
-    {id:'cod',game:'Call of Duty',emoji:'💀',tagline:'Season 8 • Battle Pass Active • Win!',color:'#00ff88',bg:'linear-gradient(135deg,#001a0d,#002a15)',cta:'SQUAD UP'},
-    {id:'val',game:'Valorant',emoji:'🎮',tagline:'Episode 9 • Ranked Mode • Join Team',color:'#ff4655',bg:'linear-gradient(135deg,#1a0509,#2a0810)',cta:'COMPETE'},
-  ]
+  const[customAds,setCustomAds]=React.useState(getCustomAds)
+  const allAds=React.useMemo(()=>[...DEFAULT_ADS,...((customAds||[]).filter(a=>a.active))],[customAds])
   const[cur,setCur]=React.useState(0)
-  const[tick,setTick]=React.useState(0)
+  const[animKey,setAnimKey]=React.useState(0)
+  const[paused,setPaused]=React.useState(false)
+  const[logoErr,setLogoErr]=React.useState({})
+
+  // Sync realtime dengan owner via BroadcastChannel + localStorage
   React.useEffect(()=>{
-    const t=setInterval(()=>{
-      setCur(c=>(c+1)%ads.length)
-      setTick(k=>k+1)
-    },4000)
-    return()=>clearInterval(t)
+    let bc
+    try{
+      bc=new BroadcastChannel('arenagg_ads')
+      bc.onmessage=(e)=>{if(e.data?.type==='ads_updated'&&Array.isArray(e.data.ads)){setCustomAds(e.data.ads)}}
+    }catch(e){}
+    const onSt=(e)=>{if(e.key===AD_STORAGE_KEY&&e.newValue){try{setCustomAds(JSON.parse(e.newValue))}catch(e){}}}
+    window.addEventListener('storage',onSt)
+    return()=>{try{bc&&bc.close()}catch(e){};window.removeEventListener('storage',onSt)}
   },[])
-  const ad=ads[cur]
+
+  React.useEffect(()=>{
+    if(paused||allAds.length<=1)return
+    const t=setInterval(()=>{
+      setCur(c=>{setAnimKey(k=>k+1);return(c+1)%allAds.length})
+    },4500)
+    return()=>clearInterval(t)
+  },[paused,allAds.length])
+
+  const goTo=n=>{setCur(n);setAnimKey(k=>k+1)}
+  const ad=allAds[cur]
+  if(!ad)return null
+  const isCustom=ad.isCustom
+
   return(
-    <div style={{background:ad.bg,border:`1px solid ${ad.color}33`,borderRadius:10,padding:'10px 14px',marginBottom:12,display:'flex',alignItems:'center',gap:10,position:'relative',overflow:'hidden',transition:'background 0.5s'}}>
+    <div
+      onMouseEnter={()=>setPaused(true)}
+      onMouseLeave={()=>setPaused(false)}
+      onClick={()=>ad.url&&window.open(ad.url,'_blank','noopener')}
+      style={{
+        background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',
+        borderRadius:14,
+        border:`1.5px solid ${ad.accent||'#ffd700'}44`,
+        marginBottom:16,
+        boxShadow:`0 8px 40px rgba(0,0,0,0.6), 0 0 60px ${ad.accent||'#ffd700'}15`,
+        position:'relative',overflow:'hidden',cursor:'pointer',minHeight:90,
+      }}
+    >
+      {/* Particles */}
+      <AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/>
       {/* Shimmer */}
-      <div style={{position:'absolute',top:0,left:'-40%',width:'35%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 3s ease-in-out infinite',pointerEvents:'none'}}/>
-      {/* Live dot */}
-      <div style={{width:8,height:8,borderRadius:'50%',background:ad.color,flexShrink:0,animation:'pulse 1s infinite',boxShadow:`0 0 8px ${ad.color}`}}/>
-      {/* Emoji */}
-      <span style={{fontSize:20,flexShrink:0}}>{ad.emoji}</span>
-      {/* Text */}
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:10,fontWeight:700,color:ad.color,letterSpacing:1}}>{ad.game}</div>
-        <div style={{fontSize:9,color:'rgba(255,255,255,0.5)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{ad.tagline}</div>
+      <div style={{position:'absolute',top:0,width:'35%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.04),transparent)',animation:'ad-shimmer 3s ease-in-out infinite',pointerEvents:'none'}}/>
+      {/* Top accent */}
+      <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'},transparent)`}}/>
+      {/* Main content */}
+      <div key={animKey} style={{display:'flex',alignItems:'center',gap:16,padding:'14px 18px 18px',animation:'ad-slide-in 0.4s ease both'}}>
+        {/* Logo */}
+        <div style={{width:66,height:66,borderRadius:14,overflow:'hidden',flexShrink:0,background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,${ad.accent||'#ffd700'}22)`,border:`1.5px solid ${ad.accent||'#ffd700'}44`,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 0 22px ${ad.color||'#1a6fd4'}55`}}>
+          {ad.logo&&!logoErr[ad.id]
+            ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+            :<span style={{fontSize:30}}>{ad.emoji||'🎮'}</span>
+          }
+        </div>
+        {/* Text */}
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:4}}>
+            <span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',letterSpacing:2,opacity:0.7}}>🔴 GAME AD</span>
+            {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}22`,padding:'1px 6px',borderRadius:3}}>SPONSOR</span>}
+          </div>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1.5,marginBottom:4}}>{ad.game}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2}}>{ad.tagline}</div>
+          <div style={{fontSize:10,color:'rgba(255,255,255,0.55)'}}>{ad.sub||ad.description||''}</div>
+        </div>
+        {/* CTA + dots */}
+        <div style={{flexShrink:0,display:'flex',flexDirection:'column',alignItems:'center',gap:8}}>
+          <div style={{padding:'10px 18px',background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'})`,color:'#000',borderRadius:8,fontFamily:'var(--fh)',fontSize:9,fontWeight:900,letterSpacing:1.5,boxShadow:`0 4px 18px ${ad.accent||'#ffd700'}55`,whiteSpace:'nowrap',animation:'ad-cta-pulse 2s ease infinite',animationDelay:'1s'}}>{ad.cta||'Mainkan'}</div>
+          <div style={{display:'flex',gap:4}}>
+            {allAds.map((_,n)=>(
+              <div key={n} onClick={e=>{e.stopPropagation();goTo(n)}}
+                style={{width:n===cur?14:5,height:5,borderRadius:3,background:n===cur?ad.accent||'#ffd700':'rgba(255,255,255,0.25)',cursor:'pointer',transition:'width 0.3s'}}/>
+            ))}
+          </div>
+        </div>
       </div>
-      {/* Dots */}
-      <div style={{display:'flex',gap:3,flexShrink:0}}>
-        {ads.map((_,n)=><div key={n} onClick={()=>setCur(n)} style={{width:n===cur?14:4,height:4,borderRadius:2,background:n===cur?ad.color:'rgba(255,255,255,0.2)',cursor:'pointer',transition:'width 0.3s'}}/>)}
-      </div>
-      {/* CTA */}
-      <div style={{fontFamily:'var(--fh)',fontSize:8,color:'#000',background:ad.color,padding:'4px 10px',borderRadius:4,flexShrink:0,letterSpacing:1,fontWeight:700,cursor:'pointer'}}>{ad.cta}</div>
+      {/* Bottom glow */}
+      <div style={{position:'absolute',bottom:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'}88,transparent)`}}/>
     </div>
   )
 }
+
 
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
 function QRImg({value,size=155}){
