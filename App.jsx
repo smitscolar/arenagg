@@ -183,7 +183,7 @@ const savedTheme=localStorage.getItem('arenagg_theme');if(savedTheme==='light')d
 // ============================================================
 const NOTIF_KEY='arenagg_notifications'
 function loadNotifs(){try{return JSON.parse(localStorage.getItem(NOTIF_KEY)||'[]')}catch(e){return[]}}
-function saveNotifs(ns){try{localStorage.setItem(NOTIF_KEY,JSON.stringify(ns.slice(0,50)))}catch(e){}}
+function saveNotifs(ns){try{localStorage.setItem(NOTIF_KEY,JSON.stringify((ns||[]).slice(0,50)))}catch(e){}}
 function addNotif(msg,type,link){
   type=type||'info';link=link||''
   const ns=loadNotifs()
@@ -1727,7 +1727,7 @@ function Leaderboard({tournaments,teams,lang}){
   // City stats
   const cityCount={}
   tournaments.forEach(t=>{if(t.city)cityCount[t.city]=(cityCount[t.city]||0)+1})
-  const topCities=Object.entries(cityCount).sort((a,b)=>b[1]-a[1]).slice(0,5)
+  const topCities=Object.entries(cityCount||{}).sort((a,b)=>b[1]-a[1]).slice(0,5)
   
   const medals=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟']
   // Extra stats
@@ -1763,7 +1763,7 @@ function Leaderboard({tournaments,teams,lang}){
         <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',letterSpacing:1,marginBottom:14}}>🏅 TOP TIM (BERDASAR PRIZE)</div>
         {paidTeams.length===0
           ?<div style={{color:'var(--muted)',fontSize:11,textAlign:'center',padding:20}}>Belum ada tim yang lunas</div>
-          :paidTeams.slice(0,10).map((t,idx)=>(
+          :(paidTeams||[]).slice(0,10).map((t,idx)=>(
             <div key={t.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:idx<paidTeams.length-1?'1px solid rgba(255,255,255,0.03)':'none'}}>
               <span style={{fontSize:18,flexShrink:0,width:28,textAlign:'center'}}>{medals[idx]||`${idx+1}`}</span>
               <div style={{flex:1,minWidth:0}}>
@@ -3826,7 +3826,7 @@ function BottomNav({page,setPage,lang,hasLive}){
   return <nav className="bottom-nav">
     {NAV_IDS.map((id,idx)=><button key={id} className={`bnav-item ${page===id?'active':''}`} onClick={()=>setPage(id)}>
       <span className="bnav-icon">{icons[idx]}{id==='tournaments'&&hasLive&&<span style={{width:4,height:4,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top'}}/>}</span>
-      <span>{i.nav[idx].slice(0,5)}</span>
+      <span>{(i.nav&&i.nav[idx]||'').slice(0,5)}</span>
     </button>)}
   </nav>
 }
