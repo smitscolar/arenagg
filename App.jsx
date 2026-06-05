@@ -2741,7 +2741,7 @@ function AuthPage({onLogin,lang,setLangFn}){
       <div style={{textAlign:'center',marginTop:12,marginBottom:4}}>
         <a href="/#/peserta" style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--orange)',letterSpacing:1,textDecoration:'none',padding:'5px 14px',border:'1px solid rgba(255,107,0,0.3)',borderRadius:20,background:'rgba(255,107,0,0.08)'}}>⚡ Portal Peserta →</a>
       </div>
-      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA · v2.9.1</div>
+      <div style={{textAlign:'center',marginTop:8,fontSize:9,color:'rgba(255,255,255,0.15)',fontFamily:'var(--fm)',letterSpacing:2}}>© 2026 ARENAGG · ESPORT PLATFORM SEA · v4.0</div>
     </div>
   </div>
 }
@@ -3263,6 +3263,41 @@ function SuccessPage({form, t, bank, toast, onBack, lang}){
 }
 
 
+// Countdown timer component
+function CountdownTimer({date,time}){
+  const[diff,setDiff]=React.useState(null)
+  React.useEffect(()=>{
+    const target=new Date((date||'')+'T'+(time?time+':00':'00:00:00'))
+    if(isNaN(target.getTime()))return
+    const update=()=>{
+      const now=new Date()
+      const d=target-now
+      if(d<=0){setDiff(null);return}
+      const days=Math.floor(d/(1000*60*60*24))
+      const hrs=Math.floor((d%(1000*60*60*24))/(1000*60*60))
+      const mins=Math.floor((d%(1000*60*60))/(1000*60))
+      const secs=Math.floor((d%60000)/1000)
+      setDiff({days,hrs,mins,secs,total:d})
+    }
+    update()
+    const t=setInterval(update,1000)
+    return()=>clearInterval(t)
+  },[date,time])
+  if(!diff)return null
+  return<div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(0,0,0,0.2))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:10,padding:'12px 14px',marginBottom:12,textAlign:'center'}}>
+    <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:8}}>⏳ TURNAMEN DIMULAI DALAM</div>
+    <div style={{display:'flex',justifyContent:'center',gap:12}}>
+      {[[diff.days,'Hari'],[diff.hrs,'Jam'],[diff.mins,'Menit'],[diff.secs,'Detik']].map(([val,label])=>(
+        <div key={label} style={{minWidth:44}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:24,fontWeight:900,color:diff.total<3600000?'var(--red)':diff.total<86400000?'var(--orange)':'var(--cyan)',lineHeight:1}}>{String(val).padStart(2,'0')}</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',marginTop:2,letterSpacing:1}}>{label.toUpperCase()}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+}
+
+
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
 function PublicPage({tid,onBack,toast}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
@@ -3423,7 +3458,9 @@ function PublicPage({tid,onBack,toast}){
     <div style={{maxWidth:540,margin:'0 auto',padding:'20px 16px'}}>
       {step==='detail'&&<div className="animate-in">
         <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.06))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:12,padding:'22px 18px',marginBottom:12,textAlign:'center'}}>
-          <span className={`tag tag-${t.status}`} style={{marginBottom:10,display:'inline-block'}}>{t.status}</span>
+          <span className={`tag tag-${t.status}`} style={{marginBottom:10,display:'inline-block',padding:'4px 12px',borderRadius:20,fontFamily:'var(--fm)',fontSize:9,letterSpacing:2,fontWeight:700}}>
+            {t.status==='live'?'🔴 LIVE NOW':t.status==='active'?'✅ PENDAFTARAN BUKA':t.status==='pending'?'⏳ SEGERA BUKA':t.status==='closed'?'🔒 DITUTUP':'📋 '+t.status.toUpperCase()}
+          </span>
           <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,marginBottom:5}}>{t.name}</div>
           <div style={{fontSize:12,color:'var(--muted)',marginBottom:10}}>🎮 {t.game} · 📍 {t.city}{t.time&&<span> · ⏰ {t.time} WIB</span>}</div>
           <div style={{fontFamily:'var(--fh)',fontSize:24,color:'var(--yellow)',fontWeight:900}}>{fmtRp(t.prize)}</div>
@@ -3453,9 +3490,12 @@ function PublicPage({tid,onBack,toast}){
             {tm.paid&&<span style={{fontSize:9,color:'var(--green)',fontFamily:'var(--fm)'}}>✓ LUNAS</span>}
           </div>)}
         </div>}
+        {t.date&&<CountdownTimer date={t.date} time={t.time}/>}
         {t.status==='closed'
           ?<div style={{background:'rgba(74,74,106,0.1)',border:'1px solid var(--border)',borderRadius:8,padding:20,textAlign:'center',color:'var(--muted)'}}><div style={{fontSize:24,marginBottom:8}}>🔒</div><div style={{fontFamily:'var(--fh)',fontSize:11}}>{i.closed_msg}</div></div>
-          :<button className="btn btn-cyan btn-full" style={{fontSize:13,padding:13,opacity:isFull?0.5:1}} onClick={()=>!isFull&&setStep('form')} disabled={isFull}>{isFull?i.full:i.reg_now}</button>}
+          :<button className="btn btn-cyan btn-full" style={{fontSize:13,padding:13,opacity:isFull?0.5:1,background:isFull?undefined:'linear-gradient(135deg,#00c6ff,#0088ff)'}} onClick={()=>!isFull&&setStep('form')} disabled={isFull}>
+            {isFull?i.full:<>✅ {i.reg_now||'REGISTER NOW'} →</>}
+          </button>}
 
       {/* DIVIDER + LOGIN PESERTA */}
       {t?.status!=='closed'&&<div style={{marginTop:10}}>
@@ -5002,6 +5042,9 @@ function FloatingChat({user,tournaments=[]}){
           <div style={{fontSize:9,color:'rgba(255,255,255,0.7)',marginTop:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
             {currentTourn?currentTourn.name:'Semua Peserta & Organizer'}
           </div>
+          <div style={{fontSize:8,color:'rgba(255,255,255,0.5)',marginTop:2}}>
+            {messages.length>0?`${messages.length} pesan`:'Belum ada pesan'}
+          </div>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:5}}>
           <div style={{width:7,height:7,borderRadius:'50%',background:'#00ff88',animation:'pulse 1.5s infinite'}}/>
@@ -5082,6 +5125,14 @@ function FloatingChat({user,tournaments=[]}){
         <div ref={chatEndRef} style={{height:1}}/>
       </div>
 
+      {/* QUICK TEMPLATES */}
+      <div style={{padding:'4px 8px',display:'flex',gap:4,flexWrap:'wrap',borderTop:'1px solid rgba(255,255,255,0.04)',flexShrink:0}}>
+        {['🔔 Turnamen segera dimulai!','⏰ Harap standby di room','✅ Match dimulai','⚠️ Ada perubahan jadwal'].map(t=>(
+          <button key={t} onClick={()=>setMsg(t)} style={{padding:'2px 7px',borderRadius:10,border:'1px solid rgba(255,255,255,0.1)',background:'rgba(255,255,255,0.05)',color:'rgba(255,255,255,0.6)',fontSize:8,cursor:'pointer',whiteSpace:'nowrap'}}>
+            {t}
+          </button>
+        ))}
+      </div>
       {/* INPUT */}
       <div style={{
         padding:'8px 10px',
