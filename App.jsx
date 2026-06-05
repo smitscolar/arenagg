@@ -1198,7 +1198,7 @@ function LiveMatchView({tournament,teams,toast,onBack}){
 // ============================================================
 // PUBLIC LIVE VIEW — shareable link untuk penonton luar
 // ============================================================
-function PublicLivePage({tid,onBack,toast}){
+function PublicLivePage({tid,onBack,toast,lang:langPropPL,setLangFn:setLangFnPL}){
   const[t,setT]=useState(null)
   const[teams,setTeams]=useState([])
   const[scores,setScores]=useState({})
@@ -1208,7 +1208,8 @@ function PublicLivePage({tid,onBack,toast}){
   const[nameInput,setNameInput]=useState('')
   const[loading,setL]=useState(true)
   const[activeTab,setActiveTab]=useState('score')
-  const[lang,setLangState]=useState(getLang())
+  const[lang,setLangState]=useState(langPropPL||getLang())
+  const setLangFn=setLangFnPL||(l=>{setLangState(l);setLang(l)})
   // Sync bahasa saat berubah dari tab/komponen lain
   useEffect(()=>{
     const onStorage=(e)=>{
@@ -3446,7 +3447,7 @@ function CountdownTimer({date,time}){
 
 
 // PUBLIC PAGE — Fix routing, cari turnamen dengan ID yang tepat
-function PublicPage({tid,onBack,toast}){
+function PublicPage({tid,onBack,toast,lang:langPropPP,setLangFn:setLangFnPP}){
   const[t,setT]=useState(null);const[teams,setTms]=useState([]);const[loading,setL]=useState(true)
   const[step,setStep]=useState('detail');const[form,setForm]=useState({name:'',captain:'',contact:'',members:'5',photo:'',game_id:'',stream_url:''});const[hasStream,setHasStream]=useState(false);const[saving,setSaving]=useState(false);const[lastSubmit,setLastSubmit]=useState(0)
   // Login state untuk peserta
@@ -3456,7 +3457,8 @@ function PublicPage({tid,onBack,toast}){
   const[loginMode,setLoginMode]=useState('contact')
   const[loginLoading,setLoginL]=useState(false)
   const[loginErr,setLoginErr]=useState('')
-  const[lang,setLangState]=useState(getLang())
+  const[lang,setLangState]=useState(langPropPP||getLang())
+  const setLangFn=setLangFnPP||(l=>{setLangState(l);setLang(l)})
   // Sync bahasa saat berubah dari tab/komponen lain
   useEffect(()=>{
     const onStorage=(e)=>{
@@ -5436,8 +5438,8 @@ function AppCore(){
   // Extract tid from hash for direct URL access
   const _hashTid = (_hash.startsWith('#/t/')||_hash.startsWith('#/daftar/')) ? _hash.split('/')[2] : null
   if(_hash.startsWith('#/peserta')||(page==='portal'))return <ParticipantPortal toast={toast} tournaments={tournaments}/>
-  if((_hash.startsWith('#/live/')||page==='public-live')&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast}/>
-  if(((_hash.startsWith('#/t/')||_hash.startsWith('#/daftar/'))||page==='public')&&(publicTid||_hashTid))return <PublicPage tid={publicTid||_hashTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast}/>
+  if((_hash.startsWith('#/live/')||page==='public-live')&&liveTid)return <PublicLivePage tid={liveTid} onBack={()=>{setPage('dashboard');setLiveTid(null);window.location.hash=''}} toast={toast} lang={lang} setLangFn={setLangFn}/>
+  if(((_hash.startsWith('#/t/')||_hash.startsWith('#/daftar/'))||page==='public')&&(publicTid||_hashTid))return <PublicPage tid={publicTid||_hashTid} onBack={()=>{setPage('dashboard');setPublicTid(null);window.location.hash=''}} toast={toast} lang={lang} setLangFn={setLangFn}/>
 
   if(authLoading)return <div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',background:'var(--bg)',color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:14,letterSpacing:2}}>LOADING...</div>
 
