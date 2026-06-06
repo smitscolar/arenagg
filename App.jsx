@@ -2338,6 +2338,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     {id:'tournaments',label:i.all_tourn_tab||'Semua Turnamen',icon:'🏆'},
     {id:'history',label:i.history_tab||'Riwayat',icon:'📋'},
     {id:'livescore',label:'Live Score',icon:'🔴'},
+    {id:'arcade',label:'Mini Game',icon:'🕹'},
     {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
     {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
   ]
@@ -2480,11 +2481,6 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             </div>
           </div>
 
-
-          {/* ═══════════════════════════════════════
-               MINI GAME ARCADE — 5 game slot grid
-               ═══════════════════════════════════════ */}
-          <MiniGameArcade member={member} allTournaments={allTournaments} toast={toast} lang={lang}/>
 
           {/* EVENT / TURNAMEN MENDATANG — highlight */}
           {allTournaments.filter(t=>['pending','open','active','upcoming'].includes(t.status)).length>0&&(
@@ -2687,6 +2683,13 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
               ))}
             </>
           }
+        </>}
+
+        {/* ═══════════════════════════════════════
+             TAB: 🕹 MINI GAME ARCADE
+             ═══════════════════════════════════════ */}
+        {activeTab==='arcade'&&<>
+          <MiniGameArcade member={member} allTournaments={allTournaments} toast={toast} lang={lang}/>
         </>}
 
         {/* TAB: NOTIFIKASI */}
@@ -3689,6 +3692,13 @@ function TriviaGame({onClose,toast,memberId}){
         <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 10px rgba(0,229,255,0.6)'}}>🧠 TRIVIA ESPORT</div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
       </div>
+      {/* Cara main */}
+      {typeof step==='number'&&step===0&&!answered&&(
+        <div style={{background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:8,padding:'10px 12px',marginBottom:12,fontSize:10,color:'var(--muted)',lineHeight:1.8}}>
+          <b style={{color:'var(--cyan)'}}>📖 Cara Main:</b> Pilih jawaban A/B/C/D untuk setiap soal.<br/>
+          Ada <b style={{color:'var(--cyan)'}}>5 soal</b> hari ini tentang dunia esport. Jawab semua untuk dapat skor penuh!
+        </div>
+      )}
       {step==='done'
         ?<div style={{textAlign:'center',padding:'20px 0'}}>
             <div style={{fontSize:40,marginBottom:10}}>{score>=4?'🏆':score>=2?'✨':'💪'}</div>
@@ -3839,6 +3849,12 @@ function SpinWheelGame({onClose,toast,memberId}){
         <div style={{fontFamily:'var(--fh)',fontSize:11,color:'#aa88ff',letterSpacing:2,textShadow:'0 0 10px rgba(170,136,255,0.5)'}}>🎡 SPIN WHEEL</div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
       </div>
+      {!spunToday&&(
+        <div style={{background:'rgba(170,136,255,0.06)',border:'1px solid rgba(170,136,255,0.15)',borderRadius:8,padding:'8px 12px',marginBottom:8,fontSize:10,color:'var(--muted)',lineHeight:1.7}}>
+          <b style={{color:'#aa88ff'}}>📖 Cara Main:</b> Klik tombol <b style={{color:'#aa88ff'}}>PUTAR</b> untuk memutar roda.<br/>
+          Kamu dapat <b style={{color:'#aa88ff'}}>1x putaran gratis setiap hari</b>. Hadiah langka = Badge & Diskon!
+        </div>
+      )}
       <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10}}>
         <div style={{position:'relative'}}>
           <div style={{position:'absolute',top:-8,left:'50%',transform:'translateX(-50%)',fontSize:16,zIndex:2}}>▼</div>
@@ -3895,6 +3911,11 @@ function HeroWordle({onClose,toast,memberId}){
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
         <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:2,textShadow:'0 0 10px rgba(0,255,136,0.5)'}}>🔤 HERO WORDLE</div>
         <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      <div style={{background:'rgba(0,255,136,0.06)',border:'1px solid rgba(0,255,136,0.12)',borderRadius:7,padding:'8px 10px',marginBottom:8,fontSize:10,color:'var(--muted)',lineHeight:1.7}}>
+        <b style={{color:'var(--green)'}}>📖 Cara Main:</b> Tebak nama hero MLBB hari ini!<br/>
+        🟩 Hijau = huruf tepat · 🟨 Kuning = ada tapi salah posisi · ⬜ Abu = tidak ada<br/>
+        Maksimal <b style={{color:'var(--green)'}}>{maxTry} tebakan</b>. Hero baru setiap hari!
       </div>
       <div style={{fontSize:10,color:'var(--muted)',marginBottom:10}}>Tebak nama hero MLBB hari ini ({maxTry-guesses.length} tebakan tersisa)</div>
 
@@ -3999,7 +4020,14 @@ function AimTrainer({onClose,toast,memberId}){
       </div>
       {phase==='ready'&&(
         <div style={{textAlign:'center',padding:'16px 0'}}>
-          <div style={{fontSize:10,color:'var(--muted)',marginBottom:12,lineHeight:1.8}}>Klik target sebanyak mungkin dalam 20 detik!<br/>Latih aim kamu sebelum turnamen.</div>
+          <div style={{background:'rgba(255,45,85,0.06)',border:'1px solid rgba(255,45,85,0.15)',borderRadius:8,padding:'10px',marginBottom:12,fontSize:10,color:'var(--muted)',lineHeight:1.8,textAlign:'left'}}>
+            <b style={{color:'var(--red)'}}>📖 Cara Main:</b><br/>
+            • Klik tombol <b style={{color:'var(--red)'}}>MULAI</b> untuk memulai<br/>
+            • Target lingkaran berwarna muncul acak di arena<br/>
+            • Klik target secepat mungkin dalam <b style={{color:'var(--red)'}}>20 detik</b><br/>
+            • Klik area kosong = Miss (-akurasi)<br/>
+            • Cocok buat warmup sebelum main FPS!
+          </div>
           <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',marginBottom:14}}>🏆 Rekor: {best}</div>
           <button onClick={()=>{setPhase('playing');setScore(0);setMisses(0);setTimeLeft(20);setTargets([])}} style={{padding:'10px 24px',background:'rgba(255,45,85,0.15)',border:'1px solid rgba(255,45,85,0.4)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
             🎮 MULAI
@@ -4034,6 +4062,115 @@ function AimTrainer({onClose,toast,memberId}){
   )
 }
 
+// ── 5. REAKSI KILAT ──────────────────────────────────────────
+function ReaksiKilat({onClose,toast,memberId}){
+  const[phase,setPhase]=React.useState('ready') // ready|waiting|go|result
+  const[reactionTime,setReactionTime]=React.useState(null)
+  const[startTime,setStartTime]=React.useState(null)
+  const[tooEarly,setTooEarly]=React.useState(false)
+  const[best,setBest]=React.useState(()=>getGameData('reaksi_best_'+memberId)||9999)
+  const timerRef=React.useRef(null)
+
+  const start=()=>{
+    setPhase('waiting')
+    setTooEarly(false)
+    setReactionTime(null)
+    const delay=1500+Math.random()*3500
+    timerRef.current=setTimeout(()=>{
+      setPhase('go')
+      setStartTime(Date.now())
+    },delay)
+  }
+
+  const handleClick=()=>{
+    if(phase==='waiting'){
+      clearTimeout(timerRef.current)
+      setTooEarly(true)
+      setPhase('ready')
+    } else if(phase==='go'){
+      const ms=Date.now()-startTime
+      setReactionTime(ms)
+      setPhase('result')
+      if(ms<best){
+        setBest(ms)
+        saveGameData('reaksi_best_'+memberId,ms)
+        if(ms<200)toast('🔥 LUAR BIASA! '+ms+'ms - Reflek legenda!','success')
+        else toast('⚡ Rekor baru! '+ms+'ms','success')
+      } else {
+        toast('⚡ '+ms+'ms | Rekor: '+best+'ms','info')
+      }
+    }
+  }
+
+  const getRating=(ms)=>{
+    if(ms<150)return{emoji:'🏆',label:'LEGEND',color:'var(--yellow)'}
+    if(ms<200)return{emoji:'🔥',label:'PRO',color:'var(--orange)'}
+    if(ms<250)return{emoji:'⭐',label:'GREAT',color:'var(--cyan)'}
+    if(ms<300)return{emoji:'👍',label:'GOOD',color:'var(--green)'}
+    return{emoji:'💪',label:'LATIH LAGI',color:'var(--muted)'}
+  }
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(255,215,0,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',letterSpacing:2,textShadow:'0 0 10px rgba(255,215,0,0.5)'}}>⚡ REAKSI KILAT</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+
+      {phase==='ready'&&(
+        <div style={{textAlign:'center',padding:'10px 0'}}>
+          <div style={{fontSize:10,color:'var(--muted)',marginBottom:12,lineHeight:1.8,background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.15)',borderRadius:8,padding:'10px'}}>
+            <b style={{color:'var(--yellow)'}}>📖 Cara Main:</b><br/>
+            Klik <b style={{color:'var(--yellow)'}}>MULAI</b> → Tunggu layar berubah <span style={{color:'var(--green)'}}>HIJAU</span><br/>
+            Saat hijau → Klik SECEPAT mungkin!<br/>
+            ⚠️ Jangan klik sebelum hijau = gagal
+          </div>
+          {best<9999&&<div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',marginBottom:10}}>🏆 Rekor: {best}ms</div>}
+          <button onClick={start} style={{padding:'12px 32px',background:'rgba(255,215,0,0.15)',border:'1px solid rgba(255,215,0,0.4)',borderRadius:8,color:'var(--yellow)',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,cursor:'pointer'}}>
+            ⚡ MULAI
+          </button>
+        </div>
+      )}
+
+      {phase==='waiting'&&(
+        <div onClick={handleClick} style={{textAlign:'center',padding:'30px 20px',background:'rgba(255,45,85,0.1)',border:'2px solid rgba(255,45,85,0.4)',borderRadius:12,cursor:'pointer',userSelect:'none'}}>
+          <div style={{fontSize:40,marginBottom:10}}>🔴</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--red)',letterSpacing:2}}>TUNGGU...</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginTop:8}}>Jangan klik dulu!</div>
+        </div>
+      )}
+
+      {tooEarly&&phase==='ready'&&(
+        <div style={{textAlign:'center',marginTop:8}}>
+          <div style={{color:'var(--red)',fontSize:12,marginBottom:10}}>❌ Terlalu cepat! Tunggu warna hijau dulu.</div>
+          <button onClick={start} style={{padding:'9px 20px',background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:7,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>COBA LAGI</button>
+        </div>
+      )}
+
+      {phase==='go'&&(
+        <div onClick={handleClick} style={{textAlign:'center',padding:'30px 20px',background:'rgba(0,255,136,0.12)',border:'2px solid rgba(0,255,136,0.5)',borderRadius:12,cursor:'pointer',userSelect:'none',animation:'pulse 0.3s ease'}}>
+          <div style={{fontSize:40,marginBottom:10}}>🟢</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:20,color:'var(--green)',letterSpacing:3,textShadow:'0 0 20px rgba(0,255,136,0.8)'}}>KLIK SEKARANG!</div>
+        </div>
+      )}
+
+      {phase==='result'&&reactionTime&&(()=>{
+        const r=getRating(reactionTime)
+        return(
+          <div style={{textAlign:'center',padding:'10px 0'}}>
+            <div style={{fontSize:40,marginBottom:8}}>{r.emoji}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:22,color:r.color,marginBottom:4,textShadow:`0 0 15px ${r.color}`}}>{reactionTime}ms</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:13,color:r.color,marginBottom:12}}>{r.label}</div>
+            {reactionTime<best&&<div style={{fontSize:10,color:'var(--yellow)',marginBottom:10}}>🏆 REKOR BARU!</div>}
+            <div style={{fontSize:10,color:'var(--muted)',marginBottom:14}}>Rekor terbaik: {Math.min(reactionTime,best)}ms</div>
+            <button onClick={start} style={{padding:'9px 24px',background:'rgba(255,215,0,0.1)',border:'1px solid rgba(255,215,0,0.3)',borderRadius:8,color:'var(--yellow)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,cursor:'pointer'}}>⚡ MAIN LAGI</button>
+          </div>
+        )
+      })()}
+    </div>
+  )
+}
+
 // ── ARCADE CONTAINER ──────────────────────────────────────────
 function MiniGameArcade({member,allTournaments=[],toast,lang}){
   const[active,setActive]=React.useState(null)
@@ -4045,11 +4182,6 @@ function MiniGameArcade({member,allTournaments=[],toast,lang}){
       id:'trivia',icon:'🧠',title:'Trivia',sub:'Harian',color:'var(--cyan)',
       played:!!getGameData('trivia_'+today+'_'+memberId),
       desc:'10 soal esport',
-    },
-    {
-      id:'tebak',icon:'🎯',title:'Tebak',sub:'Skor',color:'var(--yellow)',
-      played:!!getGameData('tebak_'+today+'_'+memberId),
-      desc:'Prediksi juara',
     },
     {
       id:'spin',icon:'🎡',title:'Spin',sub:'Wheel',color:'#aa88ff',
@@ -4066,13 +4198,25 @@ function MiniGameArcade({member,allTournaments=[],toast,lang}){
       played:false,
       desc:'Latih aim kamu',
     },
+    {
+      id:'reaksi',icon:'⚡',title:'Reaksi',sub:'Kilat',color:'var(--yellow)',
+      played:false,
+      desc:'Uji reflek kamu',
+    },
   ]
 
   return(
     <div style={{marginBottom:16}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>🕹 MINI GAME ARCADE</div>
-        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>Refresh tiap hari</div>
+      {/* Header arcade */}
+      <div style={{background:'rgba(255,107,0,0.06)',border:'1px solid rgba(255,107,0,0.2)',borderRadius:12,padding:'12px 16px',marginBottom:14}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:12,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>🕹 MINI GAME ARCADE</div>
+          <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>Reset tiap hari</div>
+        </div>
+        <div style={{fontSize:10,color:'var(--muted)',lineHeight:1.7}}>
+          Pilih game di bawah dan klik untuk mulai bermain.<br/>
+          <span style={{color:'var(--green)'}}>Dot hijau</span> = sudah dimainkan hari ini &nbsp;·&nbsp; Semua progress tersimpan otomatis
+        </div>
       </div>
 
       {/* Game slots row */}
@@ -4097,10 +4241,10 @@ function MiniGameArcade({member,allTournaments=[],toast,lang}){
 
       {/* Active game panel */}
       {active==='trivia'&&<TriviaGame onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
-      {active==='tebak'&&<TebakSkorGame onClose={()=>setActive(null)} toast={toast} memberId={memberId} tournaments={allTournaments}/>}
       {active==='spin'&&<SpinWheelGame onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
       {active==='wordle'&&<HeroWordle onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
       {active==='aim'&&<AimTrainer onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
+      {active==='reaksi'&&<ReaksiKilat onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
     </div>
   )
 }
