@@ -974,6 +974,84 @@ async function sendChatToSupabase(tournId,msg,isOrg=false){
   }catch(e){return false}
 }
 
+
+// ============================================================
+// AUTO NOTIFIKASI HASIL PERTANDINGAN
+// Broadcast ke semua peserta real-time via Supabase
+// ============================================================
+const MATCH_NOTIF_KEY = 'arenagg_match_notifs_'
+
+function getMatchNotifs(tournId){
+  try{return JSON.parse(localStorage.getItem(MATCH_NOTIF_KEY+tournId)||'[]')}catch(e){return[]}
+}
+function saveMatchNotif(tournId, notif){
+  try{
+    const existing = getMatchNotifs(tournId)
+    const updated = [notif, ...existing].slice(0, 50)
+    localStorage.setItem(MATCH_NOTIF_KEY+tournId, JSON.stringify(updated))
+  }catch(e){}
+}
+
+async function sendMatchNotification(tournId, data){
+  // data = {winnerName, loserName, scoreWin, scoreLose, round, matchId}
+  const timestamp = new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})
+  const notif = {
+    id: Date.now(),
+    type: 'match_result',
+    tournId,
+    winnerName: data.winnerName,
+    loserName: data.loserName,
+    scoreWin: data.scoreWin ?? '-',
+    scoreLose: data.scoreLose ?? '-',
+    round: data.round || 'Match',
+    time: timestamp,
+    read: false
+  }
+
+  // 1. Simpan ke localStorage
+  saveMatchNotif(tournId, notif)
+
+  // 2. Broadcast via BroadcastChannel (same device cross-tab)
+  try{
+    const bc = new BroadcastChannel('arenagg_match_result')
+    bc.postMessage(notif)
+    bc.close()
+  }catch(e){}
+
+  // 3. Broadcast via Supabase Realtime (cross-device)
+  try{
+    await getSBChannel(tournId).send({
+      type:'broadcast',
+      event:'match_result',
+      payload: notif
+    })
+  }catch(e){}
+
+  // 4. Kirim sebagai system message ke chat turnamen
+  const sysMsg = {
+    id: Date.now()+1,
+    name: '🤖 ArenaGG System',
+    text: `🏆 [${notif.round}] ${notif.winnerName} MENANG (${notif.scoreWin}-${notif.scoreLose}) vs ${notif.loserName} · ${timestamp}`,
+    time: timestamp,
+    isOrg: true,
+    isSystem: true
+  }
+  await sendChatToSupabase(tournId, sysMsg, true)
+
+  return notif
+}
+
+// Helper: dapatkan semua notif match yang belum dibaca
+function getUnreadMatchNotifs(tournId){
+  return getMatchNotifs(tournId).filter(n=>!n.read)
+}
+function markAllMatchNotifsRead(tournId){
+  try{
+    const notifs = getMatchNotifs(tournId).map(n=>({...n,read:true}))
+    localStorage.setItem(MATCH_NOTIF_KEY+tournId, JSON.stringify(notifs))
+  }catch(e){}
+}
+
 // --- Score storage helpers ---
 const SCORES_KEY = 'arenagg_scores'
 function getScores(){try{return JSON.parse(localStorage.getItem(SCORES_KEY)||'{}')}catch(e){return{}}}
@@ -1078,6 +1156,32 @@ function LiveMatchView({tournament,teams,toast,onBack}){
     try{window.dispatchEvent(new StorageEvent('storage',{key:SCORES_KEY}))}catch(e){}
   }
 
+  // KONFIRMASI HASIL PERTANDINGAN - trigger auto-notifikasi
+  const confirmMatchResult = async(match)=>{
+    if(!match.a||!match.b) return
+    const scoreA = scores[match.id+'_a']||0
+    const scoreB = scores[match.id+'_b']||0
+    const winnerTeam = scoreA > scoreB ? match.a : scoreB > scoreA ? match.b : null
+    const loserTeam = scoreA > scoreB ? match.b : scoreB > scoreA ? match.a : null
+    if(!winnerTeam){
+      window.alert('Skor seri! Tentukan pemenang dulu.')
+      return
+    }
+    const confirm = window.confirm(
+      `Konfirmasi hasil:\n\n🏆 MENANG: ${winnerTeam.name} (${scoreA > scoreB ? scoreA : scoreB})\n❌ KALAH: ${loserTeam.name} (${scoreA > scoreB ? scoreB : scoreA})\n\nKirim notifikasi otomatis ke semua peserta?`
+    )
+    if(!confirm) return
+    await sendMatchNotification(t.id, {
+      winnerName: winnerTeam.name,
+      loserName: loserTeam.name,
+      scoreWin: scoreA > scoreB ? scoreA : scoreB,
+      scoreLose: scoreA > scoreB ? scoreB : scoreA,
+      round: `Match ${pairs.indexOf(match)+1}`,
+      matchId: match.id
+    })
+    window.alert('✅ Notifikasi berhasil dikirim ke semua peserta!')
+  }
+
   // Chat: send message
   const sendChat=async()=>{
     if(!chatMsg.trim()||!chatName)return
@@ -1178,6 +1282,12 @@ function LiveMatchView({tournament,teams,toast,onBack}){
                     </div>
                   </div>
                   {(match.scoreA!==match.scoreB)&&<div style={{fontSize:9,fontFamily:'var(--fm)',color:'var(--green)',marginTop:4,letterSpacing:1,textAlign:'center'}}>✓ {match.scoreA>match.scoreB?match.a?.name:match.b?.name} UNGGUL</div>}
+                </div>
+                {/* KONFIRMASI HASIL — trigger auto-notifikasi */}
+                <div style={{textAlign:'center',marginTop:8,paddingTop:8,borderTop:'1px solid rgba(255,255,255,0.06)'}}>
+                  <button onClick={()=>confirmMatchResult(match)} style={{padding:'7px 18px',background:match.scoreA!==match.scoreB?'rgba(0,255,136,0.12)':'rgba(255,255,255,0.04)',border:`1px solid ${match.scoreA!==match.scoreB?'rgba(0,255,136,0.4)':'rgba(255,255,255,0.1)'}`,borderRadius:7,color:match.scoreA!==match.scoreB?'var(--green)':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:match.scoreA!==match.scoreB?'pointer':'not-allowed',width:'100%'}}>
+                    {match.scoreA!==match.scoreB?'📢 KONFIRMASI & KIRIM NOTIF OTOMATIS':'⚖ Seri — Tentukan Skor Dulu'}
+                  </button>
                 </div>
                 {/* TEAM B */}
                 <div>
@@ -2280,6 +2390,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const[allTournaments,setAllTourn]=useState([])
   const[loadingTourn,setLoadT]=useState(true)
   const[tournError,setTournError]=useState(null)
+  const[matchNotifs,setMatchNotifs]=useState([])
+  const[unreadCount,setUnreadCount]=useState(0)
   const[editMode,setEditMode]=useState(false)
   const[editNama,setEditNama]=useState(member.nama||'')
   const[editHp,setEditHp]=useState(member.hp||'')
@@ -2363,6 +2475,51 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     return()=>supabase.removeChannel(ch)
   },[member])
 
+  // ── Listen match result notifications (auto notif dari organizer) ──
+  React.useEffect(()=>{
+    if(!member?.id)return
+    const loadNotifs=()=>{
+      const allNotifs=[]
+      allTournaments.forEach(t=>{
+        const notifs=getMatchNotifs(t.id).map(n=>({...n,tournamentName:n.tournamentName||t.name}))
+        allNotifs.push(...notifs)
+      })
+      const sorted=allNotifs.sort((a,b)=>b.id-a.id).slice(0,30)
+      setMatchNotifs(sorted)
+      setUnreadCount(sorted.filter(n=>!n.read).length)
+    }
+    loadNotifs()
+    let bc
+    try{
+      bc=new BroadcastChannel('arenagg_match_result')
+      bc.onmessage=(e)=>{
+        const notif=e.data
+        if(!notif||notif.type!=='match_result')return
+        setMatchNotifs(prev=>{
+          if(prev.find(n=>n.id===notif.id))return prev
+          const updated=[{...notif,read:false},...prev].slice(0,30)
+          setUnreadCount(updated.filter(n=>!n.read).length)
+          return updated
+        })
+      }
+    }catch(e){}
+    const channels=allTournaments.map(t=>{
+      const ch=supabasePublic.channel('mr-'+t.id+'-'+member.id.slice(-6))
+      ch.on('broadcast',{event:'match_result'},(payload)=>{
+        const notif=payload.payload
+        if(!notif)return
+        setMatchNotifs(prev=>{
+          if(prev.find(n=>n.id===notif.id))return prev
+          const updated=[{...notif,tournamentName:t.name,read:false},...prev].slice(0,30)
+          setUnreadCount(updated.filter(n=>!n.read).length)
+          return updated
+        })
+      }).subscribe()
+      return ch
+    })
+    return()=>{try{bc&&bc.close()}catch(e){};channels.forEach(ch=>{try{supabasePublic.removeChannel(ch)}catch(e){}})}
+  },[member,allTournaments])
+
   const saveProfile=async()=>{
     if(!editNama.trim()){toast('Nama tidak boleh kosong','error');return}
     setSavingP(true)
@@ -2390,7 +2547,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     {id:'livescore',label:'Live Score',icon:'🔴'},
     {id:'arcade',label:'Mini Game',icon:'🕹'},
     {id:'arpay',label:'ARPAY',icon:'💎',special:true},
-    {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
+    {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔',badge:unreadCount},
     {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
   ]
 
@@ -2446,6 +2603,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
                 <span style={{fontSize:15,flexShrink:0,filter:isActive?(t.special?'drop-shadow(0 0 8px #ffd700)':'drop-shadow(0 0 8px var(--cyan))'):'none'}}>{t.icon}</span>
                 <span className="mb-label" style={{fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:isActive?(t.special?'var(--yellow)':'var(--cyan)'):'var(--muted)',textShadow:isActive?(t.special?'0 0 8px rgba(255,215,0,0.8)':'0 0 8px rgba(0,229,255,0.8)'):'none',whiteSpace:'nowrap'}}>{t.label}</span>
                 {liveBadge>0&&<span className="mb-label" style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',minWidth:16,height:16,borderRadius:8,background:'var(--orange)',fontFamily:'var(--fm)',fontSize:8,color:'#000',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px',fontWeight:700}}>{liveBadge}</span>}
+                {t.badge>0&&<span style={{position:'absolute',right:8,top:'50%',transform:'translateY(-50%)',minWidth:16,height:16,borderRadius:8,background:'var(--red)',fontFamily:'var(--fm)',fontSize:8,color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px',fontWeight:700,animation:'pulse 1s infinite'}}>{t.badge}</span>}
                 {isLive&&<span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>}
               </button>
             )
@@ -2753,7 +2911,39 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
         {/* TAB: NOTIFIKASI */}
         {activeTab==='notif'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>🔔 {(i.notif_tab||'NOTIFIKASI').toUpperCase()}</div>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 12px rgba(255,107,0,0.6)'}}>🔔 {(i.notif_tab||'NOTIFIKASI').toUpperCase()}</div>
+            {matchNotifs.filter(n=>!n.read).length>0&&(
+              <button onClick={()=>{allTournaments.forEach(t=>markAllMatchNotifsRead(t.id));setUnreadCount(0);setMatchNotifs(prev=>prev.map(n=>({...n,read:true})))}} style={{fontSize:11,color:'var(--muted)',background:'none',border:'none',cursor:'pointer',textDecoration:'underline'}}>Tandai dibaca</button>
+            )}
+          </div>
+
+          {/* MATCH RESULTS — notifikasi otomatis dari organizer */}
+          {matchNotifs.length>0&&(
+            <div style={{marginBottom:14}}>
+              <div style={{fontFamily:'var(--fm)',fontSize:11,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>HASIL PERTANDINGAN</div>
+              {matchNotifs.map(notif=>{
+                const isWin=myTeams.some(t=>t.name===notif.winnerName)
+                const isLose=myTeams.some(t=>t.name===notif.loserName)
+                return(
+                  <div key={notif.id} style={{background:!notif.read?'rgba(0,229,255,0.05)':'rgba(10,10,25,0.6)',border:`1px solid ${!notif.read?'rgba(0,229,255,0.18)':'rgba(255,255,255,0.05)'}`,borderLeft:`4px solid ${isWin?'var(--green)':isLose?'var(--red)':'var(--orange)'}`,borderTopRightRadius:10,borderBottomRightRadius:10,padding:'12px 14px',marginBottom:8}}>
+                    <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',marginBottom:5}}>{notif.round} · {notif.tournamentName||''} · {notif.time}</div>
+                    <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+                      <span style={{fontSize:18}}>{isWin?'🏆':isLose?'💔':'📢'}</span>
+                      <span style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',fontWeight:700}}>{notif.winnerName}</span>
+                      <span style={{fontFamily:'var(--fh)',fontSize:12,color:'var(--cyan)'}}>{notif.scoreWin}–{notif.scoreLose}</span>
+                      <span style={{fontSize:11,color:'var(--muted)'}}>vs</span>
+                      <span style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--red)',fontWeight:700}}>{notif.loserName}</span>
+                      {!notif.read&&<div style={{width:8,height:8,borderRadius:'50%',background:'var(--cyan)',animation:'pulse 1s infinite',marginLeft:'auto'}}/>}
+                    </div>
+                    {(isWin||isLose)&&<div style={{fontFamily:'var(--fh)',fontSize:11,color:isWin?'var(--green)':'var(--muted)',marginTop:6}}>
+                      {isWin?'🎉 Tim kamu MENANG! Bersiap babak berikutnya!':'Turnamen selesai untuk tim kamu. Terima kasih sudah ikut!'}
+                    </div>}
+                  </div>
+                )
+              })}
+            </div>
+          )}
           {/* Jadwal pertandingan */}
           {myTeams.filter(tm=>tm.tournaments&&['open','upcoming','live'].includes(tm.tournaments.status)).length>0&&(
             <div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.2)',borderRadius:10,padding:'12px 14px',marginBottom:12}}>
@@ -6599,12 +6789,26 @@ function BracketView({tournaments,teams,lang}){
   const isRoundRobin=t&&(t.format==='Round Robin'||t.format==='Swiss'||t.format==='League')
 
   var getBracket=function(){try{return JSON.parse(localStorage.getItem('arenagg_bracket_'+selT)||'{}')}catch(e){return{}}}
-  var setWinner=function(key,winId){
+  var setWinner=function(key,winId,loserId,scoreWin,scoreLose){
     try{
       var bk=getBracket(); bk[key]=winId
       localStorage.setItem('arenagg_bracket_'+selT,JSON.stringify(bk))
       setTick(function(n){return n+1})
       addNotif('🏅 Pemenang match ditetapkan','success','bracket')
+      // Auto-notifikasi ke semua peserta
+      var winTeam = tTeams.find(function(x){return x.id===winId})
+      var loseTeam = tTeams.find(function(x){return x.id===loserId})
+      if(winTeam){
+        var round = key.startsWith('final')?'Final':key.startsWith('sf')?'Semi Final':'Babak '+key
+        sendMatchNotification(selT, {
+          winnerName: winTeam.name,
+          loserName: loseTeam?loseTeam.name:'Lawan',
+          scoreWin: scoreWin||'-',
+          scoreLose: scoreLose||'-',
+          round: round,
+          matchId: key
+        })
+      }
     }catch(e){}
   }
   var resetBracket=function(){
@@ -6624,13 +6828,29 @@ function BracketView({tournaments,teams,lang}){
     return Object.assign({},tm,{w:w,l:l,pts:pts,gf:gf,ga:ga,gd:gf-ga})
   }).sort(function(a,b){return b.pts-a.pts||b.gd-a.gd})
 
-  var setRRResult=function(matchId,winId,sA,sB){
+  var setRRResult=function(matchId,winId,sA,sB,aId,bId){
     var ms=JSON.parse(localStorage.getItem('arenagg_rr_'+selT)||'[]')
     var found=false
     ms=ms.map(function(m){if(m.id===matchId){found=true;return Object.assign({},m,{w:winId,sA:sA,sB:sB})}return m})
     if(!found)ms.push({id:matchId,w:winId,sA:sA,sB:sB})
     localStorage.setItem('arenagg_rr_'+selT,JSON.stringify(ms))
     setTick(function(n){return n+1})
+    // Auto-notifikasi ke semua peserta (Round Robin)
+    var winTeam = tTeams.find(function(x){return x.id===winId})
+    var loseId = winId===aId?bId:aId
+    var loseTeam = tTeams.find(function(x){return x.id===loseId})
+    var winScore = winId===aId?sA:sB
+    var loseScore = winId===aId?sB:sA
+    if(winTeam){
+      sendMatchNotification(selT, {
+        winnerName: winTeam.name,
+        loserName: loseTeam?loseTeam.name:'Lawan',
+        scoreWin: winScore,
+        scoreLose: loseScore,
+        round: 'Round Robin',
+        matchId: matchId
+      })
+    }
   }
 
   // Build single elim rounds
