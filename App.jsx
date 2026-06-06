@@ -2627,7 +2627,12 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             <div className="mb-label" style={{minWidth:0}}>
               <div style={{fontSize:10,fontWeight:700,color:'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{member.nama}</div>
               <div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',letterSpacing:0.5}}>{member.member_id}</div>
-              <div style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--yellow)',letterSpacing:0.5,marginTop:1}}>💎 {formatARPAY(getARPAY(member?.member_id||member?.id||''))} APY</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--yellow)',letterSpacing:0.5,marginTop:1}}>
+                💎 {formatARPAY(getARPAY(member?.member_id||member?.id||''))} APY
+                {getTotalStaked(member?.member_id||member?.id||'')>0&&
+                  <span style={{color:'rgba(255,215,0,0.55)',fontSize:7}}> · 🏦{formatARPAY(getTotalStaked(member?.member_id||member?.id||''))}</span>
+                }
+              </div>
             </div>
           </div>
           <div className="mb-label"><LangSelector lang={lang} setLangFn={setLangFn}/></div>
@@ -4568,6 +4573,570 @@ function arpayToUSD(amount){
   return (amount * ARPAY_RATE_USD).toFixed(2)
 }
 
+
+// ============================================================
+// ╔══════════════════════════════════════════════════════════╗
+// ║         ARPAY STAKING + BELI + SWAPPAY SYSTEM           ║
+// ╚══════════════════════════════════════════════════════════╝
+// ============================================================
+
+const ARPAY_STAKE_KEY  = 'arenagg_arpay_stakes_'
+const ARPAY_BUY_KEY    = 'arenagg_arpay_buyreq_'
+const ARPAY_SWAP_KEY   = 'arenagg_arpay_swapreq_'
+
+const STAKING_PLANS = [
+  { id:'s30',  days:30,  rate:0.05,  label:'30 Hari',  bonus:'5%',  color:'#00e5ff', minAmount:10  },
+  { id:'s60',  days:60,  rate:0.12,  label:'60 Hari',  bonus:'12%', color:'#ffd700', minAmount:25  },
+  { id:'s90',  days:90,  rate:0.20,  label:'90 Hari',  bonus:'20%', color:'#ff6b00', minAmount:50  },
+  { id:'s180', days:180, rate:0.45,  label:'180 Hari', bonus:'45%', color:'#aa88ff', minAmount:100 },
+]
+
+function getStakes(memberId){
+  try{return JSON.parse(localStorage.getItem(ARPAY_STAKE_KEY+memberId)||'[]')}catch(e){return[]}
+}
+function saveStakes(memberId,stakes){
+  try{localStorage.setItem(ARPAY_STAKE_KEY+memberId,JSON.stringify(stakes))}catch(e){}
+}
+function getBuyRequests(memberId){
+  try{return JSON.parse(localStorage.getItem(ARPAY_BUY_KEY+memberId)||'[]')}catch(e){return[]}
+}
+function saveBuyRequest(memberId,req){
+  const list=getBuyRequests(memberId)
+  list.unshift(req)
+  try{localStorage.setItem(ARPAY_BUY_KEY+memberId,JSON.stringify(list.slice(0,20)))}catch(e){}
+}
+function getSwapRequests(memberId){
+  try{return JSON.parse(localStorage.getItem(ARPAY_SWAP_KEY+memberId)||'[]')}catch(e){return[]}
+}
+function saveSwapRequest(memberId,req){
+  const list=getSwapRequests(memberId)
+  list.unshift(req)
+  try{localStorage.setItem(ARPAY_SWAP_KEY+memberId,JSON.stringify(list.slice(0,20)))}catch(e){}
+}
+
+// Cek stakes yang sudah mature dan cairkan
+function processMatureStakes(memberId){
+  const stakes=getStakes(memberId)
+  const now=Date.now()
+  let totalClaimed=0
+  const updated=stakes.map(s=>{
+    if(!s.claimed && s.matureAt<=now){
+      const reward=parseFloat((s.amount*s.rate).toFixed(4))
+      const total=s.amount+reward
+      earnARPAY(memberId,total,'🏦 Staking selesai: '+s.planLabel+' +'+reward.toFixed(2)+' ARPAY')
+      totalClaimed+=total
+      return{...s,claimed:true,claimedAt:now}
+    }
+    return s
+  })
+  if(totalClaimed>0) saveStakes(memberId,updated)
+  return{updated,totalClaimed}
+}
+
+function getTotalStaked(memberId){
+  return getStakes(memberId)
+    .filter(s=>!s.claimed)
+    .reduce((sum,s)=>sum+s.amount,0)
+}
+
+
+// ============================================================
+// ARPAY STAKING PAGE
+// ============================================================
+function ARPAYStaking({member, toast}){
+  const memberId=member?.member_id||member?.id||'guest'
+  const[balance,setBalance]=React.useState(()=>getARPAY(memberId))
+  const[stakes,setStakes]=React.useState(()=>getStakes(memberId))
+  const[selPlan,setSelPlan]=React.useState(STAKING_PLANS[0])
+  const[amount,setAmount]=React.useState('')
+  const[loading,setLoading]=React.useState(false)
+
+  // Cek mature stakes saat buka
+  React.useEffect(()=>{
+    const{updated,totalClaimed}=processMatureStakes(memberId)
+    if(totalClaimed>0){
+      setStakes(updated)
+      setBalance(getARPAY(memberId))
+      toast(`🎉 +${totalClaimed.toFixed(2)} ARPAY dari staking yang selesai!`,'success')
+    } else {
+      setStakes(getStakes(memberId))
+    }
+  },[])
+
+  const doStake=()=>{
+    const amt=parseFloat(amount)
+    if(!amt||amt<selPlan.minAmount){toast(`Min stake ${selPlan.minAmount} ARPAY`,'error');return}
+    if(amt>balance){toast('Saldo tidak cukup','error');return}
+    setLoading(true)
+    const result=spendARPAY(memberId,amt,'🏦 Stake '+amt+' ARPAY ('+selPlan.label+')')
+    if(!result.ok){toast(result.msg,'error');setLoading(false);return}
+    const stake={
+      id:'stk_'+Date.now(),
+      planId:selPlan.id,
+      planLabel:selPlan.label,
+      amount:amt,
+      rate:selPlan.rate,
+      bonus:parseFloat((amt*selPlan.rate).toFixed(4)),
+      total:parseFloat((amt+amt*selPlan.rate).toFixed(4)),
+      startAt:Date.now(),
+      matureAt:Date.now()+(selPlan.days*24*60*60*1000),
+      claimed:false,
+      days:selPlan.days,
+      color:selPlan.color
+    }
+    const updated=[...stakes,stake]
+    saveStakes(memberId,updated)
+    setStakes(updated)
+    setBalance(result.balance)
+    setAmount('')
+    setLoading(false)
+    toast(`✅ Staking ${amt} ARPAY selama ${selPlan.days} hari berhasil!`,'success')
+  }
+
+  const fmtDate=ts=>new Date(ts).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})
+  const progress=s=>{
+    const elapsed=Date.now()-s.startAt
+    const total=s.matureAt-s.startAt
+    return Math.min(100,Math.round((elapsed/total)*100))
+  }
+  const daysLeft=s=>Math.max(0,Math.ceil((s.matureAt-Date.now())/(24*60*60*1000)))
+
+  const activeStakes=stakes.filter(s=>!s.claimed)
+  const doneStakes=stakes.filter(s=>s.claimed)
+  const totalStaked=activeStakes.reduce((a,s)=>a+s.amount,0)
+  const totalReward=activeStakes.reduce((a,s)=>a+s.bonus,0)
+
+  return(
+    <div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:2,marginBottom:14,textShadow:'0 0 10px rgba(0,229,255,0.5)'}}>🏦 STAKING ARPAY</div>
+
+      {/* Stats */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:16}}>
+        {[
+          {l:'Saldo',v:`${formatARPAY(balance)} APY`,c:'var(--cyan)'},
+          {l:'Distake',v:`${formatARPAY(totalStaked)} APY`,c:'var(--yellow)'},
+          {l:'Est. Reward',v:`+${formatARPAY(totalReward)} APY`,c:'var(--green)'},
+        ].map(s=>(
+          <div key={s.l} style={{background:'rgba(10,10,25,0.85)',border:'1px solid rgba(255,255,255,0.07)',borderRadius:10,padding:'12px 8px',textAlign:'center'}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:15,fontWeight:900,color:s.c}}>{s.v}</div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>{s.l}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Pilih Plan */}
+      <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>PILIH PAKET STAKING</div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:8,marginBottom:14}}>
+        {STAKING_PLANS.map(p=>(
+          <div key={p.id} onClick={()=>setSelPlan(p)} style={{background:selPlan.id===p.id?`${p.color}12`:'rgba(10,10,25,0.8)',border:`1.5px solid ${selPlan.id===p.id?p.color:'rgba(255,255,255,0.08)'}`,borderRadius:10,padding:'12px',cursor:'pointer',transition:'all 0.2s',position:'relative'}}>
+            {selPlan.id===p.id&&<div style={{position:'absolute',top:6,right:8,width:7,height:7,borderRadius:'50%',background:p.color,boxShadow:`0 0 6px ${p.color}`}}/>}
+            <div style={{fontFamily:'var(--fh)',fontSize:13,color:p.color,fontWeight:700,marginBottom:3}}>{p.label}</div>
+            <div style={{fontSize:18,fontWeight:900,color:'var(--text)',fontFamily:'var(--fh)'}}>{p.bonus}</div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>Min {p.minAmount} ARPAY</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input jumlah */}
+      <div style={{background:'rgba(10,10,25,0.85)',border:`1px solid ${selPlan.color}33`,borderRadius:12,padding:'16px',marginBottom:14}}>
+        <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>JUMLAH STAKE</div>
+        <div style={{display:'flex',gap:6,marginBottom:8}}>
+          {[10,25,50,100].filter(v=>v>=selPlan.minAmount).map(v=>(
+            <button key={v} onClick={()=>setAmount(String(v))} style={{padding:'5px 12px',background:amount===String(v)?`${selPlan.color}18`:'rgba(255,255,255,0.04)',border:`1px solid ${amount===String(v)?selPlan.color+'66':'rgba(255,255,255,0.08)'}`,borderRadius:6,color:amount===String(v)?selPlan.color:'var(--muted)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>
+              {v} APY
+            </button>
+          ))}
+          <button onClick={()=>setAmount(formatARPAY(balance))} style={{padding:'5px 10px',background:'rgba(255,255,255,0.03)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:6,color:'var(--muted)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>MAX</button>
+        </div>
+        <input type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder={`Min ${selPlan.minAmount} ARPAY`} style={{fontSize:18,fontWeight:700,marginBottom:10}}/>
+        {amount&&parseFloat(amount)>=selPlan.minAmount&&(
+          <div style={{background:`${selPlan.color}08`,border:`1px solid ${selPlan.color}22`,borderRadius:8,padding:'10px 12px',marginBottom:10,fontSize:11,color:'var(--muted)'}}>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span>Distake</span><span style={{color:'var(--text)'}}>{parseFloat(amount).toFixed(2)} ARPAY</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span>Reward ({selPlan.bonus})</span><span style={{color:'var(--green)'}}>+{(parseFloat(amount)*selPlan.rate).toFixed(2)} ARPAY</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}><span>Total dapat</span><span style={{color:selPlan.color,fontWeight:700}}>{(parseFloat(amount)*(1+selPlan.rate)).toFixed(2)} ARPAY</span></div>
+            <div style={{display:'flex',justifyContent:'space-between',borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:6,marginTop:4}}><span>Cair pada</span><span style={{color:'var(--text)'}}>{fmtDate(Date.now()+selPlan.days*86400000)}</span></div>
+          </div>
+        )}
+        <button onClick={doStake} disabled={loading||!amount||parseFloat(amount)<selPlan.minAmount||parseFloat(amount)>balance}
+          style={{width:'100%',padding:'12px',background:`linear-gradient(135deg,${selPlan.color}22,${selPlan.color}11)`,border:`1px solid ${selPlan.color}55`,borderRadius:8,color:selPlan.color,fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,cursor:'pointer',opacity:(!amount||parseFloat(amount)<selPlan.minAmount||parseFloat(amount)>balance)?0.4:1}}>
+          {loading?'MEMPROSES...':`🔒 STAKE SEKARANG — ${selPlan.label}`}
+        </button>
+      </div>
+
+      {/* Active stakes */}
+      {activeStakes.length>0&&(
+        <div style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>STAKING AKTIF ({activeStakes.length})</div>
+          {activeStakes.map(s=>{
+            const pct=progress(s)
+            const dl=daysLeft(s)
+            const mature=dl===0
+            return(
+              <div key={s.id} style={{background:'rgba(10,10,25,0.85)',border:`1px solid ${s.color}22`,borderRadius:10,padding:'14px',marginBottom:8}}>
+                <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8}}>
+                  <div>
+                    <div style={{fontFamily:'var(--fh)',fontSize:12,color:s.color,fontWeight:700,marginBottom:2}}>{s.planLabel}</div>
+                    <div style={{fontSize:11,color:'var(--text)'}}>{s.amount.toFixed(2)} APY <span style={{color:'var(--muted)'}}>→</span> <span style={{color:'var(--green)',fontWeight:700}}>{s.total.toFixed(2)} APY</span></div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    {mature
+                      ?<button onClick={()=>{
+                          const{updated,totalClaimed}=processMatureStakes(memberId)
+                          setStakes(updated)
+                          setBalance(getARPAY(memberId))
+                          if(totalClaimed>0)toast(`🎉 +${totalClaimed.toFixed(2)} ARPAY dicairkan!`,'success')
+                        }} style={{padding:'6px 14px',background:'rgba(0,255,136,0.15)',border:'1px solid rgba(0,255,136,0.4)',borderRadius:6,color:'var(--green)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer',letterSpacing:1}}>
+                          💰 CAIRKAN
+                        </button>
+                      :<div style={{fontFamily:'var(--fh)',fontSize:11,color:s.color}}>{dl} hari lagi</div>
+                    }
+                  </div>
+                </div>
+                <div style={{height:5,background:'rgba(255,255,255,0.06)',borderRadius:3,overflow:'hidden'}}>
+                  <div style={{height:'100%',width:`${pct}%`,background:`linear-gradient(90deg,${s.color}88,${s.color})`,borderRadius:3,transition:'width 0.5s'}}/>
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',marginTop:4,fontSize:9,color:'var(--muted)'}}>
+                  <span>Mulai: {fmtDate(s.startAt)}</span>
+                  <span>{pct}%</span>
+                  <span>Cair: {fmtDate(s.matureAt)}</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {doneStakes.length>0&&(
+        <div>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>RIWAYAT STAKING</div>
+          {doneStakes.slice(0,5).map(s=>(
+            <div key={s.id} style={{display:'flex',justifyContent:'space-between',padding:'10px 12px',background:'rgba(10,10,25,0.6)',border:'1px solid rgba(255,255,255,0.05)',borderRadius:8,marginBottom:6,opacity:0.7}}>
+              <div>
+                <div style={{fontSize:11,color:'var(--muted)'}}>{s.planLabel} · {fmtDate(s.startAt)}</div>
+                <div style={{fontSize:11,color:'var(--text)',marginTop:2}}>{s.amount.toFixed(2)} → {s.total.toFixed(2)} APY</div>
+              </div>
+              <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)'}}>+{s.bonus.toFixed(2)} APY</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================
+// BELI ARPAY — Pembelian dengan Rupiah (manual verify)
+// ============================================================
+const BANK_ACCOUNTS=[
+  {bank:'BCA',no:'1234567890',name:'PT ArenaGG Indonesia'},
+  {bank:'Mandiri',no:'1111222333',name:'PT ArenaGG Indonesia'},
+  {bank:'QRIS',no:'arenagg',name:'ArenaGG Platform'},
+]
+function ARPAYBuy({member,toast}){
+  const memberId=member?.member_id||member?.id||'guest'
+  const[amount,setAmount]=React.useState('10')
+  const[method,setMethod]=React.useState('BCA')
+  const[proofNote,setProofNote]=React.useState('')
+  const[submitted,setSubmitted]=React.useState(false)
+  const[history,setHistory]=React.useState(()=>getBuyRequests(memberId))
+
+  const rupiahAmount=(parseFloat(amount||0)*ARPAY_RATE_IDR).toLocaleString('id-ID')
+  const selectedBank=BANK_ACCOUNTS.find(b=>b.bank===method)||BANK_ACCOUNTS[0]
+
+  const submit=()=>{
+    if(!amount||parseFloat(amount)<1){toast('Min beli 1 ARPAY','error');return}
+    if(!proofNote.trim()){toast('Isi bukti transfer (nama pengirim / kode unik)','error');return}
+    const req={
+      id:'buy_'+Date.now(),
+      memberId,
+      memberName:member.nama,
+      amount:parseFloat(amount),
+      rupiah:parseFloat(amount)*ARPAY_RATE_IDR,
+      method,
+      proof:proofNote.trim(),
+      status:'pending',
+      createdAt:new Date().toISOString(),
+      note:''
+    }
+    saveBuyRequest(memberId,req)
+    // Broadcast ke owner via Supabase
+    try{
+      supabasePublic.from('arpay_buy_requests').insert([{
+        member_id:memberId,
+        member_name:member.nama,
+        amount:req.amount,
+        rupiah:req.rupiah,
+        method,
+        proof:proofNote.trim(),
+        status:'pending'
+      }]).then(()=>{})
+    }catch(e){}
+    setHistory([req,...history])
+    setSubmitted(true)
+    toast('✅ Request beli ARPAY dikirim! Owner akan konfirmasi dalam 1x24 jam.','success')
+  }
+
+  if(submitted) return(
+    <div style={{textAlign:'center',padding:'30px 20px'}}>
+      <div style={{fontSize:48,marginBottom:16}}>⏳</div>
+      <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',marginBottom:8}}>MENUNGGU KONFIRMASI</div>
+      <div style={{fontSize:12,color:'var(--muted)',lineHeight:1.8,marginBottom:20}}>Request beli ARPAY kamu sudah diterima.<br/>Owner akan verifikasi dan tambahkan ARPAY ke akunmu<br/>dalam <b style={{color:'var(--text)'}}>1x24 jam</b>.</div>
+      <button onClick={()=>setSubmitted(false)} style={{padding:'10px 24px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:8,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer',letterSpacing:1.5}}>
+        BELI LAGI
+      </button>
+    </div>
+  )
+
+  return(
+    <div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:2,marginBottom:14,textShadow:'0 0 10px rgba(0,255,136,0.5)'}}>💳 BELI ARPAY</div>
+
+      {/* Calculator */}
+      <div style={{background:'rgba(0,229,255,0.05)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:'16px',marginBottom:14}}>
+        <div style={{display:'flex',gap:6,marginBottom:8,flexWrap:'wrap'}}>
+          {[5,10,25,50,100,250].map(v=>(
+            <button key={v} onClick={()=>setAmount(String(v))} style={{padding:'6px 12px',background:amount===String(v)?'rgba(0,229,255,0.15)':'rgba(255,255,255,0.04)',border:`1px solid ${amount===String(v)?'rgba(0,229,255,0.5)':'rgba(255,255,255,0.08)'}`,borderRadius:6,color:amount===String(v)?'var(--cyan)':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>
+              {v} APY
+            </button>
+          ))}
+        </div>
+        <input type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="Jumlah ARPAY" style={{fontSize:20,fontWeight:900,marginBottom:8}}/>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'var(--muted)'}}>
+          <span>Harga</span><span style={{color:'var(--green)',fontFamily:'var(--fh)',fontSize:13}}>Rp {rupiahAmount}</span>
+        </div>
+        <div style={{display:'flex',justifyContent:'space-between',fontSize:11,color:'var(--muted)',marginTop:4}}>
+          <span>Nilai USD</span><span style={{color:'var(--cyan)'}}>≈ ${(parseFloat(amount||0)*ARPAY_RATE_USD).toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Metode pembayaran */}
+      <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>METODE PEMBAYARAN</div>
+      <div style={{display:'flex',gap:6,marginBottom:12}}>
+        {BANK_ACCOUNTS.map(b=>(
+          <button key={b.bank} onClick={()=>setMethod(b.bank)} style={{flex:1,padding:'10px 6px',background:method===b.bank?'rgba(0,229,255,0.1)':'rgba(255,255,255,0.03)',border:`1px solid ${method===b.bank?'rgba(0,229,255,0.4)':'rgba(255,255,255,0.08)'}`,borderRadius:8,color:method===b.bank?'var(--cyan)':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer',letterSpacing:0.5}}>
+            {b.bank}
+          </button>
+        ))}
+      </div>
+
+      {/* Rekening tujuan */}
+      <div style={{background:'rgba(10,10,25,0.9)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:10,padding:'14px',marginBottom:14}}>
+        <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--yellow)',letterSpacing:1,marginBottom:8}}>TRANSFER KE REKENING</div>
+        <div style={{fontSize:13,color:'var(--text)',fontWeight:700,marginBottom:4}}>{selectedBank.bank}</div>
+        <div style={{fontFamily:'var(--fm)',fontSize:16,color:'var(--cyan)',letterSpacing:2,marginBottom:4}}>{selectedBank.no}</div>
+        <div style={{fontSize:11,color:'var(--muted)',marginBottom:8}}>{selectedBank.name}</div>
+        <div style={{background:'rgba(255,215,0,0.06)',borderRadius:7,padding:'8px 10px',fontSize:11,color:'var(--yellow)'}}>
+          💰 Nominal: <b>Rp {rupiahAmount}</b>
+        </div>
+      </div>
+
+      {/* Bukti transfer */}
+      <div style={{marginBottom:14}}>
+        <label style={{display:'block',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>BUKTI TRANSFER (nama / kode unik)</label>
+        <input value={proofNote} onChange={e=>setProofNote(e.target.value)} placeholder="Contoh: Transfer atas nama Budi, jam 14:32..." style={{fontSize:12}}/>
+      </div>
+
+      <button onClick={submit} disabled={!amount||parseFloat(amount)<1||!proofNote.trim()} style={{width:'100%',padding:'13px',background:'linear-gradient(135deg,rgba(0,255,136,0.15),rgba(0,229,255,0.1))',border:'1px solid rgba(0,255,136,0.4)',borderRadius:9,color:'var(--green)',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,cursor:'pointer',opacity:(!amount||parseFloat(amount)<1||!proofNote.trim())?0.4:1}}>
+        ✅ KONFIRMASI PEMBELIAN
+      </button>
+
+      {/* History */}
+      {history.length>0&&(
+        <div style={{marginTop:16}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>RIWAYAT PEMBELIAN</div>
+          {history.slice(0,5).map(r=>(
+            <div key={r.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 12px',background:'rgba(10,10,25,0.7)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:8,marginBottom:6}}>
+              <div>
+                <div style={{fontSize:12,color:'var(--text)',fontWeight:600}}>{r.amount} ARPAY — Rp {r.rupiah?.toLocaleString('id-ID')}</div>
+                <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>{r.method} · {new Date(r.createdAt).toLocaleDateString('id-ID')}</div>
+              </div>
+              <span style={{fontFamily:'var(--fm)',fontSize:9,padding:'3px 8px',borderRadius:4,
+                background:r.status==='confirmed'?'rgba(0,255,136,0.1)':r.status==='rejected'?'rgba(255,45,85,0.1)':'rgba(255,215,0,0.1)',
+                color:r.status==='confirmed'?'var(--green)':r.status==='rejected'?'var(--red)':'var(--yellow)'
+              }}>
+                {r.status==='confirmed'?'✓ CONFIRMED':r.status==='rejected'?'✗ REJECTED':'⏳ PENDING'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ============================================================
+// SWAPPAY — Tukar ARPAY ↔ Rupiah & ARPAY ↔ USDT
+// ============================================================
+function ARPAYSwap({member,toast}){
+  const memberId=member?.member_id||member?.id||'guest'
+  const[balance,setBalance]=React.useState(()=>getARPAY(memberId))
+  const[direction,setDirection]=React.useState('toRupiah') // toRupiah | toUSDT | fromRupiah
+  const[amount,setAmount]=React.useState('')
+  const[rekening,setRekening]=React.useState('')
+  const[bankName,setBankName]=React.useState('')
+  const[history,setHistory]=React.useState(()=>getSwapRequests(memberId))
+  const[submitted,setSubmitted]=React.useState(false)
+
+  const dirs=[
+    {id:'toRupiah',label:'ARPAY → Rupiah',from:'ARPAY',to:'Rp',rate:`1 APY = Rp ${ARPAY_RATE_IDR.toLocaleString('id-ID')}`,color:'var(--green)',fee:'2%'},
+    {id:'toUSDT',label:'ARPAY → USDT',from:'ARPAY',to:'USDT',rate:`1 APY = $${ARPAY_RATE_USD}`,color:'#26a17b',fee:'1%',soon:true},
+    {id:'fromRupiah',label:'Rupiah → ARPAY',from:'Rp',to:'ARPAY',rate:`Rp ${ARPAY_RATE_IDR.toLocaleString('id-ID')} = 1 APY`,color:'var(--cyan)',fee:'1%'},
+  ]
+  const curDir=dirs.find(d=>d.id===direction)
+
+  const calcOutput=()=>{
+    const amt=parseFloat(amount||0)
+    if(direction==='toRupiah'){
+      const fee=amt*0.02
+      const net=amt-fee
+      return{output:(net*ARPAY_RATE_IDR).toLocaleString('id-ID'),unit:'Rp',fee:`${fee.toFixed(2)} APY`}
+    }
+    if(direction==='toUSDT'){
+      const fee=amt*0.01
+      const net=amt-fee
+      return{output:(net*ARPAY_RATE_USD).toFixed(2),unit:'USDT',fee:`${fee.toFixed(2)} APY`}
+    }
+    if(direction==='fromRupiah'){
+      const arpay=(amt/ARPAY_RATE_IDR)*(1-0.01)
+      return{output:arpay.toFixed(4),unit:'ARPAY',fee:'1% admin'}
+    }
+    return{output:'0',unit:'',fee:'0'}
+  }
+
+  const out=calcOutput()
+
+  const submit=()=>{
+    const amt=parseFloat(amount)
+    if(!amt||amt<=0){toast('Masukkan jumlah','error');return}
+    if((direction==='toRupiah'||direction==='toUSDT')&&amt>balance){toast('Saldo tidak cukup','error');return}
+    if((direction==='toRupiah')&&!rekening.trim()){toast('Isi nomor rekening tujuan','error');return}
+
+    if(direction==='toRupiah'||direction==='toUSDT'){
+      const fee=direction==='toRupiah'?amt*0.02:amt*0.01
+      const result=spendARPAY(memberId,amt,`💱 SwapPay: ${amt} ARPAY → ${out.output} ${out.unit}`)
+      if(!result.ok){toast(result.msg,'error');return}
+      setBalance(result.balance)
+    }
+
+    const req={
+      id:'swap_'+Date.now(),
+      direction,
+      fromAmount:amt,
+      toAmount:out.output,
+      toUnit:out.unit,
+      fee:out.fee,
+      rekening:rekening||'-',
+      bankName:bankName||'-',
+      status:'pending',
+      createdAt:new Date().toISOString()
+    }
+    saveSwapRequest(memberId,req)
+    try{
+      supabasePublic.from('arpay_swap_requests').insert([{
+        member_id:memberId,
+        member_name:member.nama,
+        direction,
+        from_amount:amt,
+        to_amount:parseFloat(out.output.replace(/\./g,'').replace(',','.')),
+        to_unit:out.unit,
+        rekening:rekening||'-',
+        status:'pending'
+      }]).then(()=>{})
+    }catch(e){}
+    setHistory([req,...history])
+    setSubmitted(true)
+    toast(`✅ Request SwapPay dikirim! Owner akan proses dalam 1x24 jam.`,'success')
+    setAmount('');setRekening('');setBankName('')
+  }
+
+  return(
+    <div>
+      <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',letterSpacing:2,marginBottom:14,textShadow:'0 0 10px rgba(255,215,0,0.5)'}}>💱 SWAPPAY</div>
+
+      {/* Direction selector */}
+      <div style={{display:'flex',flexDirection:'column',gap:6,marginBottom:16}}>
+        {dirs.map(d=>(
+          <button key={d.id} onClick={()=>{if(!d.soon){setDirection(d.id);setSubmitted(false)}}}
+            style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 14px',background:direction===d.id?`${d.color}12`:'rgba(10,10,25,0.8)',border:`1.5px solid ${direction===d.id?d.color:'rgba(255,255,255,0.07)'}`,borderRadius:10,cursor:d.soon?'not-allowed':'pointer',opacity:d.soon?0.45:1}}>
+            <div style={{textAlign:'left'}}>
+              <div style={{fontFamily:'var(--fh)',fontSize:12,color:direction===d.id?d.color:'var(--text)',fontWeight:700}}>{d.label} {d.soon&&<span style={{fontSize:9,color:'var(--muted)',marginLeft:4}}>— Segera</span>}</div>
+              <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>{d.rate} · Fee {d.fee}</div>
+            </div>
+            <div style={{width:10,height:10,borderRadius:'50%',background:direction===d.id?d.color:'rgba(255,255,255,0.1)',transition:'all 0.2s'}}/>
+          </button>
+        ))}
+      </div>
+
+      {submitted
+        ?<div style={{textAlign:'center',padding:'24px',background:'rgba(0,255,136,0.05)',border:'1px solid rgba(0,255,136,0.2)',borderRadius:12}}>
+            <div style={{fontSize:36,marginBottom:10}}>✅</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--green)',marginBottom:6}}>REQUEST TERKIRIM</div>
+            <div style={{fontSize:11,color:'var(--muted)',lineHeight:1.8}}>Owner akan memproses swap kamu<br/>dalam 1x24 jam ke rekening tujuan.</div>
+            <button onClick={()=>setSubmitted(false)} style={{marginTop:14,padding:'8px 20px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:7,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer',letterSpacing:1}}>SWAP LAGI</button>
+          </div>
+        :<div>
+          {/* Input */}
+          <div style={{background:'rgba(10,10,25,0.85)',border:`1px solid ${curDir?.color||'rgba(255,255,255,0.1)'}33`,borderRadius:12,padding:'14px',marginBottom:12}}>
+            <label style={{display:'block',fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>
+              JUMLAH {curDir?.from}
+              {(direction==='toRupiah'||direction==='toUSDT')&&<span style={{float:'right',color:'var(--cyan)'}}>Saldo: {formatARPAY(balance)} APY</span>}
+            </label>
+            <input type="number" value={amount} onChange={e=>setAmount(e.target.value)} placeholder="0" style={{fontSize:20,fontWeight:900,marginBottom:8}}/>
+            {amount&&parseFloat(amount)>0&&(
+              <div style={{background:'rgba(0,0,0,0.3)',borderRadius:7,padding:'8px 10px',fontSize:11,color:'var(--muted)'}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:3}}><span>Kamu terima</span><span style={{color:curDir?.color,fontWeight:700}}>{out.output} {out.unit}</span></div>
+                <div style={{display:'flex',justifyContent:'space-between'}}><span>Fee</span><span>{out.fee}</span></div>
+              </div>
+            )}
+          </div>
+
+          {direction==='toRupiah'&&(
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:12}}>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>BANK</label>
+                <select value={bankName} onChange={e=>setBankName(e.target.value)} style={{width:'100%',padding:'9px',background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:7,color:'var(--text)',fontSize:12}}>
+                  <option value="">-- Pilih Bank --</option>
+                  {['BCA','Mandiri','BNI','BRI','DANA','GoPay','OVO','ShopeePay'].map(b=><option key={b} value={b}>{b}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:5}}>NO. REKENING / HP</label>
+                <input value={rekening} onChange={e=>setRekening(e.target.value)} placeholder="Nomor rekening..." style={{fontSize:12}}/>
+              </div>
+            </div>
+          )}
+
+          <button onClick={submit} disabled={!amount||parseFloat(amount)<=0||(direction==='toRupiah'&&!rekening.trim())}
+            style={{width:'100%',padding:'13px',background:`linear-gradient(135deg,${curDir?.color||'var(--cyan)'}22,${curDir?.color||'var(--cyan)'}11)`,border:`1px solid ${curDir?.color||'var(--cyan)'}55`,borderRadius:9,color:curDir?.color||'var(--cyan)',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,cursor:'pointer',opacity:(!amount||parseFloat(amount)<=0)?0.4:1}}>
+            💱 PROSES SWAPPAY
+          </button>
+        </div>
+      }
+
+      {/* History */}
+      {history.length>0&&(
+        <div style={{marginTop:16}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>RIWAYAT SWAPPAY</div>
+          {history.slice(0,5).map(r=>(
+            <div key={r.id} style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'10px 12px',background:'rgba(10,10,25,0.7)',border:'1px solid rgba(255,255,255,0.05)',borderRadius:8,marginBottom:6}}>
+              <div>
+                <div style={{fontSize:11,color:'var(--text)',fontWeight:600}}>{r.fromAmount} APY → {r.toAmount} {r.toUnit}</div>
+                <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>{new Date(r.createdAt).toLocaleDateString('id-ID')}</div>
+              </div>
+              <span style={{fontFamily:'var(--fm)',fontSize:9,padding:'3px 8px',borderRadius:4,
+                background:r.status==='done'?'rgba(0,255,136,0.1)':r.status==='rejected'?'rgba(255,45,85,0.1)':'rgba(255,215,0,0.1)',
+                color:r.status==='done'?'var(--green)':r.status==='rejected'?'var(--red)':'var(--yellow)'
+              }}>
+                {r.status==='done'?'✓ DONE':r.status==='rejected'?'✗ TOLAK':'⏳ PROSES'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── ARPAY WALLET PAGE ──────────────────────────────────────────
 function ARPAYWallet({member, toast, allTournaments=[]}){
   const memberId = member?.member_id || member?.id || 'guest'
@@ -4626,10 +5195,13 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
   }
 
   const sections = [
-    {id:'home', icon:'💰', label:'Dompet'},
-    {id:'earn', icon:'⚡', label:'Earn'},
-    {id:'spend', icon:'🛒', label:'Belanja'},
-    {id:'send', icon:'📤', label:'Kirim'},
+    {id:'home',    icon:'💰', label:'Dompet'},
+    {id:'stake',   icon:'🏦', label:'Staking'},
+    {id:'buy',     icon:'💳', label:'Beli'},
+    {id:'swap',    icon:'💱', label:'SwapPay'},
+    {id:'earn',    icon:'⚡', label:'Earn'},
+    {id:'spend',   icon:'🛒', label:'Belanja'},
+    {id:'send',    icon:'📤', label:'Kirim'},
     {id:'history', icon:'📋', label:'Riwayat'},
   ]
 
@@ -4691,6 +5263,13 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
       {activeSection==='home'&&(
         <div>
           {/* Stats row */}
+          {/* Total staked info */}
+          {getTotalStaked(memberId)>0&&(
+            <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:10,padding:'10px 14px',marginBottom:12,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div style={{fontSize:11,color:'var(--muted)'}}>🏦 Sedang Distaking</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--yellow)',fontWeight:700}}>{formatARPAY(getTotalStaked(memberId))} APY</div>
+            </div>
+          )}
           <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
             {[
               {label:'Total Earned',val:`${formatARPAY(txHistory.filter(t=>t.type==='earn').reduce((a,b)=>a+b.amount,0))} APY`,color:'var(--green)'},
@@ -4724,6 +5303,7 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
             <div style={{fontFamily:'var(--fh)',fontSize:15,color:'var(--orange)',letterSpacing:1.5,marginBottom:10}}>🗺 ROADMAP ARPAY</div>
             {[
               {phase:'SEKARANG',label:'ARPAY dalam platform',desc:'Earn & spend di ArenaGG',color:'var(--green)',done:true},
+              {phase:'SEKARANG',label:'Staking & SwapPay',desc:'Lock ARPAY, beli & tukar Rupiah',color:'var(--green)',done:true},
               {phase:'Q3 2026',label:'Token BEP-20',desc:'Deploy di Binance Smart Chain',color:'var(--cyan)',done:false},
               {phase:'Q4 2026',label:'DEX Listing',desc:'PancakeSwap + CoinGecko',color:'var(--yellow)',done:false},
               {phase:'2027',label:'CEX Listing',desc:'Gate.io, MEXC, Binance target',color:'var(--orange)',done:false},
@@ -4741,6 +5321,21 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
             ))}
           </div>
         </div>
+      )}
+
+      {/* ── SECTION: STAKING ── */}
+      {activeSection==='stake'&&(
+        <ARPAYStaking member={member} toast={toast}/>
+      )}
+
+      {/* ── SECTION: BELI ARPAY ── */}
+      {activeSection==='buy'&&(
+        <ARPAYBuy member={member} toast={toast}/>
+      )}
+
+      {/* ── SECTION: SWAPPAY ── */}
+      {activeSection==='swap'&&(
+        <ARPAYSwap member={member} toast={toast}/>
       )}
 
       {/* ── SECTION: EARN ── */}
