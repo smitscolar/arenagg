@@ -2317,8 +2317,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   ]
 
   return(
-    <div style={{minHeight:'100vh',background:'#03030d',position:'relative',overflow:'hidden'}}>
-      {/* Animated gaming background — no scanline */}
+    <div style={{minHeight:'100vh',background:'#03030d',position:'relative',display:'flex'}}>
+      {/* ── Animated BG ── */}
       <style>{`
         @keyframes mbOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
         @keyframes mbOrb2{0%,100%{transform:translate(0,0)}50%{transform:translate(-30px,40px)}}
@@ -2326,79 +2326,99 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         @keyframes mbGrid{0%,100%{opacity:0.04}50%{opacity:0.08}}
         @keyframes mbFloat{0%{transform:translateY(0) scale(1);opacity:0.5}100%{transform:translateY(-100px) scale(0.2);opacity:0}}
         @keyframes mbGlow{0%,100%{opacity:0.5}50%{opacity:1}}
-        .mb-orb1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);top:-200px;left:-150px;animation:mbOrb1 14s ease-in-out infinite;pointer-events:none;z-index:0}
-        .mb-orb2{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.06) 0%,transparent 70%);bottom:-150px;right:-100px;animation:mbOrb2 17s ease-in-out infinite;pointer-events:none;z-index:0}
-        .mb-orb3{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);top:35%;left:35%;animation:mbOrb3 20s ease-in-out infinite;pointer-events:none;z-index:0}
-        .mb-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;animation:mbGrid 7s ease-in-out infinite;pointer-events:none;z-index:0}
-        .mb-star{position:absolute;border-radius:50%;animation:mbGlow 3s ease-in-out infinite;pointer-events:none;z-index:0}
-        .mb-particle{position:absolute;width:2px;height:2px;border-radius:50%;animation:mbFloat 5s ease-out infinite;pointer-events:none;z-index:0}
-        .mb-content{position:relative;z-index:1}
+        .mb-orb1{position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 70%);top:-200px;left:-150px;animation:mbOrb1 14s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-orb2{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,0,0.06) 0%,transparent 70%);bottom:-150px;right:-100px;animation:mbOrb2 17s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-orb3{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,255,136,0.04) 0%,transparent 70%);top:35%;left:35%;animation:mbOrb3 20s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:50px 50px;animation:mbGrid 7s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-star{position:fixed;border-radius:50%;animation:mbGlow 3s ease-in-out infinite;pointer-events:none;z-index:0}
+        .mb-particle{position:fixed;width:2px;height:2px;border-radius:50%;animation:mbFloat 5s ease-out infinite;pointer-events:none;z-index:0}
+        .mb-label{display:inline}
+        @media(max-width:600px){.mb-label{display:none}}
       `}</style>
       <div className="mb-orb1"/><div className="mb-orb2"/><div className="mb-orb3"/>
       <div className="mb-grid"/>
-      {/* Stars */}
       {[...Array(12)].map((_,n)=>(
         <div key={'s'+n} className="mb-star" style={{width:n%3===0?3:2,height:n%3===0?3:2,left:`${8+n*8}%`,top:`${5+n*7}%`,background:n%3===0?'rgba(0,229,255,0.6)':n%3===1?'rgba(255,107,0,0.5)':'rgba(255,255,255,0.4)',animationDelay:`${n*0.5}s`,animationDuration:`${2+n*0.3}s`}}/>
       ))}
-      {/* Rising particles */}
       {[...Array(6)].map((_,n)=>(
         <div key={'p'+n} className="mb-particle" style={{left:`${15+n*15}%`,bottom:'5%',animationDelay:`${n*0.8}s`,animationDuration:`${4+n*0.5}s`,background:n%2===0?'rgba(0,229,255,0.7)':'rgba(255,107,0,0.6)'}}/>
       ))}
-      {/* MAIN CONTENT */}
-      <div className="mb-content">
-      {/* HEADER */}
-      <div style={{background:'rgba(5,5,18,0.92)',backdropFilter:'blur(10px)',borderBottom:'1px solid var(--border)',padding:'10px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:100}}>
-        <div style={{display:'flex',alignItems:'center',gap:10}}>
-          <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 15px rgba(0,229,255,0.8)'}}>⚔ ARENAGG</div>
-          <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5,paddingTop:1,textShadow:'0 0 10px rgba(255,107,0,0.8)'}}>MEMBER PORTAL</div>
+
+      {/* ═══════ SIDEBAR KIRI ═══════ */}
+      <div style={{position:'fixed',top:0,left:0,bottom:0,width:200,background:'rgba(4,4,15,0.97)',backdropFilter:'blur(16px)',borderRight:'1px solid rgba(0,229,255,0.1)',display:'flex',flexDirection:'column',zIndex:100}}>
+        {/* Logo */}
+        <div style={{padding:'16px 14px 12px',borderBottom:'1px solid rgba(0,229,255,0.1)'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:2}}>
+            <div style={{width:28,height:28,borderRadius:7,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>⚔</div>
+            <div>
+              <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:900,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 12px rgba(0,229,255,0.8)'}}>ARENAGG</div>
+              <div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--orange)',letterSpacing:1.5,textShadow:'0 0 8px rgba(255,107,0,0.6)'}}>MEMBER PORTAL</div>
+            </div>
+          </div>
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:8}}>
-          <LangSelector lang={lang} setLangFn={setLangFn}/>
-          <div style={{textAlign:'right'}}>
-            <div style={{fontSize:11,fontWeight:600,color:'var(--text)',textShadow:'0 0 8px rgba(255,255,255,0.3)'}}>{member.nama}</div>
-            <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1,textShadow:'0 0 8px rgba(0,229,255,0.6)'}}>{member.member_id}</div>
+
+        {/* Nav */}
+        <div style={{flex:1,overflowY:'auto',padding:'6px 0'}}>
+          {tabs.map(t=>{
+            const liveBadge=t.id==='home'?allTournaments.filter(tv=>['open','active','pending'].includes(tv.status)).length:0
+            const isLive=t.id==='livescore'&&allTournaments.filter(tv=>tv.status==='live').length>0
+            const isActive=activeTab===t.id
+            return(
+              <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'11px 14px',border:'none',background:isActive?'rgba(0,229,255,0.1)':'transparent',borderLeft:`3px solid ${isActive?'var(--cyan)':'transparent'}`,cursor:'pointer',transition:'all 0.18s',position:'relative',textAlign:'left'}}>
+                <span style={{fontSize:15,flexShrink:0,filter:isActive?'drop-shadow(0 0 8px var(--cyan))':'none'}}>{t.icon}</span>
+                <span className="mb-label" style={{fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:isActive?'var(--cyan)':'var(--muted)',textShadow:isActive?'0 0 8px rgba(0,229,255,0.8)':'none',whiteSpace:'nowrap'}}>{t.label}</span>
+                {liveBadge>0&&<span className="mb-label" style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',minWidth:16,height:16,borderRadius:8,background:'var(--orange)',fontFamily:'var(--fm)',fontSize:8,color:'#000',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px',fontWeight:700}}>{liveBadge}</span>}
+                {isLive&&<span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* User bottom */}
+        <div style={{borderTop:'1px solid rgba(0,229,255,0.1)',padding:'10px 14px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:8,cursor:'pointer'}} onClick={()=>setActiveTab('profil')}>
+            <div style={{width:30,height:30,borderRadius:'50%',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
+              {member.avatar_url
+                ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="av"/>
+                :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+              }
+            </div>
+            <div className="mb-label" style={{minWidth:0}}>
+              <div style={{fontSize:10,fontWeight:700,color:'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{member.nama}</div>
+              <div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',letterSpacing:0.5}}>{member.member_id}</div>
+            </div>
           </div>
-          {/* Chat bubble → buka tab chat */}
-          <div onClick={()=>setActiveTab('chat')} style={{width:32,height:32,borderRadius:'50%',background:activeTab==='chat'?'rgba(0,229,255,0.2)':'rgba(0,229,255,0.08)',border:`1px solid ${activeTab==='chat'?'var(--cyan)':'rgba(0,229,255,0.25)'}`,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:15,flexShrink:0,position:'relative',transition:'all 0.2s'}} title="Obrolan Publik">
-            💬
-            {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0&&(
-              <div style={{position:'absolute',top:-2,right:-2,width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
-            )}
-          </div>
-          <div onClick={()=>setActiveTab('profil')} style={{width:36,height:36,borderRadius:'50%',cursor:'pointer',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
-            {member.avatar_url
-              ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
-              :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,fontWeight:700,color:'#000'}}>
-                {(member.nama||'?')[0].toUpperCase()}
-              </div>
-            }
-          </div>
+          <div className="mb-label"><LangSelector lang={lang} setLangFn={setLangFn}/></div>
+          <button onClick={onLogout} style={{marginTop:8,width:'100%',padding:'7px',background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.2)',borderRadius:6,color:'var(--red)',fontFamily:'var(--fh)',fontSize:8,letterSpacing:1,cursor:'pointer'}}>🚪 <span className="mb-label">LOGOUT</span></button>
         </div>
       </div>
 
-      {/* TAB NAV */}
-      <div style={{background:'rgba(5,5,18,0.88)',backdropFilter:'blur(8px)',borderBottom:'1px solid rgba(0,229,255,0.15)',display:'flex',overflowX:'auto',padding:'0 4px'}}>
-        {tabs.map(t=>(
-          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap',textShadow:activeTab===t.id?'0 0 10px rgba(0,229,255,0.8)':'none',position:'relative'}}>
-            {t.icon} {t.label}
-            {t.id==='home'&&allTournaments.filter(tv=>['open','active','pending'].includes(tv.status)).length>0&&(
-              <span style={{position:'absolute',top:6,right:4,minWidth:14,height:14,borderRadius:7,background:'var(--orange)',fontFamily:'var(--fm)',fontSize:7,color:'#000',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px',fontWeight:700}}>
-                {allTournaments.filter(tv=>['open','active','pending'].includes(tv.status)).length}
-              </span>
-            )}
-            {t.id==='livescore'&&allTournaments.filter(tv=>tv.status==='live').length>0&&(
-              <span style={{position:'absolute',top:6,right:4,width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
-            )}
-          </button>
-        ))}
-        <div style={{flex:1}}/>
-        <div style={{padding:'6px 8px',display:'flex',alignItems:'center'}}>
-          <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>ID {member.member_id}</span>
+      {/* ═══════ MAIN AREA ═══════ */}
+      <div style={{marginLeft:200,flex:1,display:'flex',flexDirection:'column',minHeight:'100vh',position:'relative',zIndex:1}}>
+        {/* Top bar */}
+        <div style={{background:'rgba(4,4,15,0.92)',backdropFilter:'blur(10px)',borderBottom:'1px solid rgba(0,229,255,0.1)',padding:'10px 20px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50}}>
+          <div style={{fontFamily:'var(--fh)',fontSize:11,letterSpacing:1,color:'var(--muted)'}}>
+            {tabs.find(t=>t.id===activeTab)?.icon} <span style={{color:'var(--text)',textShadow:'0 0 8px rgba(0,229,255,0.3)'}}>{tabs.find(t=>t.id===activeTab)?.label}</span>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:8}}>
+            <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)'}}>ID {member.member_id}</span>
+            <div onClick={()=>setActiveTab('chat')} style={{width:30,height:30,borderRadius:'50%',background:activeTab==='chat'?'rgba(0,229,255,0.15)':'rgba(0,229,255,0.06)',border:`1px solid ${activeTab==='chat'?'var(--cyan)':'rgba(0,229,255,0.2)'}`,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:13,position:'relative'}} title="Obrolan">
+              💬
+              {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0&&(
+                <div style={{position:'absolute',top:-2,right:-2,width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
+              )}
+            </div>
+            <div onClick={()=>setActiveTab('profil')} style={{width:30,height:30,borderRadius:'50%',cursor:'pointer',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
+              {member.avatar_url
+                ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="av"/>
+                :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+              }
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* CONTENT */}
-      <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px',position:'relative',zIndex:1}}>
+        {/* Content */}
+        <div style={{flex:1,overflowY:'auto',padding:'16px 20px'}}>
 
         {/* ═══════════════════════════════════════════════════════
              TAB: BERANDA — Hub utama: iklan + event + turnamen 
@@ -2798,45 +2818,31 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             </div>
           }
 
-          {/* Logout */}
-          <button onClick={onLogout} style={{marginTop:16,width:'100%',padding:12,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
+          {/* Logout — tersedia juga di sidebar */}
+          <button onClick={onLogout} style={{marginTop:12,width:'100%',padding:11,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.2)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
             🚪 {i.logout_member||'Keluar'}
           </button>
         </>}
 
         {/* ═══════════════════════════════════════
-             TAB: CHAT — Obrolan publik 
+             TAB: CHAT — Obrolan langsung terhubung owner↔peserta
              ═══════════════════════════════════════ */}
-        {activeTab==='chat'&&<>
-          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:12,textShadow:'0 0 10px rgba(0,229,255,0.5)'}}>💬 OBROLAN PUBLIK</div>
-          {/* Pilih turnamen untuk chat */}
-          {allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status)).length===0
-            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
-                <div style={{fontSize:32,marginBottom:8}}>💬</div>
-                <div>Belum ada turnamen aktif untuk obrolan</div>
-              </div>
-            :<>
-              {allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status)).map(t=>(
-                <div key={t.id} style={{background:'rgba(10,10,25,0.8)',backdropFilter:'blur(6px)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                  <div>
-                    <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)',marginBottom:2}}>{t.name}</div>
-                    <div style={{fontSize:10,color:'var(--muted)'}}>🎮 {t.game} · {t.status==='live'?'🔴 LIVE':'💬 Obrolan Aktif'}</div>
-                  </div>
-                  <a href={`${window.location.origin}/#/live/${t.id}`} target="_blank" rel="noreferrer"
-                    style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--cyan)',border:'1px solid var(--cyan)',padding:'5px 12px',borderRadius:6,textDecoration:'none',letterSpacing:1,whiteSpace:'nowrap'}}>
-                    💬 BUKA
-                  </a>
-                </div>
-              ))}
-              <div style={{marginTop:16,padding:'12px 14px',background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,fontSize:11,color:'var(--muted)',lineHeight:1.7}}>
-                💡 Obrolan tersedia di halaman Live setiap turnamen. Klik <b style={{color:'var(--cyan)'}}>BUKA</b> untuk masuk ke ruang obrolan turnamen.
-              </div>
-            </>
-          }
-        </>}
+        {activeTab==='chat'&&(()=>{
+          // Pilih turnamen aktif untuk chat
+          const chatTournaments=allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status))
+          return(
+            <MemberChatPanel
+              tournaments={chatTournaments}
+              member={member}
+              lang={lang}
+              toast={toast}
+            />
+          )
+        })()}
 
+
+        </div>
       </div>
-      </div>{/* end mb-content */}
     </div>
   )
 }
@@ -3298,6 +3304,25 @@ function SubmitScoreCard({team, tournamentId, lang, toast}){
 function MemberAdBanner(){
   const[customAds,setCustomAds]=React.useState(getCustomAds)
   const allAds=React.useMemo(()=>[...DEFAULT_ADS,...((customAds||[]).filter(a=>a.active))],[customAds])
+
+  // Load custom ads dari Supabase untuk sync lintas device
+  React.useEffect(()=>{
+    const loadFromDB=async()=>{
+      try{
+        const{data}=await supabasePublic.from('sponsor_ads')
+          .select('id,name,tagline,description,url,cta,emoji,color,accent,bg,active')
+          .eq('active',true)
+        if(data&&data.length>0){
+          const dbAds=data.map(a=>({...a,isCustom:true}))
+          setCustomAds(prev=>{
+            const merged=[...(prev||[]).filter(a=>!dbAds.find(d=>d.id===a.id)),...dbAds]
+            return merged
+          })
+        }
+      }catch(e){}// tabel mungkin belum ada - OK
+    }
+    loadFromDB()
+  },[])
   const[cur,setCur]=React.useState(0)
   const[animKey,setAnimKey]=React.useState(0)
   const[paused,setPaused]=React.useState(false)
@@ -3384,6 +3409,189 @@ function MemberAdBanner(){
   )
 }
 
+
+
+// ============================================================
+// MEMBER CHAT PANEL — Obrolan real-time terhubung dengan owner
+// Pakai getSBChannel (Supabase Broadcast) + localStorage polling
+// ============================================================
+function MemberChatPanel({tournaments=[], member, lang, toast}){
+  const i=T[lang]||T.id
+  const[selTournId,setSelTournId]=React.useState(()=>tournaments[0]?.id||null)
+  const[chatHistory,setChatHistory]=React.useState([])
+  const[chatMsg,setChatMsg]=React.useState('')
+  const chatEndRef=React.useRef(null)
+
+  // Set default ke turnamen pertama saat tournaments berubah
+  React.useEffect(()=>{
+    if(tournaments.length>0&&!selTournId){
+      setSelTournId(tournaments[0].id)
+    }
+  },[tournaments])
+
+  // Load riwayat chat + subscribe realtime saat tournament berubah
+  React.useEffect(()=>{
+    if(!selTournId)return
+    // Load dari localStorage dulu
+    const stored=getChatHistory(selTournId)
+    setChatHistory(stored)
+
+    // Subscribe Supabase Broadcast channel (sama dengan owner)
+    const ch=getSBChannel(selTournId)
+    ch.on('broadcast',{event:'chat_msg'},(payload)=>{
+      const p=payload.payload
+      if(!p||p.tournId!==selTournId)return
+      const newMsg={id:p.id,name:p.name,text:p.text,time:p.time,isOrg:p.isOrg||false}
+      setChatHistory(h=>{
+        if(h.find(x=>String(x.id)===String(newMsg.id)))return h
+        const updated=[...h,newMsg]
+        saveChatHistory(selTournId,updated)
+        return updated
+      })
+    })
+
+    // localStorage polling 2s backup (cross-device sync)
+    const poll=setInterval(()=>{
+      const stored2=getChatHistory(selTournId)
+      setChatHistory(h=>{
+        if(stored2.length<=h.length)return h
+        const newMsgs=stored2.filter(m=>!h.find(x=>String(x.id)===String(m.id)))
+        return newMsgs.length?[...h,...newMsgs]:h
+      })
+    },2000)
+
+    // Load dari Supabase tabel chat_messages
+    const loadFromDB=async()=>{
+      try{
+        const{data}=await supabasePublic.from('chat_messages')
+          .select('id,sender_name,message,is_organizer,created_at')
+          .eq('tournament_id',selTournId)
+          .order('created_at',{ascending:true})
+          .limit(100)
+        if(data&&data.length>0){
+          const dbMsgs=data.map(m=>({
+            id:m.id,
+            name:m.sender_name,
+            text:m.message,
+            time:new Date(m.created_at).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+            isOrg:m.is_organizer
+          }))
+          setChatHistory(h=>{
+            const combined=[...h]
+            dbMsgs.forEach(m=>{
+              if(!combined.find(x=>String(x.id)===String(m.id)))combined.push(m)
+            })
+            return combined.sort((a,b)=>String(a.id).localeCompare(String(b.id)))
+          })
+        }
+      }catch(e){}
+    }
+    loadFromDB()
+
+    return()=>{clearInterval(poll)}
+  },[selTournId])
+
+  // Auto scroll ke bawah
+  React.useEffect(()=>{
+    if(chatEndRef.current)chatEndRef.current.scrollIntoView({behavior:'smooth'})
+  },[chatHistory])
+
+  const sendMsg=async()=>{
+    if(!chatMsg.trim()||!selTournId)return
+    const msg={
+      id:Date.now(),
+      name:member.nama||'Peserta',
+      text:chatMsg.trim(),
+      time:new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+      isOrg:false
+    }
+    setChatMsg('')
+    setChatHistory(h=>h.find(x=>String(x.id)===String(msg.id))?h:[...h,msg])
+    await sendChatToSupabase(selTournId,msg,false)
+  }
+
+  const selT=tournaments.find(t=>t.id===selTournId)
+
+  return(
+    <div style={{display:'flex',flexDirection:'column',height:'calc(100vh - 110px)'}}>
+      <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:10,textShadow:'0 0 10px rgba(0,229,255,0.5)'}}>💬 OBROLAN PUBLIK</div>
+
+      {tournaments.length===0
+        ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
+            <div style={{fontSize:32,marginBottom:8}}>💬</div>
+            <div>Belum ada turnamen aktif untuk obrolan</div>
+          </div>
+        :<>
+          {/* Pilih turnamen */}
+          {tournaments.length>1&&(
+            <div style={{display:'flex',gap:6,marginBottom:10,flexWrap:'wrap'}}>
+              {tournaments.map(t=>(
+                <button key={t.id} onClick={()=>setSelTournId(t.id)} style={{padding:'5px 12px',borderRadius:6,border:`1px solid ${selTournId===t.id?'var(--cyan)':'rgba(255,255,255,0.1)'}`,background:selTournId===t.id?'rgba(0,229,255,0.12)':'transparent',color:selTournId===t.id?'var(--cyan)':'var(--muted)',fontFamily:'var(--fh)',fontSize:8,letterSpacing:1,cursor:'pointer',whiteSpace:'nowrap'}}>
+                  {t.status==='live'&&<span style={{color:'var(--red)',marginRight:4}}>🔴</span>}
+                  {t.name}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Chat header */}
+          {selT&&(
+            <div style={{background:'rgba(0,229,255,0.06)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:8,padding:'8px 12px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+              <div>
+                <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--text)'}}>{selT.name}</div>
+                <div style={{fontSize:9,color:'var(--muted)'}}>🎮 {selT.game} · {chatHistory.length} pesan</div>
+              </div>
+              {selT.status==='live'&&<span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--red)',border:'1px solid var(--red)',padding:'2px 8px',borderRadius:4,animation:'pulse 1s infinite'}}>🔴 LIVE</span>}
+            </div>
+          )}
+
+          {/* Chat messages */}
+          <div style={{flex:1,overflowY:'auto',background:'rgba(5,5,15,0.6)',border:'1px solid rgba(0,229,255,0.1)',borderRadius:10,padding:'12px',marginBottom:10,minHeight:200}}>
+            {chatHistory.length===0
+              ?<div style={{textAlign:'center',padding:'30px 0',color:'var(--muted)',fontSize:11}}>
+                  <div style={{fontSize:24,marginBottom:6}}>💬</div>
+                  <div>Belum ada pesan. Mulai obrolan!</div>
+                </div>
+              :chatHistory.map((msg,idx)=>{
+                const isMe=msg.name===member.nama||(msg.name===member.nama+'[ORG]')
+                return(
+                  <div key={msg.id||idx} style={{marginBottom:8,display:'flex',flexDirection:isMe?'row-reverse':'row',gap:8,alignItems:'flex-end'}}>
+                    <div style={{width:26,height:26,borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:700,background:msg.isOrg?'linear-gradient(135deg,var(--orange),#ff4400)':'linear-gradient(135deg,var(--cyan),#0055aa)',color:'#000'}}>
+                      {msg.isOrg?'👑':(msg.name||'?')[0].toUpperCase()}
+                    </div>
+                    <div style={{maxWidth:'70%'}}>
+                      <div style={{fontSize:9,color:msg.isOrg?'var(--orange)':'var(--muted)',marginBottom:2,textAlign:isMe?'right':'left'}}>
+                        {msg.isOrg?'[ORGANIZER] ':''}{msg.name} · {msg.time}
+                      </div>
+                      <div style={{background:isMe?'rgba(0,229,255,0.12)':msg.isOrg?'rgba(255,107,0,0.1)':'rgba(255,255,255,0.06)',border:`1px solid ${isMe?'rgba(0,229,255,0.3)':msg.isOrg?'rgba(255,107,0,0.3)':'rgba(255,255,255,0.08)'}`,borderRadius:isMe?'12px 12px 2px 12px':'12px 12px 12px 2px',padding:'7px 10px',fontSize:12,color:'var(--text)',lineHeight:1.5,wordBreak:'break-word'}}>
+                        {msg.text}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })
+            }
+            <div ref={chatEndRef}/>
+          </div>
+
+          {/* Input chat */}
+          <div style={{display:'flex',gap:8}}>
+            <input
+              value={chatMsg}
+              onChange={e=>setChatMsg(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&!e.shiftKey&&sendMsg()}
+              placeholder={`Pesan ke ${selT?.name||'turnamen'}...`}
+              style={{flex:1,fontSize:12,borderRadius:8}}
+            />
+            <button onClick={sendMsg} disabled={!chatMsg.trim()} style={{padding:'10px 16px',background:chatMsg.trim()?'var(--cyan)':'rgba(255,255,255,0.05)',border:'none',borderRadius:8,color:chatMsg.trim()?'#000':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,fontWeight:700,cursor:chatMsg.trim()?'pointer':'not-allowed',letterSpacing:1,flexShrink:0,transition:'all 0.2s'}}>
+              KIRIM →
+            </button>
+          </div>
+        </>
+      }
+    </div>
+  )
+}
 
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
 function QRImg({value,size=155}){
