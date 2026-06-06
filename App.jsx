@@ -760,16 +760,16 @@ function AdBanner({compact=false}){
 // Ad Manager for Settings
 function AdManager({toast}){
   const[ads,setAds]=useState(getCustomAds)
-  const[form,setForm]=useState({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',active:true})
+  const[form,setForm]=useState({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',active:true})
   const[showForm,setShowForm]=useState(false)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
   
   const save=()=>{
     if(!form.name||!form.tagline){toast('Nama & tagline wajib!','error');return}
-    const newAd={...form,id:'custom_'+Date.now(),isCustom:true,game:form.name,bg:`linear-gradient(135deg,${form.color}22,${form.accent}11)`}
+    const newAd={...form,id:'custom_'+Date.now(),isCustom:true,game:form.name,logo:form.logo||null,bg:`linear-gradient(135deg,${form.color}22,${form.accent}11)`}
     const updated=[...ads,newAd]
     setAds(updated);saveCustomAds(updated)
-    setForm({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',active:true})
+    setForm({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',active:true})
     setShowForm(false)
     toast('✓ Iklan sponsor ditambahkan!','success')
   }
@@ -807,7 +807,9 @@ function AdManager({toast}){
       <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1,marginBottom:8}}>IKLAN SPONSOR KAMU</div>
       {ads.map(ad=>(
         <div key={ad.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',background:'rgba(255,107,0,0.05)',borderRadius:7,border:'1px solid rgba(255,107,0,0.2)',marginBottom:6}}>
-          <span style={{fontSize:18}}>{ad.emoji||'🎮'}</span>
+          <div style={{width:36,height:36,borderRadius:8,overflow:'hidden',border:'1px solid var(--border)',background:'rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+            {ad.logo?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span style={{fontSize:18}}>{ad.emoji||'🎮'}</span>}
+          </div>
           <div style={{flex:1}}>
             <div style={{fontSize:12,fontWeight:700}}>{ad.game}</div>
             <div style={{fontSize:10,color:'var(--muted)'}}>{ad.tagline}</div>
@@ -825,7 +827,38 @@ function AdManager({toast}){
         <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:14}}>📢 IKLAN SPONSOR BARU</div>
         <div className="g2" style={{marginBottom:10}}>
           <div><label>Nama Brand / Game *</label><input value={form.name} onChange={set('name')} maxLength={80} placeholder="Misal: Garena FF"/></div>
-          <div><label>Emoji</label><input value={form.emoji} onChange={set('emoji')} style={{width:60}}/></div>
+          <div>
+            <label>Logo / Foto Produk</label>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginTop:4}}>
+              {/* Preview */}
+              <div style={{width:48,height:48,borderRadius:10,overflow:'hidden',border:'1px solid var(--border)',background:'rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                {form.logo
+                  ?<img src={form.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="logo"/>
+                  :<span style={{fontSize:22}}>{form.emoji||'🎮'}</span>
+                }
+              </div>
+              <div style={{flex:1,display:'flex',flexDirection:'column',gap:4}}>
+                {/* Upload foto */}
+                <label style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'6px 10px',background:'rgba(0,229,255,0.08)',border:'1px solid rgba(0,229,255,0.25)',borderRadius:6,fontSize:10,color:'var(--cyan)',fontFamily:'var(--fh)',letterSpacing:1}}>
+                  📷 UPLOAD FOTO/LOGO
+                  <input type="file" accept="image/*" style={{display:'none'}} onChange={e=>{
+                    const file=e.target.files?.[0]
+                    if(!file)return
+                    if(file.size>500*1024){toast('Maks 500KB untuk logo','error');return}
+                    const reader=new FileReader()
+                    reader.onload=ev=>setForm(f=>({...f,logo:ev.target.result,emoji:''}))
+                    reader.readAsDataURL(file)
+                  }}/>
+                </label>
+                {/* Atau emoji */}
+                <div style={{display:'flex',alignItems:'center',gap:4}}>
+                  <span style={{fontSize:9,color:'var(--muted)'}}>Atau emoji:</span>
+                  <input value={form.emoji} onChange={e=>setForm(f=>({...f,emoji:e.target.value,logo:''}))} placeholder="🎮" style={{width:40,fontSize:16,textAlign:'center',padding:'4px'}}/>
+                  {form.logo&&<button onClick={()=>setForm(f=>({...f,logo:''}))} style={{fontSize:9,color:'var(--red)',background:'none',border:'none',cursor:'pointer',padding:0}}>✕ Hapus foto</button>}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div style={{marginBottom:10}}><label>Tagline *</label><input value={form.tagline} onChange={set('tagline')} placeholder="Kalimat iklan singkat..."/></div>
         <div style={{marginBottom:10}}><label>Deskripsi (opsional)</label><input value={form.description} onChange={set('description')} placeholder="Info tambahan..."/></div>
@@ -837,6 +870,23 @@ function AdManager({toast}){
           <div><label>Warna Utama</label><input type="color" value={form.color} onChange={set('color')} style={{height:36,padding:'4px 8px',cursor:'pointer'}}/></div>
           <div><label>Warna Aksen</label><input type="color" value={form.accent} onChange={set('accent')} style={{height:36,padding:'4px 8px',cursor:'pointer'}}/></div>
         </div>
+        {/* Preview mini */}
+        {(form.name||form.tagline)&&(
+          <div style={{marginBottom:12,borderRadius:10,overflow:'hidden',border:'1px solid rgba(255,255,255,0.1)'}}>
+            <div style={{background:`linear-gradient(135deg,${form.color}22,${form.accent}11)`,borderLeft:`3px solid ${form.color}`,padding:'10px 12px',display:'flex',alignItems:'center',gap:10}}>
+              <div style={{width:38,height:38,borderRadius:8,overflow:'hidden',border:`1px solid ${form.color}44`,background:`${form.color}22`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                {form.logo?<img src={form.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span style={{fontSize:18}}>{form.emoji||'🎮'}</span>}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:'var(--fm)',fontSize:9,color:form.accent||'#ffd700',letterSpacing:1,marginBottom:2}}>{form.name||'Nama Brand'}</div>
+                <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{form.tagline||'Tagline iklan...'}</div>
+                {form.description&&<div style={{fontSize:9,color:'rgba(255,255,255,0.5)',marginTop:1}}>{form.description}</div>}
+              </div>
+              <div style={{background:`linear-gradient(135deg,${form.accent||'#ffd700'},${form.color||'#00e5ff'})`,color:'#000',padding:'6px 10px',borderRadius:6,fontFamily:'var(--fh)',fontSize:8,fontWeight:700,flexShrink:0}}>{form.cta||'Kunjungi'}</div>
+            </div>
+            <div style={{padding:'4px 12px',background:'rgba(0,0,0,0.3)',fontSize:9,color:'var(--muted)'}}>↑ Preview iklan</div>
+          </div>
+        )}
         <div style={{display:'flex',gap:8}}>
           <button className="btn btn-orange" onClick={save} style={{flex:1,justifyContent:'center'}}>💾 Simpan Iklan</button>
           <button className="btn btn-ghost" onClick={()=>setShowForm(false)}>Batal</button>
