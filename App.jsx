@@ -7070,7 +7070,17 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   // Request notification permission on first load
   React.useEffect(()=>{
     const asked = localStorage.getItem('arenagg_notif_asked')
-    if(!asked){ requestNotifPermission().then(()=>localStorage.setItem('arenagg_notif_asked','1')) }
+    if(!asked){
+      try{
+        if('Notification' in window && Notification.permission==='default'){
+          Notification.requestPermission().then(()=>{
+            localStorage.setItem('arenagg_notif_asked','1')
+          }).catch(()=>{localStorage.setItem('arenagg_notif_asked','1')})
+        } else {
+          localStorage.setItem('arenagg_notif_asked','1')
+        }
+      }catch(e){ localStorage.setItem('arenagg_notif_asked','1') }
+    }
   },[])
 
   if(loading)return <div style={{flex:1,display:'flex',alignItems:'center',justifyContent:'center',minHeight:'60vh'}}><div style={{textAlign:'center'}}><div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 2s infinite',marginBottom:16}}>⚔ ARENAGG</div><Spinner size={28} color="var(--cyan)"/><div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:12,letterSpacing:2}}>MEMUAT DATA...</div></div></div>
