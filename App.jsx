@@ -533,6 +533,33 @@ function saveCustomAds(ads){
     // StorageEvent fallback untuk browser lama
     window.dispatchEvent(new StorageEvent('storage',{key:AD_STORAGE_KEY,newValue:JSON.stringify(ads)}))
   }catch(e){}
+  // Sync ke Supabase untuk lintas device (owner → peserta di device lain)
+  try{
+    const upsertData=ads.filter(a=>a.id).map(a=>({
+      id:String(a.id),
+      name:a.name||'Iklan Sponsor',
+      tagline:a.tagline||'',
+      description:a.description||'',
+      url:a.url||'',
+      cta:a.cta||'Kunjungi',
+      emoji:a.emoji||'🎮',
+      color:a.color||'#00e5ff',
+      accent:a.accent||'#ff6b00',
+      bg:a.bg||'linear-gradient(135deg,#050510,#0a0a20)',
+      active:!!a.active,
+      updated_at:new Date().toISOString()
+    }))
+    if(upsertData.length>0){
+      supabase.from('sponsor_ads').upsert(upsertData,{onConflict:'id'}).then(({error})=>{
+        if(error&&(error.code==='42P01'||error.message?.includes('does not exist'))){
+          // tabel belum ada - OK, tidak masalah
+        }
+      })
+    }
+    // Hapus ads yang sudah didelete dari Supabase
+    const allIds=ads.map(a=>String(a.id))
+    // Tidak bisa delete yang tidak tahu ID-nya tanpa query dulu - skip
+  }catch(e){}
 }
 
 // Floating particles for ad banner
@@ -2501,36 +2528,19 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
           {/* EMPTY STATE */}
           {allTournaments.length===0&&!loadingTourn&&(
-            <div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)',fontSize:12}}>
-              <div style={{fontSize:40,marginBottom:12}}>🏟</div>
-              <div style={{marginBottom:6}}>Belum ada turnamen tersedia</div>
-              <div style={{fontSize:10}}>Organizer belum membuat turnamen</div>
-              {tournError&&<div style={{marginTop:8,fontSize:10,color:'var(--red)',padding:'6px',background:'rgba(255,45,85,0.08)',borderRadius:6}}>⚠ {tournError}</div>}
+            <div style={{textAlign:'center',padding:'30px 20px',color:'var(--muted)',fontSize:12}}>
+              <div style={{fontSize:36,marginBottom:10}}>🏟</div>
+              <div style={{marginBottom:4}}>Belum ada turnamen tersedia</div>
+              <div style={{fontSize:10,marginBottom:8}}>Organizer sedang menyiapkan event</div>
+              {tournError&&<div style={{marginTop:8,fontSize:10,color:'var(--red)',padding:'8px 12px',background:'rgba(255,45,85,0.08)',borderRadius:6,border:'1px solid rgba(255,45,85,0.2)'}}>⚠ Error: {tournError}</div>}
+              <button onClick={()=>window.location.reload()} style={{marginTop:12,padding:'8px 16px',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:7,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,cursor:'pointer'}}>🔄 Refresh</button>
             </div>
           )}
           {loadingTourn&&(
             <div style={{textAlign:'center',padding:40}}><Spinner size={24} color="var(--cyan)"/></div>
           )}
 
-          {/* QUICK ACTIONS */}
-          <div style={{marginBottom:14}}>
-            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:10,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>⚡ AKSI CEPAT</div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
-              {[
-                {icon:'🏆',label:'Semua Turnamen',tab:'tournaments',color:'var(--cyan)'},
-                {icon:'📋',label:'Riwayat',tab:'history',color:'var(--orange)'},
-                {icon:'🔴',label:'Live Score',tab:'livescore',color:'var(--red)'},
-                {icon:'🔔',label:'Notifikasi',tab:'notif',color:'var(--yellow)'},
-                {icon:'👤',label:'Profil',tab:'profil',color:'var(--green)'},
-                {icon:'💬',label:'Obrolan',tab:'chat',color:'var(--cyan)'},
-              ].map(a=>(
-                <div key={a.tab} onClick={()=>setActiveTab(a.tab)} style={{background:'rgba(10,10,25,0.8)',border:`1px solid ${a.color}22`,borderRadius:10,padding:'14px 8px',textAlign:'center',cursor:'pointer',transition:'all 0.2s'}} onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${a.color}66`;e.currentTarget.style.background='rgba(20,20,40,0.9)'}} onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${a.color}22`;e.currentTarget.style.background='rgba(10,10,25,0.8)'}}>
-                  <div style={{fontSize:22,marginBottom:6}}>{a.icon}</div>
-                  <div style={{fontFamily:'var(--fh)',fontSize:8,color:a.color,letterSpacing:1}}>{a.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+
 
         </>}
 
@@ -2829,7 +2839,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
              ═══════════════════════════════════════ */}
         {activeTab==='chat'&&(()=>{
           // Pilih turnamen aktif untuk chat
-          const chatTournaments=allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status))
+          // Chat tersedia untuk SEMUA turnamen yang ada
+          const chatTournaments=allTournaments.length>0?allTournaments:[]
           return(
             <MemberChatPanel
               tournaments={chatTournaments}
@@ -3305,23 +3316,32 @@ function MemberAdBanner(){
   const[customAds,setCustomAds]=React.useState(getCustomAds)
   const allAds=React.useMemo(()=>[...DEFAULT_ADS,...((customAds||[]).filter(a=>a.active))],[customAds])
 
-  // Load custom ads dari Supabase untuk sync lintas device
+  // Load custom ads dari Supabase untuk sync lintas device (auto-refresh)
   React.useEffect(()=>{
+    let cancelled=false
     const loadFromDB=async()=>{
       try{
-        const{data}=await supabasePublic.from('sponsor_ads')
+        const{data,error}=await supabasePublic.from('sponsor_ads')
           .select('id,name,tagline,description,url,cta,emoji,color,accent,bg,active')
           .eq('active',true)
-        if(data&&data.length>0){
+          .order('updated_at',{ascending:false})
+        if(cancelled)return
+        if(!error&&data&&data.length>0){
           const dbAds=data.map(a=>({...a,isCustom:true}))
-          setCustomAds(prev=>{
-            const merged=[...(prev||[]).filter(a=>!dbAds.find(d=>d.id===a.id)),...dbAds]
-            return merged
-          })
+          setCustomAds(dbAds)
         }
-      }catch(e){}// tabel mungkin belum ada - OK
+      }catch(e){}
     }
     loadFromDB()
+    // Poll setiap 15 detik untuk sync otomatis
+    const interval=setInterval(loadFromDB,15000)
+    // Realtime subscription
+    const ch=supabasePublic.channel('sponsor-ads-changes')
+      .on('postgres_changes',{event:'*',schema:'public',table:'sponsor_ads'},()=>{
+        loadFromDB()
+      })
+      .subscribe()
+    return()=>{cancelled=true;clearInterval(interval);supabasePublic.removeChannel(ch)}
   },[])
   const[cur,setCur]=React.useState(0)
   const[animKey,setAnimKey]=React.useState(0)
@@ -3422,10 +3442,14 @@ function MemberChatPanel({tournaments=[], member, lang, toast}){
   const[chatMsg,setChatMsg]=React.useState('')
   const chatEndRef=React.useRef(null)
 
-  // Set default ke turnamen pertama saat tournaments berubah
+  // Set default ke turnamen live jika ada, atau turnamen pertama
   React.useEffect(()=>{
-    if(tournaments.length>0&&!selTournId){
-      setSelTournId(tournaments[0].id)
+    if(tournaments.length>0){
+      const liveTourn=tournaments.find(t=>t.status==='live')
+      const target=liveTourn||tournaments[0]
+      if(!selTournId||!tournaments.find(t=>t.id===selTournId)){
+        setSelTournId(target.id)
+      }
     }
   },[tournaments])
 
@@ -3519,7 +3543,8 @@ function MemberChatPanel({tournaments=[], member, lang, toast}){
       {tournaments.length===0
         ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
             <div style={{fontSize:32,marginBottom:8}}>💬</div>
-            <div>Belum ada turnamen aktif untuk obrolan</div>
+            <div>Belum ada turnamen untuk obrolan</div>
+            <div style={{fontSize:10,marginTop:6,color:'var(--muted)'}}>Organizer perlu membuat turnamen dulu</div>
           </div>
         :<>
           {/* Pilih turnamen */}
