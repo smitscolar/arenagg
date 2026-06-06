@@ -2480,6 +2480,12 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             </div>
           </div>
 
+
+          {/* ═══════════════════════════════════════
+               MINI GAME ARCADE — 5 game slot grid
+               ═══════════════════════════════════════ */}
+          <MiniGameArcade member={member} allTournaments={allTournaments} toast={toast} lang={lang}/>
+
           {/* EVENT / TURNAMEN MENDATANG — highlight */}
           {allTournaments.filter(t=>['pending','open','active','upcoming'].includes(t.status)).length>0&&(
             <div style={{marginBottom:14}}>
@@ -3613,6 +3619,488 @@ function MemberChatPanel({tournaments=[], member, lang, toast}){
           </div>
         </>
       }
+    </div>
+  )
+}
+
+
+// ============================================================
+// MINI GAME ARCADE — 5 game slot di Beranda portal peserta
+// Game: Trivia, Tebak Skor, Spin Wheel, Hero Wordle, Aim Trainer
+// ============================================================
+
+// ── Helper: daily streak localStorage ──
+function getGameData(key){ try{return JSON.parse(localStorage.getItem('arenagg_game_'+key)||'null')}catch(e){return null} }
+function saveGameData(key,val){ try{localStorage.setItem('arenagg_game_'+key,JSON.stringify(val))}catch(e){} }
+function isSameDay(ts){ const d=new Date(ts),n=new Date();return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate() }
+
+// ── 1. TRIVIA ESPORT ──────────────────────────────────────────
+const TRIVIA_Q=[
+  {q:'Berapa jumlah pemain dalam 1 tim Mobile Legends?',a:['3','4','5','6'],correct:2},
+  {q:'Apa nama hero pertama di PUBG Mobile yang bisa loncat dari pesawat?',a:['Soldier','Jumper','None','Apex'],correct:2},
+  {q:'Free Fire diterbitkan oleh perusahaan apa?',a:['Tencent','Garena','Supercell','Riot'],correct:1},
+  {q:'Di Valorant, berapa HP awal setiap pemain?',a:['100','125','150','200'],correct:0},
+  {q:'Clash Royale adalah game bergenre apa?',a:['MOBA','Battle Royale','Card Strategy','FPS'],correct:2},
+  {q:'Mobile Legends: Bang Bang pertama rilis tahun berapa?',a:['2014','2015','2016','2017'],correct:2},
+  {q:'Berapa zona aman maksimal di PUBG Mobile pada fase akhir?',a:['1','2','3','4'],correct:0},
+  {q:'Karakter "Chrono" di Free Fire terinspirasi dari siapa?',a:['Messi','Neymar','Ronaldo','Mbappe'],correct:2},
+  {q:'Apa singkatan dari MOBA?',a:['Mobile Online Battle Arena','Multiplayer Online Battle Arena','Massive Online Battle Arena','Multiple Online Battle Arena'],correct:1},
+  {q:'Di MLBB, tower apa yang harus dihancurkan untuk menang?',a:['Base Tower','Turret','Crystal','Nexus'],correct:2},
+]
+function TriviaGame({onClose,toast,memberId}){
+  const today=new Date().toDateString()
+  const saved=getGameData('trivia_'+today+'_'+memberId)
+  const[step,setStep]=React.useState(saved?'done':0)
+  const[score,setScore]=React.useState(saved?.score||0)
+  const[selected,setSelected]=React.useState(null)
+  const[answered,setAnswered]=React.useState(false)
+  const q=TRIVIA_Q[typeof step==='number'?step%TRIVIA_Q.length:0]
+  const total=5
+
+  const answer=(idx)=>{
+    if(answered||typeof step!=='number')return
+    setSelected(idx)
+    setAnswered(true)
+    const correct=idx===q.correct
+    if(correct){
+      setScore(s=>s+1)
+      toast('✓ Benar! +1 poin','success')
+    } else {
+      toast('✗ Salah! Jawaban: '+q.a[q.correct],'error')
+    }
+    setTimeout(()=>{
+      const nextStep=step+1
+      if(nextStep>=total){
+        const finalScore=(correct?score+1:score)
+        saveGameData('trivia_'+today+'_'+memberId,{score:finalScore,date:today})
+        setStep('done')
+        setScore(finalScore)
+      } else {
+        setStep(nextStep)
+        setSelected(null)
+        setAnswered(false)
+      }
+    },900)
+  }
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(0,229,255,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 10px rgba(0,229,255,0.6)'}}>🧠 TRIVIA ESPORT</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      {step==='done'
+        ?<div style={{textAlign:'center',padding:'20px 0'}}>
+            <div style={{fontSize:40,marginBottom:10}}>{score>=4?'🏆':score>=2?'✨':'💪'}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:16,color:'var(--cyan)',marginBottom:6}}>Skor: {score}/{total}</div>
+            <div style={{fontSize:12,color:'var(--muted)',marginBottom:16}}>{score===total?'SEMPURNA! Kamu master esport!':score>=3?'Bagus! Kamu cukup paham esport!':'Latih terus pengetahuanmu!'}</div>
+            <div style={{fontSize:11,color:'var(--yellow)'}}>🔄 Kembali besok untuk soal baru</div>
+          </div>
+        :<div>
+            <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
+              <span style={{fontSize:10,color:'var(--muted)'}}>Soal {(typeof step==='number'?step:0)+1}/{total}</span>
+              <span style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)'}}>Skor: {score}</span>
+            </div>
+            <div style={{background:'rgba(0,229,255,0.06)',borderRadius:8,padding:'12px',marginBottom:12,fontSize:13,color:'var(--text)',lineHeight:1.6}}>{q.q}</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {q.a.map((ans,idx)=>{
+                let bg='rgba(255,255,255,0.04)'
+                let border='rgba(255,255,255,0.1)'
+                let col='var(--text)'
+                if(answered&&idx===q.correct){bg='rgba(0,255,136,0.15)';border='var(--green)';col='var(--green)'}
+                else if(answered&&idx===selected&&idx!==q.correct){bg='rgba(255,45,85,0.15)';border='var(--red)';col='var(--red)'}
+                return(
+                  <button key={idx} onClick={()=>answer(idx)} style={{padding:'10px 8px',background:bg,border:`1px solid ${border}`,borderRadius:8,color:col,fontSize:11,cursor:'pointer',textAlign:'left',transition:'all 0.15s',lineHeight:1.4}}>
+                    {['A','B','C','D'][idx]}. {ans}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+      }
+    </div>
+  )
+}
+
+// ── 2. TEBAK SKOR ──────────────────────────────────────────
+function TebakSkorGame({onClose,toast,memberId,tournaments=[]}){
+  const[pred,setPred]=React.useState({})
+  const[submitted,setSubmitted]=React.useState(()=>!!getGameData('tebak_'+new Date().toDateString()+'_'+memberId))
+  const activeTourns=tournaments.filter(t=>['open','active','pending','upcoming'].includes(t.status)).slice(0,3)
+
+  const submit=()=>{
+    if(Object.keys(pred).length===0){toast('Isi minimal 1 prediksi!','error');return}
+    saveGameData('tebak_'+new Date().toDateString()+'_'+memberId,{pred,date:new Date().toDateString()})
+    setSubmitted(true)
+    toast('✓ Prediksi tersimpan! Cek hasilnya setelah turnamen selesai','success')
+  }
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(255,215,0,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',letterSpacing:2,textShadow:'0 0 10px rgba(255,215,0,0.5)'}}>🎯 TEBAK SKOR</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      {submitted
+        ?<div style={{textAlign:'center',padding:'20px 0'}}>
+            <div style={{fontSize:36,marginBottom:10}}>🎯</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:13,color:'var(--yellow)',marginBottom:6}}>Prediksi Tersimpan!</div>
+            <div style={{fontSize:11,color:'var(--muted)'}}>Tunggu hasil turnamen untuk lihat apakah tebakanmu benar</div>
+          </div>
+        :activeTourns.length===0
+          ?<div style={{textAlign:'center',padding:'20px',color:'var(--muted)',fontSize:12}}>
+              <div style={{fontSize:28,marginBottom:8}}>🏟</div>
+              <div>Belum ada turnamen aktif untuk diprediksi</div>
+            </div>
+          :<div>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>Prediksi siapa juara turnamen ini:</div>
+              {activeTourns.map(t=>(
+                <div key={t.id} style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:8,padding:'10px 12px',marginBottom:8}}>
+                  <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--yellow)',marginBottom:6}}>{t.name} · {t.game}</div>
+                  <input value={pred[t.id]||''} onChange={e=>setPred(p=>({...p,[t.id]:e.target.value}))} placeholder="Nama tim yang kamu prediksi menang..." style={{fontSize:11,padding:'7px 10px',width:'100%',boxSizing:'border-box'}}/>
+                </div>
+              ))}
+              <button onClick={submit} style={{marginTop:8,width:'100%',padding:'10px',background:'rgba(255,215,0,0.15)',border:'1px solid rgba(255,215,0,0.4)',borderRadius:8,color:'var(--yellow)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
+                🎯 SIMPAN PREDIKSI
+              </button>
+            </div>
+      }
+    </div>
+  )
+}
+
+// ── 3. SPIN WHEEL ──────────────────────────────────────────
+const SPIN_PRIZES=[
+  {label:'Badge Rookie',icon:'🏅',color:'#00e5ff',rare:false},
+  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
+  {label:'XP +50',icon:'⭐',color:'#ffd700',rare:false},
+  {label:'Badge Pro',icon:'🏆',color:'#ff6b00',rare:true},
+  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
+  {label:'Diskon 10%',icon:'💰',color:'#00ff88',rare:true},
+  {label:'XP +10',icon:'✨',color:'#aa88ff',rare:false},
+  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
+]
+function SpinWheelGame({onClose,toast,memberId}){
+  const today=new Date().toDateString()
+  const[spinning,setSpinning]=React.useState(false)
+  const[angle,setAngle]=React.useState(0)
+  const[result,setResult]=React.useState(null)
+  const[spunToday,setSpunToday]=React.useState(()=>!!getGameData('spin_'+today+'_'+memberId))
+  const canvasRef=React.useRef(null)
+  const n=SPIN_PRIZES.length
+  const sliceAngle=360/n
+
+  React.useEffect(()=>{
+    const canvas=canvasRef.current
+    if(!canvas)return
+    const ctx=canvas.getContext('2d')
+    const W=200,cx=W/2,cy=W/2,r=W/2-4
+    ctx.clearRect(0,0,W,W)
+    SPIN_PRIZES.forEach((p,i)=>{
+      const start=(i*sliceAngle-90)*Math.PI/180
+      const end=((i+1)*sliceAngle-90)*Math.PI/180
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath()
+      ctx.fillStyle=i%2===0?'rgba(10,10,30,0.9)':'rgba(15,15,40,0.9)';ctx.fill()
+      ctx.strokeStyle=p.color+'66';ctx.lineWidth=1.5;ctx.stroke()
+      ctx.save();ctx.translate(cx,cy);ctx.rotate((i*sliceAngle+sliceAngle/2-90)*Math.PI/180)
+      ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center'
+      ctx.fillText(p.icon,r*0.65,5)
+      ctx.font='8px monospace';ctx.fillStyle=p.color;ctx.fillText(p.label.length>8?p.label.slice(0,7)+'…':p.label,r*0.65,17)
+      ctx.restore()
+    })
+    ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fillStyle='#050510';ctx.fill()
+    ctx.strokeStyle='var(--cyan)';ctx.lineWidth=2;ctx.stroke()
+    ctx.font='bold 10px monospace';ctx.fillStyle='var(--cyan)';ctx.textAlign='center';ctx.fillText('⚔',cx,cy+4)
+  },[])
+
+  const spin=()=>{
+    if(spinning||spunToday)return
+    setSpinning(true)
+    const extra=Math.floor(Math.random()*360)
+    const spins=1440+extra
+    const targetAngle=angle+spins
+    setAngle(targetAngle)
+    setTimeout(()=>{
+      const finalAngle=targetAngle%360
+      const prizeIdx=Math.floor(((360-finalAngle+90)%360)/sliceAngle)%n
+      const prize=SPIN_PRIZES[prizeIdx]
+      setResult(prize)
+      setSpinning(false)
+      saveGameData('spin_'+today+'_'+memberId,{prize:prize.label,date:today})
+      setSpunToday(true)
+      if(prize.rare)toast('🎉 JACKPOT! Kamu dapat: '+prize.label,'success')
+      else toast('Kamu dapat: '+prize.label,'success')
+    },3000)
+  }
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(170,136,255,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'#aa88ff',letterSpacing:2,textShadow:'0 0 10px rgba(170,136,255,0.5)'}}>🎡 SPIN WHEEL</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10}}>
+        <div style={{position:'relative'}}>
+          <div style={{position:'absolute',top:-8,left:'50%',transform:'translateX(-50%)',fontSize:16,zIndex:2}}>▼</div>
+          <canvas ref={canvasRef} width={200} height={200} style={{borderRadius:'50%',border:'2px solid rgba(170,136,255,0.4)',transform:`rotate(${angle}deg)`,transition:spinning?'transform 3s cubic-bezier(0.17,0.67,0.12,0.99)':'none'}}/>
+        </div>
+        {result&&<div style={{fontFamily:'var(--fh)',fontSize:12,color:result.color,textAlign:'center'}}>{result.icon} {result.label}!</div>}
+        {spunToday&&!spinning
+          ?<div style={{fontSize:11,color:'var(--muted)',textAlign:'center'}}>🔄 Kembali besok untuk spin lagi!</div>
+          :<button onClick={spin} disabled={spinning} style={{padding:'9px 24px',background:'rgba(170,136,255,0.15)',border:'1px solid rgba(170,136,255,0.4)',borderRadius:8,color:'#aa88ff',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:spinning?'not-allowed':'pointer'}}>
+              {spinning?'SPINNING...':'🎡 PUTAR SEKARANG'}
+            </button>
+        }
+      </div>
+    </div>
+  )
+}
+
+// ── 4. HERO WORDLE ──────────────────────────────────────────
+const HEROES=['LAYLA','MIYA','TIGREAL','ALUCARD','NANA','CLINT','RAFAELA','BALMOND','SABER','ALICE','FRANCO','BANE','BRUNO','CYCLOPS','EUDORA','GORD','KAGURA','HAYABUSA','FREYA','GROCK','LESLEY','HARITH','LUNOX','PHARSA','KIMMY']
+function HeroWordle({onClose,toast,memberId}){
+  const today=new Date().toDateString()
+  const saved=getGameData('wordle_'+today+'_'+memberId)
+  const targetHero=HEROES[Math.abs(new Date().getDate()*7+new Date().getMonth()*31)%HEROES.length]
+  const[guesses,setGuesses]=React.useState(saved?.guesses||[])
+  const[current,setCurrent]=React.useState('')
+  const[done,setDone]=React.useState(saved?.done||false)
+  const maxTry=6
+
+  const guess=()=>{
+    const val=current.toUpperCase().trim()
+    if(val.length<2){toast('Masukkan nama hero!','error');return}
+    const newGuesses=[...guesses,val]
+    setGuesses(newGuesses)
+    setCurrent('')
+    const won=val===targetHero
+    if(won||newGuesses.length>=maxTry){
+      setDone(true)
+      saveGameData('wordle_'+today+'_'+memberId,{guesses:newGuesses,done:true,won})
+      if(won)toast('🎉 BENAR! Hero: '+targetHero,'success')
+      else toast('Jawaban: '+targetHero,'info')
+    }
+  }
+
+  const getLetterStatus=(guess,pos)=>{
+    const l=guess[pos]
+    if(!l)return''
+    if(l===targetHero[pos])return'correct'
+    if(targetHero.includes(l))return'present'
+    return'absent'
+  }
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(0,255,136,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:2,textShadow:'0 0 10px rgba(0,255,136,0.5)'}}>🔤 HERO WORDLE</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      <div style={{fontSize:10,color:'var(--muted)',marginBottom:10}}>Tebak nama hero MLBB hari ini ({maxTry-guesses.length} tebakan tersisa)</div>
+
+      {/* Grid guesses */}
+      <div style={{marginBottom:10}}>
+        {[...Array(Math.min(guesses.length+1,maxTry))].map((_,ri)=>{
+          const g=guesses[ri]||''
+          const isCurrent=ri===guesses.length&&!done
+          return(
+            <div key={ri} style={{display:'flex',gap:4,marginBottom:4,justifyContent:'center'}}>
+              {[...Array(Math.max(targetHero.length,g.length||4))].map((_,ci)=>{
+                const letter=g[ci]||''
+                const status=g?getLetterStatus(g,ci):''
+                const bg=status==='correct'?'rgba(0,255,136,0.3)':status==='present'?'rgba(255,215,0,0.3)':status==='absent'?'rgba(255,255,255,0.05)':'rgba(255,255,255,0.05)'
+                const border=status==='correct'?'var(--green)':status==='present'?'var(--yellow)':status==='absent'?'rgba(255,255,255,0.15)':'rgba(255,255,255,0.2)'
+                return(
+                  <div key={ci} style={{width:28,height:28,background:bg,border:`1px solid ${border}`,borderRadius:4,display:'flex',alignItems:'center',justifyContent:'center',fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)'}}>{letter}</div>
+                )
+              })}
+            </div>
+          )
+        })}
+      </div>
+
+      {done
+        ?<div style={{textAlign:'center',fontSize:11,color:guesses[guesses.length-1]===targetHero?'var(--green)':'var(--red)'}}>
+            {guesses[guesses.length-1]===targetHero?'🎉 Benar!':'💀 Game Over'} · Hero: <b>{targetHero}</b>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:4}}>🔄 Hero baru besok!</div>
+          </div>
+        :<div style={{display:'flex',gap:6}}>
+            <input value={current} onChange={e=>setCurrent(e.target.value.toUpperCase())} onKeyDown={e=>e.key==='Enter'&&guess()} placeholder="Nama hero..." style={{flex:1,fontSize:11,padding:'7px 10px',textTransform:'uppercase'}}/>
+            <button onClick={guess} style={{padding:'7px 14px',background:'rgba(0,255,136,0.15)',border:'1px solid rgba(0,255,136,0.4)',borderRadius:7,color:'var(--green)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>TEBAK</button>
+          </div>
+      }
+    </div>
+  )
+}
+
+// ── 5. AIM TRAINER ──────────────────────────────────────────
+function AimTrainer({onClose,toast,memberId}){
+  const[phase,setPhase]=React.useState('ready')
+  const[targets,setTargets]=React.useState([])
+  const[score,setScore]=React.useState(0)
+  const[timeLeft,setTimeLeft]=React.useState(20)
+  const[misses,setMisses]=React.useState(0)
+  const[best,setBest]=React.useState(()=>getGameData('aim_best_'+memberId)||0)
+  const arenaRef=React.useRef(null)
+
+  const spawnTarget=React.useCallback(()=>{
+    const id=Date.now()+Math.random()
+    const size=28+Math.random()*28
+    const x=5+Math.random()*80
+    const y=5+Math.random()*75
+    const colors=['var(--cyan)','var(--orange)','var(--green)','var(--red)','var(--yellow)']
+    const color=colors[Math.floor(Math.random()*colors.length)]
+    setTargets(t=>[...t.slice(-6),{id,x,y,size,color}])
+    setTimeout(()=>setTargets(t=>t.filter(x=>x.id!==id)),1200)
+  },[])
+
+  React.useEffect(()=>{
+    if(phase!=='playing')return
+    const spawnInterval=setInterval(spawnTarget,600)
+    const timer=setInterval(()=>{
+      setTimeLeft(t=>{
+        if(t<=1){
+          clearInterval(spawnInterval);clearInterval(timer)
+          setPhase('done')
+          return 0
+        }
+        return t-1
+      })
+    },1000)
+    spawnTarget()
+    return()=>{clearInterval(spawnInterval);clearInterval(timer)}
+  },[phase])
+
+  const hit=(id,e)=>{
+    e.stopPropagation()
+    setTargets(t=>t.filter(x=>x.id!==id))
+    setScore(s=>s+1)
+  }
+  const miss=()=>{
+    setMisses(m=>m+1)
+  }
+  React.useEffect(()=>{
+    if(phase==='done'){
+      if(score>best){
+        setBest(score)
+        saveGameData('aim_best_'+memberId,score)
+        toast('🎯 Rekor baru! Skor: '+score,'success')
+      } else {
+        toast('Skor: '+score+' | Rekor: '+best,'info')
+      }
+    }
+  },[phase])
+
+  return(
+    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(255,45,85,0.3)',minHeight:280}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--red)',letterSpacing:2,textShadow:'0 0 10px rgba(255,45,85,0.5)'}}>🎮 AIM TRAINER</div>
+        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+      </div>
+      {phase==='ready'&&(
+        <div style={{textAlign:'center',padding:'16px 0'}}>
+          <div style={{fontSize:10,color:'var(--muted)',marginBottom:12,lineHeight:1.8}}>Klik target sebanyak mungkin dalam 20 detik!<br/>Latih aim kamu sebelum turnamen.</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--yellow)',marginBottom:14}}>🏆 Rekor: {best}</div>
+          <button onClick={()=>{setPhase('playing');setScore(0);setMisses(0);setTimeLeft(20);setTargets([])}} style={{padding:'10px 24px',background:'rgba(255,45,85,0.15)',border:'1px solid rgba(255,45,85,0.4)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
+            🎮 MULAI
+          </button>
+        </div>
+      )}
+      {phase==='playing'&&(
+        <div>
+          <div style={{display:'flex',justifyContent:'space-between',marginBottom:6}}>
+            <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--cyan)'}}>HIT: {score}</span>
+            <span style={{fontFamily:'var(--fh)',fontSize:11,color:timeLeft<=5?'var(--red)':'var(--text)'}}>{timeLeft}s</span>
+            <span style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--muted)'}}>MISS: {misses}</span>
+          </div>
+          <div ref={arenaRef} onClick={miss} style={{position:'relative',height:180,background:'rgba(0,0,0,0.4)',borderRadius:10,border:'1px solid rgba(255,45,85,0.2)',overflow:'hidden',cursor:'crosshair'}}>
+            {targets.map(tgt=>(
+              <div key={tgt.id} onClick={(e)=>hit(tgt.id,e)} style={{position:'absolute',left:`${tgt.x}%`,top:`${tgt.y}%`,width:tgt.size,height:tgt.size,borderRadius:'50%',background:`${tgt.color}33`,border:`2px solid ${tgt.color}`,cursor:'crosshair',display:'flex',alignItems:'center',justifyContent:'center',animation:'pulse 0.4s ease',boxShadow:`0 0 10px ${tgt.color}66`,transform:'translate(-50%,-50%)'}}/>
+            ))}
+          </div>
+        </div>
+      )}
+      {phase==='done'&&(
+        <div style={{textAlign:'center',padding:'16px 0'}}>
+          <div style={{fontSize:36,marginBottom:8}}>{score>best?'🏆':score>=10?'🎯':'💪'}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',marginBottom:4}}>SKOR: {score}</div>
+          <div style={{fontSize:11,color:'var(--muted)',marginBottom:12}}>Miss: {misses} | Akurasi: {score+misses>0?Math.round(score/(score+misses)*100):0}% | Rekor: {Math.max(score,best)}</div>
+          <button onClick={()=>{setPhase('ready')}} style={{padding:'9px 20px',background:'rgba(255,45,85,0.1)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,cursor:'pointer'}}>
+            🔄 MAIN LAGI
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── ARCADE CONTAINER ──────────────────────────────────────────
+function MiniGameArcade({member,allTournaments=[],toast,lang}){
+  const[active,setActive]=React.useState(null)
+  const memberId=member?.member_id||member?.id||'guest'
+  const today=new Date().toDateString()
+
+  const games=[
+    {
+      id:'trivia',icon:'🧠',title:'Trivia',sub:'Harian',color:'var(--cyan)',
+      played:!!getGameData('trivia_'+today+'_'+memberId),
+      desc:'10 soal esport',
+    },
+    {
+      id:'tebak',icon:'🎯',title:'Tebak',sub:'Skor',color:'var(--yellow)',
+      played:!!getGameData('tebak_'+today+'_'+memberId),
+      desc:'Prediksi juara',
+    },
+    {
+      id:'spin',icon:'🎡',title:'Spin',sub:'Wheel',color:'#aa88ff',
+      played:!!getGameData('spin_'+today+'_'+memberId),
+      desc:'Hadiah harian',
+    },
+    {
+      id:'wordle',icon:'🔤',title:'Hero',sub:'Wordle',color:'var(--green)',
+      played:!!getGameData('wordle_'+today+'_'+memberId),
+      desc:'Tebak hero MLBB',
+    },
+    {
+      id:'aim',icon:'🎮',title:'Aim',sub:'Trainer',color:'var(--red)',
+      played:false,
+      desc:'Latih aim kamu',
+    },
+  ]
+
+  return(
+    <div style={{marginBottom:16}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>🕹 MINI GAME ARCADE</div>
+        <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>Refresh tiap hari</div>
+      </div>
+
+      {/* Game slots row */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:8,marginBottom:active?12:0}}>
+        {games.map(g=>(
+          <div key={g.id} onClick={()=>setActive(active===g.id?null:g.id)}
+            style={{
+              background:active===g.id?`${g.color}18`:'rgba(8,8,20,0.8)',
+              border:`1.5px solid ${active===g.id?g.color:g.played?g.color+'44':'rgba(255,255,255,0.1)'}`,
+              borderRadius:12,padding:'12px 6px',textAlign:'center',cursor:'pointer',
+              transition:'all 0.2s',position:'relative',
+            }}
+          >
+            {g.played&&<div style={{position:'absolute',top:4,right:4,width:7,height:7,borderRadius:'50%',background:'var(--green)',boxShadow:'0 0 4px var(--green)'}}/>}
+            <div style={{fontSize:22,marginBottom:4,filter:active===g.id?`drop-shadow(0 0 8px ${g.color})`:'none'}}>{g.icon}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:8,color:active===g.id?g.color:'var(--muted)',letterSpacing:0.5,lineHeight:1.3}}>{g.title}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:8,color:active===g.id?g.color:'rgba(255,255,255,0.3)',letterSpacing:0.5}}>{g.sub}</div>
+            <div style={{fontSize:8,color:'var(--muted)',marginTop:3}}>{g.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Active game panel */}
+      {active==='trivia'&&<TriviaGame onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
+      {active==='tebak'&&<TebakSkorGame onClose={()=>setActive(null)} toast={toast} memberId={memberId} tournaments={allTournaments}/>}
+      {active==='spin'&&<SpinWheelGame onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
+      {active==='wordle'&&<HeroWordle onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
+      {active==='aim'&&<AimTrainer onClose={()=>setActive(null)} toast={toast} memberId={memberId}/>}
     </div>
   )
 }
