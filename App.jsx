@@ -4877,6 +4877,9 @@ function ARPAYBuy({member,toast}){
   const submit=()=>{
     if(!amount||parseFloat(amount)<1){toast('Min beli 1 ARPAY','error');return}
     if(!proofNote.trim()){toast('Isi bukti transfer (nama pengirim / kode unik)','error');return}
+    // Security: max 3x buy per hari
+    const buyLimit=checkBuyLimit(memberId)
+    if(!buyLimit.ok){toast(buyLimit.msg,'error');return}
     const req={
       id:'buy_'+Date.now(),
       memberId,
@@ -4890,6 +4893,8 @@ function ARPAYBuy({member,toast}){
       note:''
     }
     saveBuyRequest(memberId,req)
+    recordBuyRequest(memberId)
+    secLog('ARPAY_BUY_REQUEST', `${req.amount} APY via ${method}`)
     // Broadcast ke owner via Supabase
     try{
       supabasePublic.from('arpay_buy_requests').insert([{
@@ -5180,6 +5185,147 @@ function ARPAYSwap({member,toast}){
   )
 }
 
+
+// ============================================================
+// ╔══════════════════════════════════════════════════════════╗
+// ║              SECURITY SYSTEM — ArenaGG                  ║
+// ╚══════════════════════════════════════════════════════════╝
+// ============================================================
+
+const SEC_LOGIN_FAIL_KEY = 'arenagg_login_fails'
+const SEC_LOCKOUT_KEY    = 'arenagg_lockout_until'
+const SEC_SESSION_KEY    = 'arenagg_last_active'
+const SEC_DAILY_TRANSFER = 'arenagg_daily_transfer_'
+const SEC_DAILY_BUY      = 'arenagg_daily_buy_'
+const MAX_TRANSFER_DAY   = 50    // max 50 ARPAY per hari
+const MAX_BUY_PER_DAY    = 3     // max 3x beli per hari
+const SESSION_TIMEOUT    = 2*60*60*1000  // 2 jam
+const LOCKOUT_DURATION   = 15*60*1000   // 15 menit
+const MAX_LOGIN_FAILS    = 3
+
+// ── Login rate limiter ──
+function checkLoginRateLimit(){
+  try{
+    const lockUntil = parseInt(localStorage.getItem(SEC_LOCKOUT_KEY)||'0')
+    if(Date.now() < lockUntil){
+      const minsLeft = Math.ceil((lockUntil-Date.now())/60000)
+      return{ok:false, msg:`Terlalu banyak percobaan login. Coba lagi dalam ${minsLeft} menit.`}
+    }
+    return{ok:true}
+  }catch(e){return{ok:true}}
+}
+
+function recordLoginFail(){
+  try{
+    const fails = parseInt(localStorage.getItem(SEC_LOGIN_FAIL_KEY)||'0') + 1
+    localStorage.setItem(SEC_LOGIN_FAIL_KEY, String(fails))
+    if(fails >= MAX_LOGIN_FAILS){
+      localStorage.setItem(SEC_LOCKOUT_KEY, String(Date.now()+LOCKOUT_DURATION))
+      localStorage.setItem(SEC_LOGIN_FAIL_KEY, '0')
+      return true // locked
+    }
+    return false
+  }catch(e){return false}
+}
+
+function clearLoginFails(){
+  try{
+    localStorage.removeItem(SEC_LOGIN_FAIL_KEY)
+    localStorage.removeItem(SEC_LOCKOUT_KEY)
+  }catch(e){}
+}
+
+// ── Session activity tracker ──
+function updateActivity(){
+  try{localStorage.setItem(SEC_SESSION_KEY, String(Date.now()))}catch(e){}
+}
+function checkSessionTimeout(){
+  try{
+    const last = parseInt(localStorage.getItem(SEC_SESSION_KEY)||'0')
+    if(last && Date.now()-last > SESSION_TIMEOUT) return true // timeout
+    updateActivity()
+    return false
+  }catch(e){return false}
+}
+
+// ── Member ID format validator ──
+function validateMemberId(id){
+  if(!id || typeof id !== 'string') return false
+  const trimmed = id.trim().toUpperCase()
+  return /^AGG-[A-Z0-9]{6}$/.test(trimmed)
+}
+
+// ── ARPAY transfer daily limit ──
+function checkTransferLimit(memberId, amount){
+  try{
+    const today = new Date().toDateString()
+    const key = SEC_DAILY_TRANSFER + memberId + '_' + today
+    const used = parseFloat(localStorage.getItem(key)||'0')
+    if(used + amount > MAX_TRANSFER_DAY){
+      return{ok:false, msg:`Batas transfer harian ${MAX_TRANSFER_DAY} ARPAY. Sudah terpakai: ${used.toFixed(2)} ARPAY`}
+    }
+    return{ok:true, used}
+  }catch(e){return{ok:true, used:0}}
+}
+
+function recordTransfer(memberId, amount){
+  try{
+    const today = new Date().toDateString()
+    const key = SEC_DAILY_TRANSFER + memberId + '_' + today
+    const used = parseFloat(localStorage.getItem(key)||'0')
+    localStorage.setItem(key, String(used+amount))
+  }catch(e){}
+}
+
+// ── Buy request daily limit ──
+function checkBuyLimit(memberId){
+  try{
+    const today = new Date().toDateString()
+    const key = SEC_DAILY_BUY + memberId + '_' + today
+    const count = parseInt(localStorage.getItem(key)||'0')
+    if(count >= MAX_BUY_PER_DAY){
+      return{ok:false, msg:`Batas request beli ${MAX_BUY_PER_DAY}x per hari sudah tercapai. Coba besok.`}
+    }
+    return{ok:true, count}
+  }catch(e){return{ok:true, count:0}}
+}
+
+function recordBuyRequest(memberId){
+  try{
+    const today = new Date().toDateString()
+    const key = SEC_DAILY_BUY + memberId + '_' + today
+    const count = parseInt(localStorage.getItem(key)||'0')
+    localStorage.setItem(key, String(count+1))
+  }catch(e){}
+}
+
+// ── Security log ──
+function secLog(event, detail=''){
+  try{
+    const logs = JSON.parse(localStorage.getItem('arenagg_sec_log')||'[]')
+    logs.unshift({
+      event, detail,
+      time: new Date().toLocaleString('id-ID'),
+      ts: Date.now()
+    })
+    localStorage.setItem('arenagg_sec_log', JSON.stringify(logs.slice(0,50)))
+  }catch(e){}
+}
+
+// ── PIN confirmation for large ARPAY transfers ──
+function confirmLargeTransfer(amount, recipientId){
+  if(amount >= 10){
+    return window.confirm(
+      `⚠️ KONFIRMASI TRANSFER BESAR\n\n` +
+      `Jumlah  : ${amount} ARPAY\n` +
+      `Ke      : ${recipientId}\n` +
+      `Nilai   : ≈ $${(amount*ARPAY_RATE_USD).toFixed(2)} / Rp ${(amount*ARPAY_RATE_IDR).toLocaleString('id-ID')}\n\n` +
+      `Transfer ini TIDAK DAPAT dibatalkan.\nLanjutkan?`
+    )
+  }
+  return true
+}
+
 // ── ARPAY WALLET PAGE ──────────────────────────────────────────
 function ARPAYWallet({member, toast, allTournaments=[]}){
   const memberId = member?.member_id || member?.id || 'guest'
@@ -5210,13 +5356,22 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
 
   const doSend = ()=>{
     if(!sendTo.trim()){ toast('Masukkan ID penerima','error'); return }
+    // Security: validasi format Member ID (AGG-XXXXXX)
+    if(!validateMemberId(sendTo.trim())){ toast('Format ID tidak valid. Gunakan AGG-XXXXXX','error'); return }
     const amt = parseFloat(sendAmount)
     if(!amt || amt <= 0){ toast('Masukkan jumlah yang valid','error'); return }
-    if(sendTo.trim() === memberId){ toast('Tidak bisa kirim ke diri sendiri','error'); return }
+    if(sendTo.trim().toUpperCase() === memberId.toUpperCase()){ toast('Tidak bisa kirim ke diri sendiri','error'); return }
+    // Security: cek daily transfer limit
+    const limitCheck = checkTransferLimit(memberId, amt)
+    if(!limitCheck.ok){ toast(limitCheck.msg,'error'); return }
+    // Security: konfirmasi transfer besar (>= 10 ARPAY)
+    if(!confirmLargeTransfer(amt, sendTo.trim())){ return }
     const result = spendARPAY(memberId, amt, `📤 Transfer ke ${sendTo.trim()}`)
     if(!result.ok){ toast(result.msg,'error'); return }
     setBalance(result.balance)
     setTxHistory(getARPAYTx(memberId))
+    recordTransfer(memberId, amt)
+    secLog('ARPAY_TRANSFER', `${amt} APY → ${sendTo.trim()}`)
     toast(`✓ Berhasil kirim ${amt} ARPAY ke ${sendTo.trim()}!`, 'success')
     setSendAmount('')
     setSendTo('')
@@ -5553,11 +5708,20 @@ function AuthPage({onLogin,lang,setLangFn}){
     if(!email.includes('@')||!email.includes('.')){setErr('Format email tidak valid.');return}
     if(pass.length<6){setErr('Password minimal 6 karakter.');return}
     if(mode==='register'&&pass.length<8){setErr('Password minimal 8 karakter untuk akun baru.');return}
+    // Security: cek rate limit login
+    const rateCheck=checkLoginRateLimit()
+    if(!rateCheck.ok){setErr(rateCheck.msg);return}
     setL(true)
     try{
       if(mode==='login'){
         const{data,error}=await supabase.auth.signInWithPassword({email,password:pass})
-        if(error)throw error
+        if(error){
+          const locked=recordLoginFail()
+          if(locked)throw new Error('Akun dikunci 15 menit karena terlalu banyak percobaan.')
+          throw error
+        }
+        clearLoginFails()
+        secLog('LOGIN_SUCCESS',email)
         onLogin(data.user)
       } else {
         const{data,error}=await supabase.auth.signUp({email,password:pass,options:{data:{organizer_name:name||email.split('@')[0]}}})
@@ -6232,6 +6396,9 @@ function PublicPage({tid,onBack,toast,lang:langPropPP,setLangFn:setLangFnPP}){
     if(!loginName.trim()){setLoginErr('Isi nama tim');return}
     if(loginMode==='contact'&&!loginContact.trim()){setLoginErr('Isi No. HP');return}
     if(loginMode==='gameid'&&!loginGameId.trim()){setLoginErr('Isi Game Account ID');return}
+    // Security: cek rate limit login
+    const rateCheck=checkLoginRateLimit()
+    if(!rateCheck.ok){setLoginErr(rateCheck.msg);return}
     setLoginErr('');setLoginL(true)
     try{
       let query=supabase.from('teams').select('*,tournaments(*)')
@@ -8611,6 +8778,22 @@ function AppCore(){
       setAuthLoading(false)
     })
     return()=>subscription.unsubscribe()
+  },[])
+
+  // Security: session timeout + activity tracker
+  React.useEffect(()=>{
+    const events=['mousedown','keydown','scroll','touchstart']
+    const onActivity=()=>updateActivity()
+    events.forEach(e=>window.addEventListener(e,onActivity,{passive:true}))
+    updateActivity()
+    const timer=setInterval(()=>{
+      if(checkSessionTimeout()){
+        supabase.auth.getSession().then(({data:{session}})=>{
+          if(session){secLog('SESSION_TIMEOUT','Idle 2 jam');supabase.auth.signOut()}
+        })
+      }
+    },5*60*1000)
+    return()=>{events.forEach(e=>window.removeEventListener(e,onActivity));clearInterval(timer)}
   },[])
 
   React.useEffect(()=>{
