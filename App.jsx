@@ -4312,13 +4312,13 @@ function MiniGameArcade({member,allTournaments=[],toast,lang}){
 // ============================================================
 // ╔═══════════════════════════════════════════════════════════╗
 // ║           ARPAY — ArenaGG Digital Currency                ║
-// ║           1 ARPAY = $1 (Rp 16.000)                       ║
+// ║           1 ARPAY = $0.1 (Rp 1.600)                      ║
 // ║  Earn · Spend · Hold · Transfer                           ║
 // ╚═══════════════════════════════════════════════════════════╝
 // ============================================================
 
-const ARPAY_RATE_IDR = 16000  // 1 ARPAY = Rp 16.000
-const ARPAY_RATE_USD = 1      // 1 ARPAY = $1
+const ARPAY_RATE_IDR = 1600   // 1 ARPAY = Rp 1.600
+const ARPAY_RATE_USD = 0.1    // 1 ARPAY = $0.1
 const ARPAY_KEY = 'arenagg_arpay_'
 const ARPAY_TX_KEY = 'arenagg_arpay_tx_'
 const ARPAY_DAILY_KEY = 'arenagg_arpay_daily_'
@@ -4453,8 +4453,8 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
           </div>
           <div style={{textAlign:'right'}}>
             <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:2}}>NILAI SAAT INI</div>
-            <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:1}}>1 ARPAY = <b>$1</b></div>
-            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>≈ Rp 16.000</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:1}}>1 ARPAY = <b>$0.1</b></div>
+            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>≈ Rp 1.600</div>
           </div>
         </div>
         {/* Balance */}
@@ -4509,7 +4509,7 @@ function ARPAYWallet({member, toast, allTournaments=[]}){
           <div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,padding:'14px',marginBottom:10}}>
             <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1.5,marginBottom:10}}>📖 APA ITU ARPAY?</div>
             {[
-              {icon:'💰',text:'1 ARPAY = $1 = Rp 16.000'},
+              {icon:'💰',text:'1 ARPAY = $0.1 = Rp 1.600'},
               {icon:'⚡',text:'Earn ARPAY dari game, login harian, & turnamen'},
               {icon:'🛒',text:'Pakai untuk bayar entry fee & beli item eksklusif'},
               {icon:'📤',text:'Kirim ke sesama member ArenaGG'},
