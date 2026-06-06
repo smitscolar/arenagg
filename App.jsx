@@ -2389,6 +2389,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     {id:'history',label:i.history_tab||'Riwayat',icon:'📋'},
     {id:'livescore',label:'Live Score',icon:'🔴'},
     {id:'arcade',label:'Mini Game',icon:'🕹'},
+    {id:'arpay',label:'ARPAY',icon:'💎',special:true},
     {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
     {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
   ]
@@ -2441,9 +2442,9 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             const isLive=t.id==='livescore'&&allTournaments.filter(tv=>tv.status==='live').length>0
             const isActive=activeTab===t.id
             return(
-              <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'11px 14px',border:'none',background:isActive?'rgba(0,229,255,0.1)':'transparent',borderLeft:`3px solid ${isActive?'var(--cyan)':'transparent'}`,cursor:'pointer',transition:'all 0.18s',position:'relative',textAlign:'left'}}>
-                <span style={{fontSize:15,flexShrink:0,filter:isActive?'drop-shadow(0 0 8px var(--cyan))':'none'}}>{t.icon}</span>
-                <span className="mb-label" style={{fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:isActive?'var(--cyan)':'var(--muted)',textShadow:isActive?'0 0 8px rgba(0,229,255,0.8)':'none',whiteSpace:'nowrap'}}>{t.label}</span>
+              <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{width:'100%',display:'flex',alignItems:'center',gap:10,padding:'11px 14px',border:'none',background:isActive?(t.special?'rgba(255,215,0,0.08)':'rgba(0,229,255,0.1)'):'transparent',borderLeft:`3px solid ${isActive?(t.special?'var(--yellow)':'var(--cyan)'):'transparent'}`,cursor:'pointer',transition:'all 0.18s',position:'relative',textAlign:'left'}}>
+                <span style={{fontSize:15,flexShrink:0,filter:isActive?(t.special?'drop-shadow(0 0 8px #ffd700)':'drop-shadow(0 0 8px var(--cyan))'):'none'}}>{t.icon}</span>
+                <span className="mb-label" style={{fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:isActive?(t.special?'var(--yellow)':'var(--cyan)'):'var(--muted)',textShadow:isActive?(t.special?'0 0 8px rgba(255,215,0,0.8)':'0 0 8px rgba(0,229,255,0.8)'):'none',whiteSpace:'nowrap'}}>{t.label}</span>
                 {liveBadge>0&&<span className="mb-label" style={{position:'absolute',right:10,top:'50%',transform:'translateY(-50%)',minWidth:16,height:16,borderRadius:8,background:'var(--orange)',fontFamily:'var(--fm)',fontSize:8,color:'#000',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 4px',fontWeight:700}}>{liveBadge}</span>}
                 {isLive&&<span style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>}
               </button>
@@ -2463,6 +2464,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             <div className="mb-label" style={{minWidth:0}}>
               <div style={{fontSize:10,fontWeight:700,color:'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{member.nama}</div>
               <div style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--cyan)',letterSpacing:0.5}}>{member.member_id}</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--yellow)',letterSpacing:0.5,marginTop:1}}>💎 {formatARPAY(getARPAY(member?.member_id||member?.id||''))} APY</div>
             </div>
           </div>
           <div className="mb-label"><LangSelector lang={lang} setLangFn={setLangFn}/></div>
@@ -2740,6 +2742,13 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
              ═══════════════════════════════════════ */}
         {activeTab==='arcade'&&<>
           <MiniGameArcade member={member} allTournaments={allTournaments} toast={toast} lang={lang}/>
+        </>}
+
+        {/* ═══════════════════════════
+             TAB: 💎 ARPAY WALLET
+             ═══════════════════════════ */}
+        {activeTab==='arpay'&&<>
+          <ARPAYWallet member={member} toast={toast} allTournaments={allTournaments}/>
         </>}
 
         {/* TAB: NOTIFIKASI */}
@@ -4299,6 +4308,394 @@ function MiniGameArcade({member,allTournaments=[],toast,lang}){
   )
 }
 
+
+// ============================================================
+// ╔═══════════════════════════════════════════════════════════╗
+// ║           ARPAY — ArenaGG Digital Currency                ║
+// ║           1 ARPAY = $1 (Rp 16.000)                       ║
+// ║  Earn · Spend · Hold · Transfer                           ║
+// ╚═══════════════════════════════════════════════════════════╝
+// ============================================================
+
+const ARPAY_RATE_IDR = 16000  // 1 ARPAY = Rp 16.000
+const ARPAY_RATE_USD = 1      // 1 ARPAY = $1
+const ARPAY_KEY = 'arenagg_arpay_'
+const ARPAY_TX_KEY = 'arenagg_arpay_tx_'
+const ARPAY_DAILY_KEY = 'arenagg_arpay_daily_'
+
+function getARPAY(memberId){
+  try{return parseFloat(localStorage.getItem(ARPAY_KEY+memberId)||'0')}catch(e){return 0}
+}
+function saveARPAY(memberId, amount){
+  try{localStorage.setItem(ARPAY_KEY+memberId, amount.toFixed(4))}catch(e){}
+}
+function getARPAYTx(memberId){
+  try{return JSON.parse(localStorage.getItem(ARPAY_TX_KEY+memberId)||'[]')}catch(e){return []}
+}
+function addARPAYTx(memberId, tx){
+  const txs = getARPAYTx(memberId)
+  const updated = [{...tx, id: Date.now(), time: new Date().toLocaleString('id-ID')}, ...txs].slice(0, 50)
+  try{localStorage.setItem(ARPAY_TX_KEY+memberId, JSON.stringify(updated))}catch(e){}
+}
+function earnARPAY(memberId, amount, reason){
+  const current = getARPAY(memberId)
+  const newBal = current + amount
+  saveARPAY(memberId, newBal)
+  addARPAYTx(memberId, {type:'earn', amount, reason, balance: newBal})
+  return newBal
+}
+function spendARPAY(memberId, amount, reason){
+  const current = getARPAY(memberId)
+  if(current < amount) return {ok: false, msg: 'Saldo ARPAY tidak cukup'}
+  const newBal = current - amount
+  saveARPAY(memberId, newBal)
+  addARPAYTx(memberId, {type:'spend', amount, reason, balance: newBal})
+  return {ok: true, balance: newBal}
+}
+function claimDailyARPAY(memberId){
+  const today = new Date().toDateString()
+  const lastClaim = localStorage.getItem(ARPAY_DAILY_KEY+memberId)
+  if(lastClaim === today) return {ok: false, msg: 'Sudah claim hari ini. Kembali besok!'}
+  localStorage.setItem(ARPAY_DAILY_KEY+memberId, today)
+  const reward = 0.5 // 0.5 ARPAY per hari
+  return {ok: true, amount: reward}
+}
+function formatARPAY(amount){
+  return amount.toFixed(2)
+}
+function arpayToIDR(amount){
+  return (amount * ARPAY_RATE_IDR).toLocaleString('id-ID')
+}
+function arpayToUSD(amount){
+  return (amount * ARPAY_RATE_USD).toFixed(2)
+}
+
+// ── ARPAY WALLET PAGE ──────────────────────────────────────────
+function ARPAYWallet({member, toast, allTournaments=[]}){
+  const memberId = member?.member_id || member?.id || 'guest'
+  const[balance, setBalance] = React.useState(()=>getARPAY(memberId))
+  const[txHistory, setTxHistory] = React.useState(()=>getARPAYTx(memberId))
+  const[activeSection, setActiveSection] = React.useState('home') // home|earn|spend|send|history
+  const[sendAmount, setSendAmount] = React.useState('')
+  const[sendTo, setSendTo] = React.useState('')
+  const[buyAmount, setBuyAmount] = React.useState('10')
+  const[dailyClaimed, setDailyClaimed] = React.useState(()=>{
+    return localStorage.getItem(ARPAY_DAILY_KEY+memberId) === new Date().toDateString()
+  })
+
+  const refresh = ()=>{
+    setBalance(getARPAY(memberId))
+    setTxHistory(getARPAYTx(memberId))
+  }
+
+  const claim = ()=>{
+    const result = claimDailyARPAY(memberId)
+    if(!result.ok){ toast(result.msg, 'info'); return }
+    const nb = earnARPAY(memberId, result.amount, '🎁 Daily Login Reward')
+    setBalance(nb)
+    setTxHistory(getARPAYTx(memberId))
+    setDailyClaimed(true)
+    toast(`🎉 +${result.amount} ARPAY dari daily reward!`, 'success')
+  }
+
+  const doSend = ()=>{
+    if(!sendTo.trim()){ toast('Masukkan ID penerima','error'); return }
+    const amt = parseFloat(sendAmount)
+    if(!amt || amt <= 0){ toast('Masukkan jumlah yang valid','error'); return }
+    if(sendTo.trim() === memberId){ toast('Tidak bisa kirim ke diri sendiri','error'); return }
+    const result = spendARPAY(memberId, amt, `📤 Transfer ke ${sendTo.trim()}`)
+    if(!result.ok){ toast(result.msg,'error'); return }
+    setBalance(result.balance)
+    setTxHistory(getARPAYTx(memberId))
+    toast(`✓ Berhasil kirim ${amt} ARPAY ke ${sendTo.trim()}!`, 'success')
+    setSendAmount('')
+    setSendTo('')
+  }
+
+  // Earn dari mini game
+  const earnFromGame = (gameName, amount)=>{
+    const today = new Date().toDateString()
+    const earnKey = `arenagg_arpay_game_${memberId}_${gameName}_${today}`
+    if(localStorage.getItem(earnKey)){
+      toast(`Sudah earn ARPAY dari ${gameName} hari ini`, 'info')
+      return
+    }
+    localStorage.setItem(earnKey, '1')
+    const nb = earnARPAY(memberId, amount, `🕹 Earn dari ${gameName}`)
+    setBalance(nb)
+    setTxHistory(getARPAYTx(memberId))
+    toast(`+${amount} ARPAY dari ${gameName}!`, 'success')
+  }
+
+  const sections = [
+    {id:'home', icon:'💰', label:'Dompet'},
+    {id:'earn', icon:'⚡', label:'Earn'},
+    {id:'spend', icon:'🛒', label:'Belanja'},
+    {id:'send', icon:'📤', label:'Kirim'},
+    {id:'history', icon:'📋', label:'Riwayat'},
+  ]
+
+  return(
+    <div style={{minHeight:400}}>
+      {/* ── HEADER WALLET ── */}
+      <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.12),rgba(255,107,0,0.08))',border:'1px solid rgba(0,229,255,0.25)',borderRadius:16,padding:'20px',marginBottom:14,position:'relative',overflow:'hidden'}}>
+        <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:'linear-gradient(90deg,transparent,var(--cyan),var(--orange),var(--cyan),transparent)'}}/>
+        {/* Brand */}
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:16}}>
+          <div>
+            <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+              <div style={{width:32,height:32,borderRadius:8,background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,fontWeight:900,color:'#000',boxShadow:'0 4px 12px rgba(0,229,255,0.4)'}}>A</div>
+              <div>
+                <div style={{fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'var(--cyan)',letterSpacing:3,textShadow:'0 0 12px rgba(0,229,255,0.6)'}}>ARPAY</div>
+                <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1.5}}>ARENAGG DIGITAL CURRENCY</div>
+              </div>
+            </div>
+          </div>
+          <div style={{textAlign:'right'}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginBottom:2}}>NILAI SAAT INI</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:11,color:'var(--green)',letterSpacing:1}}>1 ARPAY = <b>$1</b></div>
+            <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>≈ Rp 16.000</div>
+          </div>
+        </div>
+        {/* Balance */}
+        <div style={{marginBottom:14}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:4}}>SALDO KAMU</div>
+          <div style={{display:'flex',alignItems:'baseline',gap:8}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:36,fontWeight:900,color:'var(--text)',textShadow:'0 0 20px rgba(0,229,255,0.2)',lineHeight:1}}>{formatARPAY(balance)}</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--cyan)',letterSpacing:2}}>ARPAY</div>
+          </div>
+          <div style={{display:'flex',gap:12,marginTop:6}}>
+            <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--green)'}}>≈ ${arpayToUSD(balance)}</div>
+            <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--orange)'}}>≈ Rp {arpayToIDR(balance)}</div>
+          </div>
+        </div>
+        {/* Daily claim button */}
+        {!dailyClaimed
+          ?<button onClick={claim} style={{width:'100%',padding:'10px',background:'linear-gradient(135deg,rgba(0,229,255,0.2),rgba(255,107,0,0.15))',border:'1px solid rgba(0,229,255,0.4)',borderRadius:8,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
+              <span style={{animation:'pulse 1.5s infinite'}}>🎁</span> KLAIM DAILY REWARD +0.5 ARPAY
+            </button>
+          :<div style={{textAlign:'center',padding:'8px',background:'rgba(0,255,136,0.05)',border:'1px solid rgba(0,255,136,0.15)',borderRadius:8,fontSize:10,color:'var(--muted)'}}>
+              ✅ Daily reward sudah diklaim hari ini · Kembali besok!
+            </div>
+        }
+      </div>
+
+      {/* ── SUB NAV ── */}
+      <div style={{display:'flex',gap:6,marginBottom:14,overflowX:'auto',paddingBottom:2}}>
+        {sections.map(s=>(
+          <button key={s.id} onClick={()=>setActiveSection(s.id)} style={{flex:'0 0 auto',padding:'8px 14px',border:`1px solid ${activeSection===s.id?'var(--cyan)':'rgba(255,255,255,0.1)'}`,background:activeSection===s.id?'rgba(0,229,255,0.1)':'transparent',borderRadius:8,color:activeSection===s.id?'var(--cyan)':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1,cursor:'pointer',whiteSpace:'nowrap'}}>
+            {s.icon} {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── SECTION: HOME ── */}
+      {activeSection==='home'&&(
+        <div>
+          {/* Stats row */}
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginBottom:14}}>
+            {[
+              {label:'Total Earned',val:`${formatARPAY(txHistory.filter(t=>t.type==='earn').reduce((a,b)=>a+b.amount,0))} APY`,color:'var(--green)'},
+              {label:'Total Spent',val:`${formatARPAY(txHistory.filter(t=>t.type==='spend').reduce((a,b)=>a+b.amount,0))} APY`,color:'var(--orange)'},
+              {label:'Transaksi',val:txHistory.length,color:'var(--cyan)'},
+            ].map(s=>(
+              <div key={s.label} style={{background:'rgba(10,10,25,0.8)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 8px',textAlign:'center'}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:700,color:s.color,marginBottom:2}}>{s.val}</div>
+                <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Info card */}
+          <div style={{background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,padding:'14px',marginBottom:10}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:1.5,marginBottom:10}}>📖 APA ITU ARPAY?</div>
+            {[
+              {icon:'💰',text:'1 ARPAY = $1 = Rp 16.000'},
+              {icon:'⚡',text:'Earn ARPAY dari game, login harian, & turnamen'},
+              {icon:'🛒',text:'Pakai untuk bayar entry fee & beli item eksklusif'},
+              {icon:'📤',text:'Kirim ke sesama member ArenaGG'},
+              {icon:'🚀',text:'Harga bisa naik seiring pertumbuhan platform'},
+            ].map((item,i)=>(
+              <div key={i} style={{display:'flex',gap:10,marginBottom:8,alignItems:'flex-start'}}>
+                <span style={{fontSize:15,flexShrink:0}}>{item.icon}</span>
+                <span style={{fontSize:12,color:'var(--text)',lineHeight:1.5}}>{item.text}</span>
+              </div>
+            ))}
+          </div>
+          {/* Roadmap mini */}
+          <div style={{background:'rgba(255,107,0,0.04)',border:'1px solid rgba(255,107,0,0.12)',borderRadius:10,padding:'14px'}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1.5,marginBottom:10}}>🗺 ROADMAP ARPAY</div>
+            {[
+              {phase:'SEKARANG',label:'ARPAY dalam platform',desc:'Earn & spend di ArenaGG',color:'var(--green)',done:true},
+              {phase:'Q3 2026',label:'Token BEP-20',desc:'Deploy di Binance Smart Chain',color:'var(--cyan)',done:false},
+              {phase:'Q4 2026',label:'DEX Listing',desc:'PancakeSwap + CoinGecko',color:'var(--yellow)',done:false},
+              {phase:'2027',label:'CEX Listing',desc:'Gate.io, MEXC, Binance target',color:'var(--orange)',done:false},
+            ].map((r,i)=>(
+              <div key={i} style={{display:'flex',gap:10,marginBottom:10,alignItems:'flex-start'}}>
+                <div style={{width:8,height:8,borderRadius:'50%',background:r.color,marginTop:4,flexShrink:0,boxShadow:`0 0 6px ${r.color}`,opacity:r.done?1:0.5}}/>
+                <div>
+                  <div style={{display:'flex',gap:6,alignItems:'center',marginBottom:2}}>
+                    <span style={{fontFamily:'var(--fm)',fontSize:8,color:r.color,letterSpacing:1}}>{r.phase}</span>
+                    <span style={{fontFamily:'var(--fh)',fontSize:10,color:r.done?'var(--text)':'var(--muted)'}}>{r.label}</span>
+                  </div>
+                  <div style={{fontSize:10,color:'var(--muted)'}}>{r.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── SECTION: EARN ── */}
+      {activeSection==='earn'&&(
+        <div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--green)',letterSpacing:2,marginBottom:12,textShadow:'0 0 10px rgba(0,255,136,0.5)'}}>⚡ CARA EARN ARPAY</div>
+          {[
+            {icon:'🎁',title:'Daily Login',desc:'Klaim setiap hari',reward:'0.5 ARPAY/hari',action:()=>{claim()},btnLabel:'KLAIM',disabled:dailyClaimed,color:'var(--cyan)'},
+            {icon:'🧠',title:'Trivia Harian',desc:'Jawab 5 soal esport',reward:'0.25 ARPAY',action:()=>earnFromGame('Trivia',0.25),btnLabel:'EARN',disabled:false,color:'var(--cyan)'},
+            {icon:'🎡',title:'Spin Wheel',desc:'Putar roda harian',reward:'0.1–1 ARPAY',action:()=>earnFromGame('SpinWheel',0.5),btnLabel:'EARN',disabled:false,color:'#aa88ff'},
+            {icon:'🎮',title:'Aim Trainer',desc:'Latih aim, raih rekor',reward:'0.2 ARPAY',action:()=>earnFromGame('AimTrainer',0.2),btnLabel:'EARN',disabled:false,color:'var(--red)'},
+            {icon:'🔤',title:'Hero Wordle',desc:'Tebak nama hero MLBB',reward:'0.3 ARPAY',action:()=>earnFromGame('HeroWordle',0.3),btnLabel:'EARN',disabled:false,color:'var(--green)'},
+            {icon:'⚡',title:'Reaksi Kilat',desc:'Uji kecepatan reflek',reward:'0.15 ARPAY',action:()=>earnFromGame('ReaksiKilat',0.15),btnLabel:'EARN',disabled:false,color:'var(--yellow)'},
+            {icon:'🏆',title:'Daftar Turnamen',desc:'Per turnamen yang diikuti',reward:'1 ARPAY',action:()=>toast('ARPAY akan diberikan otomatis saat kamu daftar turnamen!','info'),btnLabel:'INFO',disabled:false,color:'var(--orange)'},
+            {icon:'🥇',title:'Juara Turnamen',desc:'Menang = jackpot ARPAY',reward:'10–50 ARPAY',action:()=>toast('ARPAY hadiah akan dikirim organizer setelah turnamen selesai!','info'),btnLabel:'INFO',disabled:false,color:'var(--yellow)'},
+          ].map((e,i)=>(
+            <div key={i} style={{background:'rgba(10,10,25,0.8)',border:`1px solid ${e.color}22`,borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:12}}>
+              <span style={{fontSize:22,flexShrink:0}}>{e.icon}</span>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)',marginBottom:2}}>{e.title}</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>{e.desc}</div>
+              </div>
+              <div style={{textAlign:'right',flexShrink:0}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:10,color:e.color,marginBottom:6}}>{e.reward}</div>
+                <button onClick={e.action} disabled={e.disabled} style={{padding:'5px 12px',background:e.disabled?'rgba(255,255,255,0.03)':`${e.color}18`,border:`1px solid ${e.disabled?'rgba(255,255,255,0.08)':e.color+'44'}`,borderRadius:6,color:e.disabled?'var(--muted)':e.color,fontFamily:'var(--fh)',fontSize:8,letterSpacing:1,cursor:e.disabled?'not-allowed':'pointer'}}>
+                  {e.disabled?'SELESAI':e.btnLabel}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── SECTION: SPEND ── */}
+      {activeSection==='spend'&&(
+        <div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>🛒 BELANJA DENGAN ARPAY</div>
+          <div style={{background:'rgba(255,215,0,0.06)',border:'1px solid rgba(255,215,0,0.2)',borderRadius:10,padding:'12px',marginBottom:12,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <div style={{fontSize:12,color:'var(--muted)'}}>Saldo kamu</div>
+            <div style={{fontFamily:'var(--fh)',fontSize:14,color:'var(--yellow)'}}>{formatARPAY(balance)} ARPAY</div>
+          </div>
+          {[
+            {icon:'🏆',title:'Entry Fee Turnamen',desc:'Diskon 10% vs bayar biasa',price:5,color:'var(--green)',action:'register'},
+            {icon:'👑',title:'Badge VIP',desc:'Tampil di profil & chat',price:2,color:'var(--yellow)',action:'badge'},
+            {icon:'✨',title:'Frame Profil Neon',desc:'Bingkai avatar eksklusif',price:3,color:'var(--cyan)',action:'frame'},
+            {icon:'🔥',title:'Nama Glowing',desc:'Nama berwarna api di leaderboard',price:1,color:'var(--orange)',action:'name'},
+            {icon:'🎖',title:'Badge Eksklusif ARPAY',desc:'Hanya untuk holder ARPAY',price:5,color:'#aa88ff',action:'badge2'},
+            {icon:'📢',title:'Boost Profil',desc:'Profil tampil di atas pencarian 7 hari',price:10,color:'var(--red)',action:'boost'},
+          ].map((item,i)=>(
+            <div key={i} style={{background:'rgba(10,10,25,0.8)',border:`1px solid ${item.color}22`,borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',alignItems:'center',gap:12}}>
+              <span style={{fontSize:22,flexShrink:0}}>{item.icon}</span>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)',marginBottom:2}}>{item.title}</div>
+                <div style={{fontSize:10,color:'var(--muted)'}}>{item.desc}</div>
+              </div>
+              <div style={{textAlign:'right',flexShrink:0}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,color:item.color,marginBottom:6}}>{item.price} ARPAY</div>
+                <button onClick={()=>{
+                  const result = spendARPAY(memberId, item.price, `🛒 Beli: ${item.title}`)
+                  if(!result.ok){toast(result.msg,'error');return}
+                  setBalance(result.balance)
+                  setTxHistory(getARPAYTx(memberId))
+                  toast(`✓ Berhasil beli ${item.title}!`,'success')
+                }} disabled={balance < item.price} style={{padding:'5px 12px',background:balance>=item.price?`${item.color}18`:'rgba(255,255,255,0.03)',border:`1px solid ${balance>=item.price?item.color+'44':'rgba(255,255,255,0.08)'}`,borderRadius:6,color:balance>=item.price?item.color:'var(--muted)',fontFamily:'var(--fh)',fontSize:8,letterSpacing:1,cursor:balance>=item.price?'pointer':'not-allowed'}}>
+                  {balance>=item.price?'BELI':'KURANG'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── SECTION: SEND ── */}
+      {activeSection==='send'&&(
+        <div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>📤 KIRIM ARPAY</div>
+          <div style={{background:'rgba(10,10,25,0.8)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:12,padding:'16px',marginBottom:12}}>
+            <div style={{marginBottom:12}}>
+              <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>ID MEMBER PENERIMA</label>
+              <input value={sendTo} onChange={e=>setSendTo(e.target.value)} placeholder="Contoh: AGG-ABC123" style={{fontSize:13}}/>
+            </div>
+            <div style={{marginBottom:14}}>
+              <label style={{display:'block',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:1,marginBottom:6}}>JUMLAH ARPAY</label>
+              <div style={{display:'flex',gap:6,marginBottom:6}}>
+                {[0.5,1,2,5,10].map(amt=>(
+                  <button key={amt} onClick={()=>setSendAmount(String(amt))} style={{padding:'5px 10px',background:sendAmount===String(amt)?'rgba(0,229,255,0.15)':'rgba(255,255,255,0.04)',border:`1px solid ${sendAmount===String(amt)?'var(--cyan)':'rgba(255,255,255,0.1)'}`,borderRadius:6,color:sendAmount===String(amt)?'var(--cyan)':'var(--muted)',fontFamily:'var(--fh)',fontSize:9,cursor:'pointer'}}>
+                    {amt}
+                  </button>
+                ))}
+              </div>
+              <input type="number" value={sendAmount} onChange={e=>setSendAmount(e.target.value)} placeholder="0.00" style={{fontSize:16,fontWeight:700}}/>
+            </div>
+            {sendAmount&&parseFloat(sendAmount)>0&&(
+              <div style={{background:'rgba(0,229,255,0.06)',borderRadius:8,padding:'10px',marginBottom:12,fontSize:11,color:'var(--muted)'}}>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span>Kirim</span><span style={{color:'var(--text)'}}>{parseFloat(sendAmount||0).toFixed(2)} ARPAY</span>
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',marginBottom:4}}>
+                  <span>Nilai</span><span style={{color:'var(--green)'}}>≈ ${(parseFloat(sendAmount||0)*ARPAY_RATE_USD).toFixed(2)}</span>
+                </div>
+                <div style={{display:'flex',justifyContent:'space-between',borderTop:'1px solid rgba(255,255,255,0.06)',paddingTop:6,marginTop:6}}>
+                  <span>Sisa saldo</span><span style={{color:'var(--cyan)'}}>{(balance - parseFloat(sendAmount||0)).toFixed(2)} ARPAY</span>
+                </div>
+              </div>
+            )}
+            <button onClick={doSend} disabled={!sendTo.trim()||!sendAmount||parseFloat(sendAmount)<=0||balance<parseFloat(sendAmount||0)}
+              style={{width:'100%',padding:'12px',background:'rgba(0,229,255,0.12)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:8,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:10,letterSpacing:1.5,cursor:'pointer',opacity:(!sendTo.trim()||!sendAmount||parseFloat(sendAmount)<=0||balance<parseFloat(sendAmount||0))?0.4:1}}>
+              📤 KIRIM ARPAY SEKARANG
+            </button>
+            <div style={{marginTop:10,fontSize:10,color:'var(--muted)',textAlign:'center',lineHeight:1.6}}>
+              ID kamu: <span style={{color:'var(--cyan)',fontFamily:'var(--fm)'}}>{memberId}</span>
+            </div>
+          </div>
+          <div style={{background:'rgba(255,215,0,0.04)',border:'1px solid rgba(255,215,0,0.1)',borderRadius:10,padding:'12px',fontSize:10,color:'var(--muted)',lineHeight:1.8}}>
+            <b style={{color:'var(--yellow)'}}>⚠ Perhatian:</b><br/>
+            Transfer ARPAY bersifat <b style={{color:'var(--text)'}}>final</b> dan tidak dapat dibatalkan.<br/>
+            Pastikan ID penerima benar sebelum kirim.
+          </div>
+        </div>
+      )}
+
+      {/* ── SECTION: HISTORY ── */}
+      {activeSection==='history'&&(
+        <div>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:12}}>📋 RIWAYAT TRANSAKSI</div>
+          {txHistory.length===0
+            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
+                <div style={{fontSize:28,marginBottom:8}}>📋</div>
+                <div>Belum ada transaksi</div>
+              </div>
+            :txHistory.map((tx,i)=>(
+              <div key={tx.id||i} style={{display:'flex',alignItems:'center',gap:12,padding:'10px 12px',background:'rgba(10,10,25,0.7)',border:'1px solid rgba(255,255,255,0.06)',borderRadius:8,marginBottom:6}}>
+                <div style={{width:32,height:32,borderRadius:'50%',background:tx.type==='earn'?'rgba(0,255,136,0.15)':'rgba(255,107,0,0.15)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,flexShrink:0}}>
+                  {tx.type==='earn'?'↓':'↑'}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:11,color:'var(--text)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{tx.reason}</div>
+                  <div style={{fontSize:9,color:'var(--muted)',marginTop:2}}>{tx.time}</div>
+                </div>
+                <div style={{textAlign:'right',flexShrink:0}}>
+                  <div style={{fontFamily:'var(--fh)',fontSize:12,color:tx.type==='earn'?'var(--green)':'var(--orange)',fontWeight:700}}>
+                    {tx.type==='earn'?'+':'-'}{tx.amount.toFixed(2)} APY
+                  </div>
+                  <div style={{fontSize:9,color:'var(--muted)'}}>Saldo: {tx.balance.toFixed(2)}</div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      )}
+    </div>
+  )
+}
 // QR memakai Google Charts API — dijamin berfungsi (fix: teams photo removed)
 function QRImg({value,size=155}){
   const url=`https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(value)}&bgcolor=ffffff&color=000000&margin=8`
