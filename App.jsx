@@ -2338,7 +2338,6 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
     {id:'tournaments',label:i.all_tourn_tab||'Semua Turnamen',icon:'🏆'},
     {id:'history',label:i.history_tab||'Riwayat',icon:'📋'},
     {id:'livescore',label:'Live Score',icon:'🔴'},
-    {id:'chat',label:'Obrolan',icon:'💬'},
     {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
     {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
   ]
