@@ -2199,7 +2199,7 @@ function ParticipantPortal({toast,tournaments=[]}){
 // Tab: Semua Turnamen | Riwayat | Notifikasi | Profil
 // ============================================================
 function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,setLangFn:setLangFnProp}){
-  const[activeTab,setActiveTab]=useState('tournaments')
+  const[activeTab,setActiveTab]=useState('home')
   const[allTournaments,setAllTourn]=useState([])
   const[loadingTourn,setLoadT]=useState(true)
   const[tournError,setTournError]=useState(null)
@@ -2307,9 +2307,11 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const statusLabel={open:i.open_reg||'Buka Daftar',upcoming:'Segera',live:'🔴 LIVE',closed:'Selesai',pending:'⏳ Segera',active:'✅ Open',done:'Selesai'}
 
   const tabs=[
+    {id:'home',label:'Beranda',icon:'🏠'},
     {id:'tournaments',label:i.all_tourn_tab||'Semua Turnamen',icon:'🏆'},
     {id:'history',label:i.history_tab||'Riwayat',icon:'📋'},
     {id:'livescore',label:'Live Score',icon:'🔴'},
+    {id:'chat',label:'Obrolan',icon:'💬'},
     {id:'notif',label:i.notif_tab||'Notifikasi',icon:'🔔'},
     {id:'profil',label:i.profil_tab||'Profil',icon:'👤'},
   ]
@@ -2356,8 +2358,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             <div style={{fontSize:11,fontWeight:600,color:'var(--text)',textShadow:'0 0 8px rgba(255,255,255,0.3)'}}>{member.nama}</div>
             <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--cyan)',letterSpacing:1,textShadow:'0 0 8px rgba(0,229,255,0.6)'}}>{member.member_id}</div>
           </div>
-          {/* Chat bubble */}
-          <div onClick={()=>setActiveTab('notif')} style={{width:32,height:32,borderRadius:'50%',background:'rgba(0,229,255,0.1)',border:'1px solid rgba(0,229,255,0.3)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:14,flexShrink:0,position:'relative',transition:'all 0.2s'}} title="Notifikasi & Jadwal">
+          {/* Chat bubble → buka tab chat */}
+          <div onClick={()=>setActiveTab('chat')} style={{width:32,height:32,borderRadius:'50%',background:activeTab==='chat'?'rgba(0,229,255,0.2)':'rgba(0,229,255,0.08)',border:`1px solid ${activeTab==='chat'?'var(--cyan)':'rgba(0,229,255,0.25)'}`,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:15,flexShrink:0,position:'relative',transition:'all 0.2s'}} title="Obrolan Publik">
             💬
             {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0&&(
               <div style={{position:'absolute',top:-2,right:-2,width:8,height:8,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
@@ -2377,8 +2379,16 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
       {/* TAB NAV */}
       <div style={{background:'rgba(5,5,18,0.88)',backdropFilter:'blur(8px)',borderBottom:'1px solid rgba(0,229,255,0.15)',display:'flex',overflowX:'auto',padding:'0 4px'}}>
         {tabs.map(t=>(
-          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap',textShadow:activeTab===t.id?'0 0 10px rgba(0,229,255,0.8)':'none'}}>
+          <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:'0 0 auto',padding:'10px 16px',border:'none',background:'none',cursor:'pointer',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,fontWeight:700,color:activeTab===t.id?'var(--cyan)':'var(--muted)',borderBottom:activeTab===t.id?'2px solid var(--cyan)':'2px solid transparent',transition:'var(--trans)',whiteSpace:'nowrap',textShadow:activeTab===t.id?'0 0 10px rgba(0,229,255,0.8)':'none',position:'relative'}}>
             {t.icon} {t.label}
+            {t.id==='home'&&allTournaments.filter(tv=>['open','active','pending'].includes(tv.status)).length>0&&(
+              <span style={{position:'absolute',top:6,right:4,minWidth:14,height:14,borderRadius:7,background:'var(--orange)',fontFamily:'var(--fm)',fontSize:7,color:'#000',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 3px',fontWeight:700}}>
+                {allTournaments.filter(tv=>['open','active','pending'].includes(tv.status)).length}
+              </span>
+            )}
+            {t.id==='livescore'&&allTournaments.filter(tv=>tv.status==='live').length>0&&(
+              <span style={{position:'absolute',top:6,right:4,width:7,height:7,borderRadius:'50%',background:'var(--red)',animation:'pulse 1s infinite'}}/>
+            )}
           </button>
         ))}
         <div style={{flex:1}}/>
@@ -2387,19 +2397,122 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         </div>
       </div>
 
-      {/* AD BANNER — sticky di bawah tab nav, muncul di semua menu */}
-      <div style={{background:'rgba(5,5,18,0.88)',backdropFilter:'blur(8px)',borderBottom:'1px solid rgba(255,107,0,0.12)',padding:'8px 12px 12px'}}>
-        <div style={{maxWidth:640,margin:'0 auto'}}>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-            <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 8px rgba(255,107,0,0.5)'}}>📺 IKLAN LIVE</span>
-            <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{allTournaments.length} TURNAMEN TERSEDIA</span>
-          </div>
-          <MemberAdBanner/>
-        </div>
-      </div>
-
       {/* CONTENT */}
       <div style={{maxWidth:640,margin:'0 auto',padding:'16px 12px',position:'relative',zIndex:1}}>
+
+        {/* ═══════════════════════════════════════════════════════
+             TAB: BERANDA — Hub utama: iklan + event + turnamen 
+             ═══════════════════════════════════════════════════════ */}
+        {activeTab==='home'&&<>
+
+          {/* IKLAN LIVE — hanya di beranda */}
+          <div style={{marginBottom:18}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <span style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2,textShadow:'0 0 10px rgba(255,107,0,0.6)'}}>📺 IKLAN LIVE</span>
+              <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1}}>{allTournaments.length} turnamen tersedia</span>
+            </div>
+            <MemberAdBanner/>
+          </div>
+
+          {/* SELAMAT DATANG + ID CARD ringkas */}
+          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:14,padding:'14px 16px',marginBottom:14,display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:44,height:44,borderRadius:'50%',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
+              {member.avatar_url
+                ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
+                :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+              }
+            </div>
+            <div style={{flex:1}}>
+              <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:900,color:'var(--text)',textShadow:'0 0 10px rgba(0,229,255,0.3)'}}>Halo, {member.nama}! 👋</div>
+              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:1,marginTop:2}}>{member.member_id} · {myTeams.length} tim terdaftar</div>
+            </div>
+            <div style={{textAlign:'right'}}>
+              {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0
+                ?<div style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--red)',animation:'pulse 1s infinite'}}>🔴 MATCH LIVE!</div>
+                :<div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>Tidak ada live</div>
+              }
+            </div>
+          </div>
+
+          {/* EVENT / TURNAMEN MENDATANG — highlight */}
+          {allTournaments.filter(t=>['pending','open','active','upcoming'].includes(t.status)).length>0&&(
+            <div style={{marginBottom:14}}>
+              <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:10,textShadow:'0 0 10px rgba(0,229,255,0.5)'}}>⚡ EVENT & TURNAMEN MENDATANG</div>
+              {allTournaments.filter(t=>['pending','open','active','upcoming'].includes(t.status)).slice(0,3).map(t=>{
+                const sc={pending:'var(--yellow)',open:'var(--green)',active:'var(--green)',upcoming:'var(--cyan)',live:'var(--red)'}
+                const sl={pending:'⏳ Segera',open:'✅ Buka Daftar',active:'✅ Buka Daftar',upcoming:'🔜 Segera Buka',live:'🔴 LIVE'}
+                return(
+                  <div key={t.id} style={{background:'rgba(10,10,25,0.8)',backdropFilter:'blur(6px)',border:`1px solid ${sc[t.status]||'var(--border)'}33`,borderLeft:`3px solid ${sc[t.status]||'var(--cyan)'}`,borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                    <div>
+                      <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'var(--text)',marginBottom:3,textShadow:'0 0 8px rgba(0,229,255,0.2)'}}>{t.name}</div>
+                      <div style={{fontSize:10,color:'var(--muted)'}}>🎮 {t.game} · 📍 {t.city} · 📅 {t.date||'-'}</div>
+                      <div style={{fontSize:10,color:'var(--muted)',marginTop:2}}>🏅 {('Rp '+Number(t.prize||t.prize_pool||0).toLocaleString('id-ID'))} · 💰 {('Rp '+Number(t.entry||t.entry_fee||0).toLocaleString('id-ID'))}/tim</div>
+                    </div>
+                    <div style={{display:'flex',flexDirection:'column',gap:6,alignItems:'flex-end',flexShrink:0,marginLeft:10}}>
+                      <span style={{fontFamily:'var(--fm)',fontSize:8,color:sc[t.status]||'var(--cyan)',border:`1px solid ${sc[t.status]||'var(--cyan)'}`,padding:'2px 7px',borderRadius:4,whiteSpace:'nowrap'}}>{sl[t.status]||t.status}</span>
+                      {(t.status==='open'||t.status==='active')&&(
+                        <a href={`${window.location.origin}/#/daftar/${t.id}`} style={{fontFamily:'var(--fh)',fontSize:8,color:'#000',background:'var(--green)',padding:'4px 10px',borderRadius:5,textDecoration:'none',fontWeight:700,whiteSpace:'nowrap'}}>DAFTAR →</a>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+              {allTournaments.filter(t=>['pending','open','active','upcoming'].includes(t.status)).length>3&&(
+                <div onClick={()=>setActiveTab('tournaments')} style={{textAlign:'center',padding:'8px',fontSize:11,color:'var(--cyan)',cursor:'pointer',textDecoration:'underline'}}>Lihat semua {allTournaments.length} turnamen →</div>
+              )}
+            </div>
+          )}
+
+          {/* TURNAMEN LIVE SEKARANG */}
+          {allTournaments.filter(t=>t.status==='live').length>0&&(
+            <div style={{marginBottom:14}}>
+              <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--red)',letterSpacing:2,marginBottom:10,animation:'pulse 1s infinite',textShadow:'0 0 10px rgba(255,45,85,0.6)'}}>🔴 SEDANG BERLANGSUNG</div>
+              {allTournaments.filter(t=>t.status==='live').map(t=>(
+                <div key={t.id} style={{background:'rgba(255,45,85,0.06)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontFamily:'var(--fh)',fontSize:12,fontWeight:700,color:'var(--text)',marginBottom:3}}>{t.name}</div>
+                    <div style={{fontSize:10,color:'var(--muted)'}}>🎮 {t.game} · 📍 {t.city}</div>
+                  </div>
+                  <a href={`${window.location.origin}/#/live/${t.id}`} style={{fontFamily:'var(--fh)',fontSize:8,color:'#000',background:'var(--red)',padding:'6px 12px',borderRadius:6,textDecoration:'none',fontWeight:700,animation:'pulse 1s infinite'}}>🔴 TONTON</a>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* EMPTY STATE */}
+          {allTournaments.length===0&&!loadingTourn&&(
+            <div style={{textAlign:'center',padding:'40px 20px',color:'var(--muted)',fontSize:12}}>
+              <div style={{fontSize:40,marginBottom:12}}>🏟</div>
+              <div style={{marginBottom:6}}>Belum ada turnamen tersedia</div>
+              <div style={{fontSize:10}}>Organizer belum membuat turnamen</div>
+              {tournError&&<div style={{marginTop:8,fontSize:10,color:'var(--red)',padding:'6px',background:'rgba(255,45,85,0.08)',borderRadius:6}}>⚠ {tournError}</div>}
+            </div>
+          )}
+          {loadingTourn&&(
+            <div style={{textAlign:'center',padding:40}}><Spinner size={24} color="var(--cyan)"/></div>
+          )}
+
+          {/* QUICK ACTIONS */}
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:2,marginBottom:10,textShadow:'0 0 10px rgba(255,107,0,0.5)'}}>⚡ AKSI CEPAT</div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8}}>
+              {[
+                {icon:'🏆',label:'Semua Turnamen',tab:'tournaments',color:'var(--cyan)'},
+                {icon:'📋',label:'Riwayat',tab:'history',color:'var(--orange)'},
+                {icon:'🔴',label:'Live Score',tab:'livescore',color:'var(--red)'},
+                {icon:'🔔',label:'Notifikasi',tab:'notif',color:'var(--yellow)'},
+                {icon:'👤',label:'Profil',tab:'profil',color:'var(--green)'},
+                {icon:'💬',label:'Obrolan',tab:'chat',color:'var(--cyan)'},
+              ].map(a=>(
+                <div key={a.tab} onClick={()=>setActiveTab(a.tab)} style={{background:'rgba(10,10,25,0.8)',border:`1px solid ${a.color}22`,borderRadius:10,padding:'14px 8px',textAlign:'center',cursor:'pointer',transition:'all 0.2s'}} onMouseEnter={e=>{e.currentTarget.style.border=`1px solid ${a.color}66`;e.currentTarget.style.background='rgba(20,20,40,0.9)'}} onMouseLeave={e=>{e.currentTarget.style.border=`1px solid ${a.color}22`;e.currentTarget.style.background='rgba(10,10,25,0.8)'}}>
+                  <div style={{fontSize:22,marginBottom:6}}>{a.icon}</div>
+                  <div style={{fontFamily:'var(--fh)',fontSize:8,color:a.color,letterSpacing:1}}>{a.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </>}
 
         {/* TAB: SEMUA TURNAMEN */}
         {activeTab==='tournaments'&&<>
@@ -2689,6 +2802,37 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
           <button onClick={onLogout} style={{marginTop:16,width:'100%',padding:12,background:'rgba(255,45,85,0.08)',border:'1px solid rgba(255,45,85,0.3)',borderRadius:8,color:'var(--red)',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:'pointer'}}>
             🚪 {i.logout_member||'Keluar'}
           </button>
+        </>}
+
+        {/* ═══════════════════════════════════════
+             TAB: CHAT — Obrolan publik 
+             ═══════════════════════════════════════ */}
+        {activeTab==='chat'&&<>
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:12,textShadow:'0 0 10px rgba(0,229,255,0.5)'}}>💬 OBROLAN PUBLIK</div>
+          {/* Pilih turnamen untuk chat */}
+          {allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status)).length===0
+            ?<div style={{textAlign:'center',padding:40,color:'var(--muted)',fontSize:12}}>
+                <div style={{fontSize:32,marginBottom:8}}>💬</div>
+                <div>Belum ada turnamen aktif untuk obrolan</div>
+              </div>
+            :<>
+              {allTournaments.filter(t=>['open','active','live','upcoming','pending'].includes(t.status)).map(t=>(
+                <div key={t.id} style={{background:'rgba(10,10,25,0.8)',backdropFilter:'blur(6px)',border:'1px solid rgba(0,229,255,0.15)',borderRadius:10,padding:'12px 14px',marginBottom:8,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+                  <div>
+                    <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'var(--text)',marginBottom:2}}>{t.name}</div>
+                    <div style={{fontSize:10,color:'var(--muted)'}}>🎮 {t.game} · {t.status==='live'?'🔴 LIVE':'💬 Obrolan Aktif'}</div>
+                  </div>
+                  <a href={`${window.location.origin}/#/live/${t.id}`} target="_blank" rel="noreferrer"
+                    style={{fontFamily:'var(--fh)',fontSize:8,color:'var(--cyan)',border:'1px solid var(--cyan)',padding:'5px 12px',borderRadius:6,textDecoration:'none',letterSpacing:1,whiteSpace:'nowrap'}}>
+                    💬 BUKA
+                  </a>
+                </div>
+              ))}
+              <div style={{marginTop:16,padding:'12px 14px',background:'rgba(0,229,255,0.04)',border:'1px solid rgba(0,229,255,0.12)',borderRadius:10,fontSize:11,color:'var(--muted)',lineHeight:1.7}}>
+                💡 Obrolan tersedia di halaman Live setiap turnamen. Klik <b style={{color:'var(--cyan)'}}>BUKA</b> untuk masuk ke ruang obrolan turnamen.
+              </div>
+            </>
+          }
         </>}
 
       </div>
