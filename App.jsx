@@ -397,90 +397,96 @@ function LiveBanner({tournaments}){
 // ============================================================
 
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
-// ── Real Game Logo URLs (CDN publik) ──
-const GAME_LOGOS = {
-  ml:   'https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Mobile_Legends_Bang_Bang.png/200px-Mobile_Legends_Bang_Bang.png',
-  pubg: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9c/PUBG_Mobile_cover_art.jpg/200px-PUBG_Mobile_cover_art.jpg',
-  ff:   'https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Free_Fire_official_coverart.jpg/200px-Free_Fire_official_coverart.jpg',
-  val:  'https://upload.wikimedia.org/wikipedia/en/thumb/7/73/Valorant_cover.png/200px-Valorant_cover.png',
-  cr:   'https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Clash_Royale_key_art.jpg/200px-Clash_Royale_key_art.jpg',
-  cod:  'https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Call_of_Duty_Mobile_cover.jpg/200px-Call_of_Duty_Mobile_cover.jpg',
-}
-
-  ml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="mlg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0a3a8c"/><stop offset="100%" stop-color="#00c8ff"/></linearGradient>
-      <linearGradient id="mlg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffd700"/><stop offset="100%" stop-color="#ffaa00"/></linearGradient>
-      <filter id="mlglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="100" height="100" rx="16" fill="#020d2e"/>
-    <circle cx="50" cy="50" r="42" fill="none" stroke="url(#mlg1)" stroke-width="2" opacity="0.6"/>
-    <polygon points="50,12 88,34 88,66 50,88 12,66 12,34" fill="url(#mlg1)" opacity="0.15"/>
-    <polygon points="50,12 88,34 88,66 50,88 12,66 12,34" fill="none" stroke="url(#mlg2)" stroke-width="1.5"/>
-    <path d="M30,55 L45,35 L50,42 L55,35 L70,55 L62,55 L58,47 L50,58 L42,47 L38,55 Z" fill="url(#mlg2)" filter="url(#mlglow)"/>
-    <text x="50" y="80" text-anchor="middle" fill="#ffd700" font-size="8" font-family="Arial Black,sans-serif" letter-spacing="2" opacity="0.9">MOBILE LEGENDS</text>
-  </svg>`,
-
-  pubg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="pg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#c85000"/></linearGradient>
-      <filter id="pglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="100" height="100" rx="8" fill="#0d0800"/>
-    <rect x="6" y="6" width="88" height="88" rx="6" fill="none" stroke="#f5a623" stroke-width="1.5" opacity="0.5"/>
-    <circle cx="50" cy="38" r="16" fill="none" stroke="url(#pg1)" stroke-width="3" filter="url(#pglow)"/>
-    <circle cx="50" cy="38" r="8" fill="#f5a623" opacity="0.3"/>
-    <circle cx="50" cy="38" r="3" fill="#f5a623"/>
-    <rect x="46" y="52" width="8" height="18" rx="3" fill="url(#pg1)"/>
-    <rect x="36" y="56" width="28" height="4" rx="2" fill="url(#pg1)"/>
-    <text x="50" y="83" text-anchor="middle" fill="#f5a623" font-size="11" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="3">PUBG</text>
-    <text x="50" y="93" text-anchor="middle" fill="#888" font-size="7" font-family="Arial,sans-serif" letter-spacing="2">MOBILE</text>
-  </svg>`,
-
-  ff: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="ffg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff2200"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient>
-      <filter id="ffglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="100" height="100" fill="#100000"/>
-    <polygon points="50,5 95,27 95,73 50,95 5,73 5,27" fill="none" stroke="url(#ffg1)" stroke-width="2"/>
-    <polygon points="50,18 82,34 82,66 50,82 18,66 18,34" fill="#ff220011"/>
-    <text x="50" y="52" text-anchor="middle" fill="url(#ffg1)" font-size="32" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#ffglow)">FF</text>
-    <text x="50" y="68" text-anchor="middle" fill="#ffcc00" font-size="9" font-family="Arial Black,sans-serif" letter-spacing="2">FREE FIRE</text>
-    <rect x="30" y="72" width="40" height="2" fill="url(#ffg1)" rx="1"/>
-    <text x="50" y="86" text-anchor="middle" fill="#ff6600" font-size="8" font-family="Arial,sans-serif" letter-spacing="2">MAX</text>
-  </svg>`,
-
-  val: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="vg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4655"/><stop offset="100%" stop-color="#ff0018"/></linearGradient>
-      <filter id="vglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="100" height="100" fill="#050000"/>
-    <path d="M50,8 L92,28 L92,55 L50,92 L8,55 L8,28 Z" fill="none" stroke="#ff4655" stroke-width="1.5" opacity="0.7"/>
-    <path d="M50,22 L50,78 L22,52 Z" fill="url(#vg1)" opacity="0.9" filter="url(#vglow)"/>
-    <path d="M50,22 L78,52 L50,78 Z" fill="#ff465533" opacity="0.6"/>
-    <rect x="10" y="62" width="35" height="2" fill="#ff4655" rx="1"/>
-    <rect x="55" y="62" width="35" height="2" fill="#00e5ff" rx="1"/>
-    <text x="50" y="92" text-anchor="middle" fill="#ff4655" font-size="9" font-family="Arial Black,sans-serif" letter-spacing="2">VALORANT</text>
-  </svg>`,
-
-  cr: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <defs>
-      <linearGradient id="crg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
-      <filter id="crglow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="100" height="100" rx="18" fill="#06000e"/>
-    <rect x="5" y="5" width="90" height="90" rx="14" fill="none" stroke="url(#crg1)" stroke-width="2"/>
-    <polygon points="50,12 60,35 85,35 65,52 72,76 50,62 28,76 35,52 15,35 40,35" fill="url(#crg1)" opacity="0.2"/>
-    <polygon points="50,12 60,35 85,35 65,52 72,76 50,62 28,76 35,52 15,35 40,35" fill="none" stroke="#fbbf24" stroke-width="1.5" filter="url(#crglow)"/>
-    <text x="50" y="57" text-anchor="middle" fill="#fbbf24" font-size="18" font-family="serif">♛</text>
-    <text x="50" y="85" text-anchor="middle" fill="#c084fc" font-size="8" font-family="Arial Black,sans-serif" letter-spacing="1">CLASH ROYALE</text>
-  </svg>`,
-}
-
-// Convert SVG to data URL
+// ── Game Logos sebagai SVG realistis (inline, no CORS) ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+
+const GAME_LOGOS = {
+  ml: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="mlbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#001a4d"/><stop offset="100%" stop-color="#003399"/></linearGradient>
+      <linearGradient id="mlgold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#fff176"/><stop offset="100%" stop-color="#ffaa00"/></linearGradient>
+      <radialGradient id="mlcenter" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00e5ff" stop-opacity="0.3"/><stop offset="100%" stop-color="#001a4d" stop-opacity="0"/></radialGradient>
+      <filter id="mlglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="200" height="200" rx="28" fill="url(#mlbg)"/>
+    <circle cx="100" cy="100" r="96" fill="none" stroke="#ffd700" stroke-width="2" opacity="0.4"/>
+    <circle cx="100" cy="100" r="80" fill="url(#mlcenter)"/>
+    <polygon points="100,30 170,65 170,135 100,170 30,135 30,65" fill="none" stroke="url(#mlgold)" stroke-width="3"/>
+    <path d="M65,115 L82,75 L100,95 L118,75 L135,115 L122,115 L116,98 L100,118 L84,98 L78,115 Z" fill="url(#mlgold)" filter="url(#mlglow)"/>
+    <text x="100" y="158" text-anchor="middle" fill="#ffd700" font-size="16" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="2">MOBILE</text>
+    <text x="100" y="176" text-anchor="middle" fill="#00c8ff" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="1">LEGENDS</text>
+  </svg>`),
+
+  pubg: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="pbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0a00"/><stop offset="100%" stop-color="#3d1800"/></linearGradient>
+      <linearGradient id="porange" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#e65c00"/></linearGradient>
+      <filter id="pglow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="200" height="200" rx="20" fill="url(#pbg)"/>
+    <rect x="8" y="8" width="184" height="184" rx="14" fill="none" stroke="#f5a623" stroke-width="2.5" opacity="0.6"/>
+    <circle cx="100" cy="78" r="36" fill="none" stroke="url(#porange)" stroke-width="5" filter="url(#pglow)"/>
+    <circle cx="100" cy="78" r="20" fill="#f5a62333"/>
+    <circle cx="100" cy="78" r="8" fill="url(#porange)"/>
+    <line x1="100" y1="42" x2="100" y2="54" stroke="#f5a623" stroke-width="3"/>
+    <line x1="100" y1="102" x2="100" y2="114" stroke="#f5a623" stroke-width="3"/>
+    <line x1="64" y1="78" x2="76" y2="78" stroke="#f5a623" stroke-width="3"/>
+    <line x1="124" y1="78" x2="136" y2="78" stroke="#f5a623" stroke-width="3"/>
+    <rect x="86" y="112" width="28" height="40" rx="8" fill="url(#porange)"/>
+    <rect x="66" y="122" width="68" height="10" rx="5" fill="url(#porange)"/>
+    <text x="100" y="172" text-anchor="middle" fill="#f5a623" font-size="28" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="4" filter="url(#pglow)">PUBG</text>
+    <text x="100" y="190" text-anchor="middle" fill="#aaa" font-size="14" font-family="Arial,sans-serif" letter-spacing="4">MOBILE</text>
+  </svg>`),
+
+  ff: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="ffbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0000"/><stop offset="100%" stop-color="#3d0a00"/></linearGradient>
+      <linearGradient id="fffire" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ff2200"/><stop offset="50%" stop-color="#ff6600"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient>
+      <filter id="ffglow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="200" height="200" fill="url(#ffbg)"/>
+    <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="url(#fffire)" stroke-width="3.5" filter="url(#ffglow)"/>
+    <polygon points="100,30 170,65 170,135 100,170 30,135 30,65" fill="#ff22000d"/>
+    <path d="M68,140 Q72,105 85,90 Q78,100 88,85 Q82,100 95,78 Q90,100 100,72 Q110,100 105,78 Q118,100 112,85 Q122,100 115,90 Q128,105 132,140 Q115,130 100,135 Q85,130 68,140 Z" fill="url(#fffire)" filter="url(#ffglow)"/>
+    <text x="100" y="108" text-anchor="middle" fill="white" font-size="38" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#ffglow)">FF</text>
+    <text x="100" y="165" text-anchor="middle" fill="#ffcc00" font-size="15" font-family="Arial Black,sans-serif" letter-spacing="3">FREE FIRE</text>
+    <text x="100" y="183" text-anchor="middle" fill="#ff6600" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="5">MAX</text>
+  </svg>`),
+
+  val: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="vbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0a0000"/><stop offset="100%" stop-color="#200005"/></linearGradient>
+      <linearGradient id="vred" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ff6470"/><stop offset="100%" stop-color="#ff0018"/></linearGradient>
+      <filter id="vglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="200" height="200" fill="url(#vbg)"/>
+    <path d="M100,20 L180,60 L180,110 L100,180 L20,110 L20,60 Z" fill="none" stroke="#ff4655" stroke-width="2" opacity="0.5"/>
+    <path d="M100,40 L100,160 L32,108 Z" fill="url(#vred)" filter="url(#vglow)"/>
+    <path d="M100,40 L168,108 L100,160 Z" fill="#ff465522"/>
+    <line x1="18" y1="128" x2="88" y2="128" stroke="#ff4655" stroke-width="3" stroke-linecap="round"/>
+    <line x1="112" y1="128" x2="182" y2="128" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
+    <text x="100" y="192" text-anchor="middle" fill="#ff4655" font-size="17" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="3" filter="url(#vglow)">VALORANT</text>
+  </svg>`),
+
+  cr: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="crbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d0020"/><stop offset="100%" stop-color="#1e0050"/></linearGradient>
+      <linearGradient id="crpurple" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d946ef"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
+      <linearGradient id="crgold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
+      <filter id="crglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <rect width="200" height="200" rx="28" fill="url(#crbg)"/>
+    <circle cx="100" cy="100" r="90" fill="none" stroke="url(#crpurple)" stroke-width="3" opacity="0.5"/>
+    <path d="M100,25 L115,65 L158,65 L124,88 L137,128 L100,106 L63,128 L76,88 L42,65 L85,65 Z" fill="url(#crpurple)" opacity="0.25" filter="url(#crglow)"/>
+    <path d="M100,25 L115,65 L158,65 L124,88 L137,128 L100,106 L63,128 L76,88 L42,65 L85,65 Z" fill="none" stroke="url(#crgold)" stroke-width="2.5" filter="url(#crglow)"/>
+    <path d="M84,48 L100,40 L116,48 L118,42 L100,32 L82,42 Z" fill="url(#crgold)"/>
+    <rect x="90" y="36" width="20" height="6" rx="3" fill="url(#crgold)"/>
+    <text x="100" y="170" text-anchor="middle" fill="#d946ef" font-size="14" font-family="Arial Black,sans-serif" letter-spacing="2" filter="url(#crglow)">CLASH</text>
+    <text x="100" y="188" text-anchor="middle" fill="#fbbf24" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="2">ROYALE</text>
+  </svg>`),
+}
+
+
 
 const DEFAULT_ADS = [
   {
