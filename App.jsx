@@ -397,7 +397,16 @@ function LiveBanner({tournaments}){
 // ============================================================
 
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
-const SVG_LOGOS = {
+// ── Real Game Logo URLs (CDN publik) ──
+const GAME_LOGOS = {
+  ml:   'https://upload.wikimedia.org/wikipedia/en/thumb/9/93/Mobile_Legends_Bang_Bang.png/200px-Mobile_Legends_Bang_Bang.png',
+  pubg: 'https://upload.wikimedia.org/wikipedia/en/thumb/9/9c/PUBG_Mobile_cover_art.jpg/200px-PUBG_Mobile_cover_art.jpg',
+  ff:   'https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Free_Fire_official_coverart.jpg/200px-Free_Fire_official_coverart.jpg',
+  val:  'https://upload.wikimedia.org/wikipedia/en/thumb/7/73/Valorant_cover.png/200px-Valorant_cover.png',
+  cr:   'https://upload.wikimedia.org/wikipedia/en/thumb/3/39/Clash_Royale_key_art.jpg/200px-Clash_Royale_key_art.jpg',
+  cod:  'https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Call_of_Duty_Mobile_cover.jpg/200px-Call_of_Duty_Mobile_cover.jpg',
+}
+
   ml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
     <defs>
       <linearGradient id="mlg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0a3a8c"/><stop offset="100%" stop-color="#00c8ff"/></linearGradient>
@@ -476,7 +485,7 @@ const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s
 const DEFAULT_ADS = [
   {
     id:'ml',game:'Mobile Legends: Bang Bang',
-    logo: svgToUrl(SVG_LOGOS.ml),
+    logo: GAME_LOGOS.ml,
     tagline:'Jadilah Legenda Sejati di Arena!',
     sub:'5v5 MOBA · Terpopuler Asia · 1 Milyar+ Download',
     cta:'Main Sekarang',
@@ -487,7 +496,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'pubg',game:'PUBG Mobile',
-    logo: svgToUrl(SVG_LOGOS.pubg),
+    logo: GAME_LOGOS.pubg,
     tagline:'100 Players. 1 Winner. Are You Ready?',
     sub:'Battle Royale #1 di Dunia · Gratis',
     cta:'Drop In Now',
@@ -498,7 +507,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'ff',game:'Free Fire MAX',
-    logo: svgToUrl(SVG_LOGOS.ff),
+    logo: GAME_LOGOS.ff,
     tagline:'Survive. Eliminate. Be The Last!',
     sub:'48 Pemain · 10 Menit · 1 Juara · Gratis',
     cta:'Main Gratis',
@@ -509,7 +518,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'val',game:'Valorant',
-    logo: svgToUrl(SVG_LOGOS.val),
+    logo: GAME_LOGOS.val,
     tagline:'Lock In. Execute. Dominate.',
     sub:'5v5 Tactical Shooter · PC · Gratis',
     cta:'Play Free',
@@ -520,7 +529,7 @@ const DEFAULT_ADS = [
   },
   {
     id:'cr',game:'Clash Royale',
-    logo: svgToUrl(SVG_LOGOS.cr),
+    logo: GAME_LOGOS.cr,
     tagline:'Battle Players Around the World!',
     sub:'Real-time PvP Card Strategy · Supercell',
     cta:'Play Now',
