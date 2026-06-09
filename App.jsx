@@ -8440,6 +8440,36 @@ function FloatingChat({user,tournaments=[],lang='id'}){
   const[sending,setSending]=React.useState(false)
   const chatEndRef=React.useRef(null)
   const inputRef=React.useRef(null)
+  // Draggable state
+  const[pos,setPos]=React.useState(()=>{
+    try{const s=localStorage.getItem('arenagg_chat_pos');return s?JSON.parse(s):{bottom:24,right:24}}catch{return{bottom:24,right:24}}
+  })
+  const dragging=React.useRef(false)
+  const dragStart=React.useRef({x:0,y:0,bottom:0,right:0})
+  const hasDragged=React.useRef(false)
+  const btnRef=React.useRef(null)
+  const onPointerDown=(e)=>{
+    dragging.current=true
+    hasDragged.current=false
+    dragStart.current={x:e.clientX,y:e.clientY,bottom:pos.bottom,right:pos.right}
+    e.currentTarget.setPointerCapture(e.pointerId)
+    e.preventDefault()
+  }
+  const onPointerMove=(e)=>{
+    if(!dragging.current)return
+    const dx=e.clientX-dragStart.current.x
+    const dy=e.clientY-dragStart.current.y
+    if(Math.abs(dx)>4||Math.abs(dy)>4)hasDragged.current=true
+    const newRight=Math.max(8,Math.min(window.innerWidth-60,dragStart.current.right-dx))
+    const newBottom=Math.max(8,Math.min(window.innerHeight-60,dragStart.current.bottom-dy))
+    setPos({bottom:newBottom,right:newRight})
+  }
+  const onPointerUp=(e)=>{
+    if(!dragging.current)return
+    dragging.current=false
+    localStorage.setItem('arenagg_chat_pos',JSON.stringify(pos))
+    if(!hasDragged.current)setOpen(o=>!o)
+  }
 
   const activeTournaments=tournaments.filter(t=>['active','live','registration'].includes(t.status)||true).slice(0,10)
   const currentTid=selTid||activeTournaments[0]?.id||null
@@ -8535,20 +8565,25 @@ function FloatingChat({user,tournaments=[],lang='id'}){
   const currentTourn=activeTournaments.find(t=>t.id===currentTid)
 
   return<>
-    {/* FLOATING BUTTON */}
+    {/* FLOATING BUTTON — draggable */}
     <button
-      onClick={()=>setOpen(o=>!o)}
+      ref={btnRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
       style={{
-        position:'fixed',bottom:open?'calc(420px + 16px)':24,right:24,
+        position:'fixed',
+        bottom:open?pos.bottom+(420+16):pos.bottom,
+        right:pos.right,
         width:52,height:52,borderRadius:'50%',
         background:open?'var(--border)':'linear-gradient(135deg,#0088ff,#00c6ff)',
-        border:'none',cursor:'pointer',zIndex:9999,
+        border:'none',cursor:'grab',zIndex:9999,
         display:'flex',alignItems:'center',justifyContent:'center',
         boxShadow:open?'0 2px 8px rgba(0,0,0,0.3)':'0 4px 20px rgba(0,136,255,0.5)',
-        transition:'all 0.3s cubic-bezier(0.34,1.56,0.64,1)',
-        transform:open?'rotate(0deg)':'rotate(0deg)',
+        transition:'box-shadow 0.3s,background 0.3s',
+        touchAction:'none',userSelect:'none',
       }}
-      title={lang==="en"?"Live Chat":"Obrolan Live"}
+      title={lang==="en"?"Live Chat (drag to move)":"Obrolan Live (geser untuk pindah)"}
     >
       {open
         ?<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -8572,7 +8607,7 @@ function FloatingChat({user,tournaments=[],lang='id'}){
 
     {/* CHAT PANEL */}
     {open&&<div style={{
-      position:'fixed',bottom:24,right:24,
+      position:'fixed',bottom:pos.bottom,right:pos.right,
       width:340,height:420,
       background:'var(--bg2)',
       border:'1px solid rgba(0,136,255,0.3)',
