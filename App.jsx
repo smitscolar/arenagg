@@ -7201,12 +7201,62 @@ function Sidebar({page,setPage,user,onLogout,hasLive,lang,setLangFn,isLight,togg
 function BottomNav({page,setPage,lang,hasLive}){
   const i=T[lang]||T.id
   const icons=['⚡','📈','🏆','＋','👥','📊','🔴','🏅','💰','💎','⚙']
-  return <nav className="bottom-nav">
-    {NAV_IDS.map((id,idx)=><button key={id} className={`bnav-item ${page===id?'active':''}`} onClick={()=>setPage(id)}>
-      <span className="bnav-icon">{icons[idx]}{id==='tournaments'&&hasLive&&<span style={{width:4,height:4,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top'}}/>}</span>
-      <span>{(i.nav&&i.nav[idx]||'').slice(0,5)}</span>
-    </button>)}
-  </nav>
+  const[moreOpen,setMoreOpen]=React.useState(false)
+  // 5 item utama: Dashboard, Turnamen, Buat, Peserta, Lainnya
+  const MAIN=[0,2,3,4,10] // index dari NAV_IDS: dashboard,tournaments,create,teams,settings
+  const MORE=[1,5,6,7,8,9] // revenue,bracket,live,leaderboard,finance,arpay
+  const mainItems=MAIN.map(idx=>({id:NAV_IDS[idx],icon:icons[idx],label:(i.nav&&i.nav[idx]||'').replace(/[🔴🏅💎⚙]/g,'').trim().slice(0,6),idx}))
+  const moreItems=MORE.map(idx=>({id:NAV_IDS[idx],icon:icons[idx],label:(i.nav&&i.nav[idx]||'').replace(/[🔴🏅💎]/g,'').trim().slice(0,7),idx}))
+  const moreActive=MORE.map(idx=>NAV_IDS[idx]).includes(page)
+  return <>
+    {/* MORE DRAWER */}
+    {moreOpen&&<div style={{position:'fixed',inset:0,zIndex:998}} onClick={()=>setMoreOpen(false)}/>}
+    {moreOpen&&<div style={{
+      position:'fixed',bottom:60,left:8,right:8,zIndex:999,
+      background:'var(--bg2)',border:'1px solid var(--border)',
+      borderRadius:14,padding:'10px 6px 8px',
+      boxShadow:'0 -8px 32px rgba(0,0,0,0.6)',
+      display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6,
+      backdropFilter:'blur(16px)',
+    }}>
+      <div style={{gridColumn:'1/-1',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2,textAlign:'center',paddingBottom:6,borderBottom:'1px solid var(--border)',marginBottom:2}}>MENU LAINNYA</div>
+      {moreItems.map(({id,icon,label,idx})=><button key={id}
+        className={`bnav-item ${page===id?'active':''}`}
+        onClick={()=>{setPage(id);setMoreOpen(false)}}
+        style={{borderRadius:10,padding:'10px 4px',background:page===id?'rgba(0,229,255,0.08)':'transparent',border:page===id?'1px solid rgba(0,229,255,0.2)':'1px solid transparent',minHeight:56}}
+      >
+        <span className="bnav-icon" style={{fontSize:22}}>
+          {icon}
+          {id==='live'&&hasLive&&<span style={{width:5,height:5,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top',animation:'pulse 1s infinite'}}/>}
+        </span>
+        <span style={{fontSize:9,marginTop:2}}>{label}</span>
+      </button>)}
+    </div>}
+    {/* MAIN BOTTOM NAV */}
+    <nav className="bottom-nav" style={{display:'flex',gridTemplateColumns:'unset'}}>
+      {mainItems.map(({id,icon,label,idx})=><button key={id}
+        className={`bnav-item ${page===id?'active':''}`}
+        onClick={()=>{setPage(id);setMoreOpen(false)}}
+        style={{flex:1,minHeight:56,fontSize:9}}
+      >
+        <span className="bnav-icon" style={{fontSize:22}}>
+          {icon}
+          {id==='tournaments'&&hasLive&&<span style={{width:5,height:5,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top',animation:'pulse 1s infinite'}}/>}
+        </span>
+        <span style={{fontSize:9,letterSpacing:0.5}}>{label}</span>
+      </button>)}
+      {/* Tombol LAINNYA */}
+      <button
+        className={`bnav-item ${moreActive?'active':''}`}
+        onClick={()=>setMoreOpen(o=>!o)}
+        style={{flex:1,minHeight:56,fontSize:9,position:'relative'}}
+      >
+        <span className="bnav-icon" style={{fontSize:22,transition:'transform 0.2s',transform:moreOpen?'rotate(45deg)':'none'}}>⋯</span>
+        <span style={{fontSize:9,letterSpacing:0.5}}>Lainnya</span>
+        {moreActive&&<span style={{position:'absolute',top:6,right:'50%',transform:'translateX(14px)',width:5,height:5,borderRadius:'50%',background:'var(--cyan)'}}/>}
+      </button>
+    </nav>
+  </>
 }
 
 // DASHBOARD ELEGAN & PROFESIONAL
