@@ -7304,9 +7304,14 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
     {/* GREETING SECTION */}
     <div style={{marginBottom:22,padding:'18px 22px',background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))',borderRadius:12,border:'1px solid rgba(0,229,255,0.12)'}}>
-      <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:2,marginBottom:4}}>{greeting.toUpperCase()}</div>
-      <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--cyan)',marginBottom:3}}>{name.toUpperCase()}</div>
-      <div style={{color:'var(--muted)',fontSize:11,fontFamily:'var(--fm)',letterSpacing:1}}>{i.dash_sub}</div>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:6}}>
+        <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{width:48,height:48,objectFit:'contain',filter:'drop-shadow(0 0 8px rgba(0,229,255,0.4))',flexShrink:0}}/>
+        <div style={{flex:1}}>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:2,marginBottom:2}}>{greeting.toUpperCase()}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--cyan)',marginBottom:2}}>{name.toUpperCase()}</div>
+          <div style={{color:'var(--muted)',fontSize:11,fontFamily:'var(--fm)',letterSpacing:1}}>{i.dash_sub}</div>
+        </div>
+      </div>
       <div style={{marginTop:8,display:'flex',gap:8,flexWrap:'wrap'}}>
         <span className="metric-chip metric-neutral">📅 {new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</span>
         {liveT.length>0&&<span className="metric-chip metric-down">🔴 {liveT.length} Turnamen LIVE</span>}
