@@ -564,7 +564,11 @@ function AdBanner({compact=false}){
   >
     {/* === BACKGROUND — gambar nyata + overlay gelap === */}
     {/* Gambar asli game sebagai background */}
-    {GAME_BGS[ad.gameId||ad.id]&&<div style={{position:'absolute',inset:0,backgroundImage:`url(${GAME_BGS[ad.gameId||ad.id]})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat'}}/>}
+    {/* Background: bgImage custom sponsor > GAME_BGS bawaan > gradient */}
+    {(ad.bgImage||GAME_BGS[ad.gameId||ad.id])
+      ?<div style={{position:'absolute',inset:0,backgroundImage:`url(${ad.bgImage||GAME_BGS[ad.gameId||ad.id]})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat'}}/>
+      :<div style={{position:'absolute',inset:0,background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)'}}/>
+    }
     {/* Overlay — tipis di kanan, gelap di kiri untuk teks */}
     <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 35%, rgba(0,0,0,0.15) 65%, rgba(0,0,0,0.05) 100%)'}}/>
     {/* Color tint khas game — tipis */}
@@ -640,9 +644,209 @@ function AdBanner({compact=false}){
 // Ad Manager for Settings
 function AdManager({toast}){
   const[ads,setAds]=useState(getCustomAds)
-  const[form,setForm]=useState({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',active:true})
+  const[form,setForm]=useState({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',bgImage:'',active:true})
   const[showForm,setShowForm]=useState(false)
+  const[editId,setEditId]=useState(null)
   const set=k=>e=>setForm(f=>({...f,[k]:e.target.value}))
+
+  const handleLogoUpload=e=>{
+    const file=e.target.files?.[0]
+    if(!file)return
+    if(file.size>800*1024){toast('Maks 800KB untuk logo','error');return}
+    const reader=new FileReader()
+    reader.onload=ev=>setForm(f=>({...f,logo:ev.target.result,emoji:''}))
+    reader.readAsDataURL(file)
+  }
+
+  const handleBgUpload=e=>{
+    const file=e.target.files?.[0]
+    if(!file)return
+    if(file.size>2*1024*1024){toast('Maks 2MB untuk background','error');return}
+    // Compress background
+    const img=new Image()
+    img.onload=()=>{
+      const canvas=document.createElement('canvas')
+      const maxW=800
+      const scale=Math.min(1,maxW/img.width)
+      canvas.width=img.width*scale
+      canvas.height=img.height*scale
+      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height)
+      const compressed=canvas.toDataURL('image/jpeg',0.7)
+      setForm(f=>({...f,bgImage:compressed}))
+      toast('✓ Background berhasil diupload!','success')
+    }
+    img.src=URL.createObjectURL(file)
+  }
+
+  const save=()=>{
+    if(!form.name||!form.tagline){toast('Nama & tagline wajib!','error');return}
+    const adData={
+      ...form,
+      id:editId||('custom_'+Date.now()),
+      isCustom:true,
+      game:form.name,
+      logo:form.logo||null,
+      bg:form.bgImage?null:`linear-gradient(135deg,${form.color}22,${form.accent}11)`,
+    }
+    let updated
+    if(editId){
+      updated=ads.map(a=>a.id===editId?adData:a)
+      toast('✓ Iklan diperbarui!','success')
+    } else {
+      updated=[...ads,adData]
+      toast('✓ Iklan sponsor ditambahkan!','success')
+    }
+    setAds(updated);saveCustomAds(updated)
+    setForm({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',bgImage:'',active:true})
+    setShowForm(false);setEditId(null)
+  }
+
+  const startEdit=(ad)=>{
+    setForm({name:ad.game||ad.name||'',tagline:ad.tagline||'',description:ad.description||'',url:ad.url||'',cta:ad.cta||'Kunjungi',emoji:ad.emoji||'🎮',color:ad.color||'#00e5ff',accent:ad.accent||'#ffd700',logo:ad.logo||'',bgImage:ad.bgImage||'',active:ad.active!==false})
+    setEditId(ad.id);setShowForm(true)
+  }
+
+  const toggle=(id)=>{const updated=ads.map(a=>a.id===id?{...a,active:!a.active}:a);setAds(updated);saveCustomAds(updated)}
+  const remove=(id)=>{const updated=ads.filter(a=>a.id!==id);setAds(updated);saveCustomAds(updated);toast('Iklan dihapus','info')}
+
+  return <div>
+    <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:2,marginBottom:12}}>📺 SLOT IKLAN AKTIF</div>
+
+    {/* Default ads */}
+    <div style={{marginBottom:14}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)',letterSpacing:1,marginBottom:8}}>IKLAN BAWAAN (AUTO)</div>
+      <div style={{display:'flex',flexDirection:'column',gap:6}}>
+        {DEFAULT_ADS.map(ad=>(
+          <div key={ad.id} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 12px',background:'rgba(255,255,255,0.03)',borderRadius:7,border:'1px solid var(--border)'}}>
+            <GameLogo gameId={ad.gameId||ad.id} size={36}/>
+            <div style={{flex:1}}><div style={{fontSize:12,fontWeight:600}}>{ad.game}</div><div style={{fontSize:10,color:'var(--muted)'}}>{ad.tagline}</div></div>
+            <span className="tag tag-active" style={{fontSize:8}}>● AKTIF</span>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Custom sponsor ads */}
+    {ads.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--orange)',letterSpacing:1,marginBottom:8}}>IKLAN SPONSOR KAMU ({ads.length})</div>
+      {ads.map(ad=>(
+        <div key={ad.id} style={{marginBottom:8,borderRadius:10,overflow:'hidden',border:`1px solid ${ad.active?'rgba(255,107,0,0.3)':'var(--border)'}`,opacity:ad.active?1:0.6}}>
+          {/* Mini preview banner */}
+          <div style={{position:'relative',height:60,background:ad.bgImage?`url(${ad.bgImage}) center/cover no-repeat`:(ad.bg||'#111'),overflow:'hidden'}}>
+            {ad.bgImage&&<div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,rgba(0,0,0,0.7),rgba(0,0,0,0.3))'}}/>}
+            <div style={{position:'relative',zIndex:1,display:'flex',alignItems:'center',gap:10,padding:'8px 12px',height:'100%'}}>
+              <div style={{width:40,height:40,borderRadius:8,overflow:'hidden',border:`1px solid ${ad.accent||'#ffd700'}66`,background:`${ad.color||'#00e5ff'}22`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                {ad.logo?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span style={{fontSize:20}}>{ad.emoji||'🎮'}</span>}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:9,color:ad.accent||'#ffd700',letterSpacing:1}}>{ad.game}</div>
+                <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:700,color:'#fff',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ad.tagline}</div>
+              </div>
+              <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                <button onClick={()=>startEdit(ad)} style={{background:'rgba(0,229,255,0.15)',border:'1px solid rgba(0,229,255,0.3)',borderRadius:5,color:'var(--cyan)',fontFamily:'var(--fh)',fontSize:8,padding:'4px 8px',cursor:'pointer'}}>✏ EDIT</button>
+                <button onClick={()=>toggle(ad.id)} style={{background:'none',border:'none',cursor:'pointer',fontSize:18}}>{ad.active?'✅':'⬜'}</button>
+                <button onClick={()=>remove(ad.id)} className="btn btn-danger btn-sm" style={{padding:'3px 8px',fontSize:9}}>✕</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>}
+
+    {/* Add/Edit Form */}
+    {!showForm
+      ?<button className="btn btn-orange btn-full" onClick={()=>{setShowForm(true);setEditId(null);setForm({name:'',tagline:'',description:'',url:'',cta:'Kunjungi',emoji:'🎮',color:'#00e5ff',accent:'#ffd700',logo:'',bgImage:'',active:true})}} style={{fontSize:10}}>＋ TAMBAH IKLAN SPONSOR</button>
+      :<div style={{background:'rgba(255,107,0,0.04)',border:'1px solid rgba(255,107,0,0.25)',borderRadius:12,padding:'16px 14px'}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--orange)',letterSpacing:1,marginBottom:14}}>{editId?'✏ EDIT IKLAN SPONSOR':'📢 IKLAN SPONSOR BARU'}</div>
+
+        {/* PREVIEW BILLBOARD NYATA */}
+        <div style={{marginBottom:16,borderRadius:12,overflow:'hidden',border:'1px solid rgba(255,255,255,0.15)',position:'relative',minHeight:120}}>
+          {/* Background */}
+          {form.bgImage
+            ?<div style={{position:'absolute',inset:0,backgroundImage:`url(${form.bgImage})`,backgroundSize:'cover',backgroundPosition:'center'}}/>
+            :<div style={{position:'absolute',inset:0,background:`linear-gradient(135deg,${form.color}44,${form.accent}22,#000)`}}/>
+          }
+          <div style={{position:'absolute',inset:0,background:'linear-gradient(90deg,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.3) 60%,rgba(0,0,0,0.05) 100%)'}}/>
+          <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${form.accent||'#ffd700'},transparent)`}}/>
+          {/* Content */}
+          <div style={{position:'relative',zIndex:1,display:'flex',alignItems:'center',gap:14,padding:'14px'}}>
+            <div style={{width:70,height:70,borderRadius:14,overflow:'hidden',border:`2px solid ${form.accent||'#ffd700'}66`,background:`${form.color||'#00e5ff'}22`,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,boxShadow:`0 0 20px ${form.color||'#00e5ff'}44`}}>
+              {form.logo?<img src={form.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt=""/>:<span style={{fontSize:32}}>{form.emoji||'🎮'}</span>}
+            </div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontFamily:'var(--fh)',fontSize:9,color:form.accent||'#ffd700',letterSpacing:2,marginBottom:4}}>{form.name||'NAMA BRAND'}</div>
+              <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2}}>{form.tagline||'Tagline iklan kamu di sini...'}</div>
+              {form.description&&<div style={{fontSize:10,color:'rgba(255,255,255,0.6)',marginBottom:8}}>{form.description}</div>}
+              <div style={{display:'inline-flex',padding:'8px 20px',background:`linear-gradient(135deg,${form.accent||'#ffd700'},${form.color||'#ff6b00'})`,color:'#000',borderRadius:8,fontFamily:'var(--fh)',fontSize:10,fontWeight:900}}>{form.cta||'Kunjungi'} →</div>
+            </div>
+          </div>
+          <div style={{position:'absolute',bottom:6,right:10,fontFamily:'var(--fm)',fontSize:7,color:'rgba(255,255,255,0.3)',letterSpacing:1}}>PREVIEW LIVE</div>
+        </div>
+
+        {/* Form fields */}
+        <div className="g2" style={{marginBottom:10}}>
+          <div><label>Nama Brand / Game *</label><input value={form.name} onChange={set('name')} placeholder="Misal: Garena FF"/></div>
+          <div><label>Teks Tombol CTA</label><input value={form.cta} onChange={set('cta')} placeholder="Kunjungi"/></div>
+        </div>
+        <div style={{marginBottom:10}}><label>Tagline *</label><input value={form.tagline} onChange={set('tagline')} placeholder="Kalimat iklan singkat & menarik..."/></div>
+        <div style={{marginBottom:10}}><label>Deskripsi (opsional)</label><input value={form.description} onChange={set('description')} placeholder="Info tambahan produk..."/></div>
+        <div style={{marginBottom:10}}><label>URL Tujuan</label><input value={form.url} onChange={set('url')} placeholder="https://..."/></div>
+
+        {/* Upload Logo */}
+        <div style={{marginBottom:10}}>
+          <label>📷 Logo / Foto Produk</label>
+          <div style={{display:'flex',alignItems:'center',gap:10,marginTop:6}}>
+            <div style={{width:56,height:56,borderRadius:12,overflow:'hidden',border:'2px solid var(--border)',background:'rgba(255,255,255,0.05)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+              {form.logo?<img src={form.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="logo"/>:<span style={{fontSize:26}}>{form.emoji||'🎮'}</span>}
+            </div>
+            <div style={{flex:1,display:'flex',flexDirection:'column',gap:6}}>
+              <label style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'8px 12px',background:'rgba(0,229,255,0.08)',border:'1px solid rgba(0,229,255,0.25)',borderRadius:8,fontSize:10,color:'var(--cyan)',fontFamily:'var(--fh)',letterSpacing:1,justifyContent:'center'}}>
+                📷 UPLOAD LOGO (maks 800KB)
+                <input type="file" accept="image/*" style={{display:'none'}} onChange={handleLogoUpload}/>
+              </label>
+              <div style={{display:'flex',alignItems:'center',gap:6}}>
+                <span style={{fontSize:9,color:'var(--muted)'}}>Atau emoji:</span>
+                <input value={form.emoji} onChange={e=>setForm(f=>({...f,emoji:e.target.value,logo:''}))} placeholder="🎮" style={{width:44,fontSize:18,textAlign:'center',padding:'4px'}}/>
+                {form.logo&&<button onClick={()=>setForm(f=>({...f,logo:''}))} style={{fontSize:9,color:'var(--red)',background:'none',border:'none',cursor:'pointer'}}>✕ Hapus</button>}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Upload Background */}
+        <div style={{marginBottom:10}}>
+          <label>🖼 Foto Background Iklan</label>
+          <div style={{marginTop:6}}>
+            {form.bgImage
+              ?<div style={{position:'relative',borderRadius:10,overflow:'hidden',height:80,marginBottom:6}}>
+                  <img src={form.bgImage} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="bg"/>
+                  <button onClick={()=>setForm(f=>({...f,bgImage:''}))} style={{position:'absolute',top:6,right:6,background:'rgba(255,45,85,0.8)',border:'none',borderRadius:4,color:'#fff',padding:'3px 8px',fontSize:9,cursor:'pointer'}}>✕ Hapus BG</button>
+                  <div style={{position:'absolute',bottom:4,left:8,fontFamily:'var(--fm)',fontSize:8,color:'rgba(255,255,255,0.7)'}}>✓ Background terpasang</div>
+                </div>
+              :<label style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,cursor:'pointer',padding:'14px',background:'rgba(255,107,0,0.05)',border:'2px dashed rgba(255,107,0,0.3)',borderRadius:10,fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:1}}>
+                🖼 UPLOAD FOTO BACKGROUND (maks 2MB)
+                <input type="file" accept="image/*" style={{display:'none'}} onChange={handleBgUpload}/>
+              </label>
+            }
+            <div style={{fontSize:9,color:'var(--muted)',marginTop:4}}>💡 Gunakan foto landscape (horizontal) agar tampil optimal</div>
+          </div>
+        </div>
+
+        {/* Warna */}
+        <div className="g2" style={{marginBottom:14}}>
+          <div><label>Warna Utama</label><input type="color" value={form.color} onChange={set('color')} style={{height:36,padding:'4px 8px',cursor:'pointer',width:'100%'}}/></div>
+          <div><label>Warna Aksen</label><input type="color" value={form.accent} onChange={set('accent')} style={{height:36,padding:'4px 8px',cursor:'pointer',width:'100%'}}/></div>
+        </div>
+
+        <div style={{display:'flex',gap:8}}>
+          <button className="btn btn-orange" onClick={save} style={{flex:1,justifyContent:'center'}}>💾 {editId?'Update Iklan':'Simpan Iklan'}</button>
+          <button className="btn btn-ghost" onClick={()=>{setShowForm(false);setEditId(null)}}>Batal</button>
+        </div>
+      </div>
+    }
+  </div>
+}
+
   
   const save=()=>{
     if(!form.name||!form.tagline){toast('Nama & tagline wajib!','error');return}
