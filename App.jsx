@@ -698,89 +698,56 @@ function AdBanner({compact=false}){
     </div>
   }
 
-  // ── FULL BANNER ─────────────────────────────────────────────
+  // ── FULL BANNER — REDESIGN PREMIUM ─────────────────────────────────────────────
   return <div
     onMouseEnter={()=>setPaused(true)}
     onMouseLeave={()=>setPaused(false)}
     style={{
-      background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)',
-      borderRadius:14,
-      border:`1.5px solid ${ad.accent||'#ffd700'}44`,
-      padding:'0',
-      marginBottom:18,
-      boxShadow:`0 8px 40px rgba(0,0,0,0.6), 0 0 60px ${ad.accent||'#ffd700'}15`,
-      position:'relative',
-      overflow:'hidden',
-      cursor:'pointer',
-      minHeight:90,
-      '--ad-glow':ad.accent||'#ffd700',
+      position:'relative',overflow:'hidden',
+      borderRadius:16,marginBottom:18,cursor:'pointer',
+      border:`2px solid ${ad.accent||'#ffd700'}55`,
+      boxShadow:`0 12px 48px rgba(0,0,0,0.7), 0 0 80px ${ad.accent||'#ffd700'}20`,
+      minHeight:160,
     }}
     onClick={()=>ad.url&&window.open(ad.url,'_blank','noopener')}
   >
-    {/* Floating particles */}
-    <AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/>
-
-    {/* Shimmer sweep */}
-    <div style={{position:'absolute',top:0,width:'35%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 4s linear infinite',pointerEvents:'none',zIndex:1}}/>
-
-    {/* Top accent line */}
-    <div style={{position:'absolute',top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'},transparent)`,opacity:0.8}}/>
-
-    {/* Main content */}
-    <div key={animKey} style={{display:'flex',alignItems:'center',gap:16,padding:'14px 18px 18px',animation:'ad-slide-in 0.45s cubic-bezier(0.22,1,0.36,1) both',position:'relative',zIndex:2}}>
-
-      {/* Game Logo */}
-      <div style={{
-        width:66,height:66,borderRadius:14,overflow:'hidden',flexShrink:0,
-        background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,${ad.accent||'#ffd700'}22)`,
-        border:`1.5px solid ${ad.accent||'#ffd700'}44`,
-        display:'flex',alignItems:'center',justifyContent:'center',
-        animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both',
-        animationDelay:'0.05s',
-        boxShadow:`0 0 22px ${ad.color||'#1a6fd4'}55`,
-      }}>
+    <div style={{position:'absolute',inset:0,background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)'}}/>
+    <div style={{position:'absolute',right:-20,top:'50%',transform:'translateY(-50%)',width:170,height:170,borderRadius:24,overflow:'hidden',opacity:0.15,filter:`blur(2px)`,pointerEvents:'none',zIndex:1}}>
+      {ad.logo&&!logoErr[ad.id]
+        ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+        :<span style={{fontSize:120,display:'flex',alignItems:'center',justifyContent:'center',height:'100%'}}>{ad.emoji||'🎮'}</span>
+      }
+    </div>
+    <div style={{position:'absolute',top:0,width:'40%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)',animation:'ad-shimmer 4s linear infinite',pointerEvents:'none',zIndex:2}}/>
+    <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'},transparent)`,zIndex:3}}/>
+    <div style={{position:'absolute',inset:0,zIndex:2,pointerEvents:'none'}}><AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/></div>
+    <div key={animKey} style={{position:'relative',zIndex:4,display:'flex',alignItems:'center',gap:18,padding:'20px 22px',animation:'ad-slide-in 0.45s cubic-bezier(0.22,1,0.36,1) both'}}>
+      <div style={{width:100,height:100,borderRadius:18,overflow:'hidden',flexShrink:0,background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}55,${ad.accent||'#ffd700'}22)`,border:`2px solid ${ad.accent||'#ffd700'}66`,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 0 30px ${ad.color||'#1a6fd4'}88, 0 0 60px ${ad.accent||'#ffd700'}33`,animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both'}}>
         {ad.logo&&!logoErr[ad.id]
-          ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game}
-              onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-          :<span style={{fontSize:30}}>{ad.emoji||'🎮'}</span>
+          ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+          :<span style={{fontSize:52}}>{ad.emoji||'🎮'}</span>
         }
       </div>
-
-      {/* Text content */}
       <div style={{flex:1,minWidth:0}}>
-        <div style={{display:'flex',alignItems:'center',gap:7,marginBottom:4}}>
-          <span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',letterSpacing:2,opacity:0.8}}>🎮 GAME AD</span>
-          {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:7,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}18`,padding:'1px 5px',borderRadius:2,border:`1px solid ${ad.accent||'#ffd700'}33`}}>SPONSOR</span>}
+        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}>
+          <span style={{fontFamily:'var(--fh)',fontSize:9,color:'rgba(255,255,255,0.5)',letterSpacing:2}}>🎮 GAME AD</span>
+          {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}22`,padding:'1px 7px',borderRadius:3,border:`1px solid ${ad.accent||'#ffd700'}44`}}>SPONSOR</span>}
         </div>
-        <div style={{fontFamily:'var(--fm)',fontSize:10,color:ad.accent||'#ffd700',letterSpacing:1.5,marginBottom:3,fontWeight:700}}>{(ad.game||'').toUpperCase()}</div>
-        <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:'#fff',marginBottom:4,lineHeight:1.2,textShadow:`0 0 20px ${ad.accent||'#ffd700'}44`}}>{ad.tagline}</div>
-        <div style={{fontSize:10,color:'rgba(255,255,255,0.55)'}}>{ad.sub||ad.description}</div>
-      </div>
-
-      {/* CTA */}
-      <div style={{flexShrink:0,display:'flex',flexDirection:'column',alignItems:'center',gap:8}}>
-        <div style={{
-          padding:'10px 18px',
-          background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'})`,
-          color:'#000',borderRadius:8,
-          fontFamily:'var(--fh)',fontSize:9,fontWeight:900,letterSpacing:1.5,
-          boxShadow:`0 4px 18px ${ad.accent||'#ffd700'}55`,
-          whiteSpace:'nowrap',
-          animation:'ad-cta-pulse 2s ease infinite',
-          animationDelay:'1s',
-        }}>{ad.cta}</div>
-        {/* Dots */}
-        <div style={{display:'flex',gap:4}}>
-          {allAds.map((_,i)=>(
-            <div key={i} onClick={e=>{e.stopPropagation();goTo(i)}}
-              style={{width:i===current?14:5,height:5,borderRadius:3,background:i===current?ad.accent||'#ffd700':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',boxShadow:i===current?`0 0 8px ${ad.accent||'#ffd700'}`:'none'}}/>
-          ))}
+        <div style={{fontFamily:'var(--fh)',fontSize:13,color:ad.accent||'#ffd700',letterSpacing:2,marginBottom:6,fontWeight:900,textShadow:`0 0 20px ${ad.accent||'#ffd700'}88`}}>{(ad.game||'').toUpperCase()}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:'#fff',marginBottom:8,lineHeight:1.2,textShadow:`0 2px 20px rgba(0,0,0,0.8), 0 0 40px ${ad.accent||'#ffd700'}33`}}>{ad.tagline}</div>
+        <div style={{fontSize:11,color:'rgba(255,255,255,0.6)',marginBottom:14,fontFamily:'var(--fm)'}}>{ad.sub||ad.description}</div>
+        <div style={{display:'flex',alignItems:'center',gap:14}}>
+          <div style={{padding:'10px 24px',background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#ff6b00'})`,color:'#000',borderRadius:10,fontFamily:'var(--fh)',fontSize:11,fontWeight:900,letterSpacing:1.5,boxShadow:`0 4px 20px ${ad.accent||'#ffd700'}66`,animation:'ad-cta-pulse 2s ease infinite',whiteSpace:'nowrap'}}>{ad.cta} →</div>
+          <div style={{display:'flex',gap:5}}>
+            {allAds.map((_,i)=>(
+              <div key={i} onClick={e=>{e.stopPropagation();goTo(i)}}
+                style={{width:i===current?18:6,height:6,borderRadius:3,background:i===current?ad.accent||'#ffd700':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',boxShadow:i===current?`0 0 10px ${ad.accent||'#ffd700'}`:'none'}}/>
+            ))}
+          </div>
         </div>
       </div>
     </div>
-
-    {/* Bottom glow line */}
-    <div style={{position:'absolute',bottom:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'},transparent)`,opacity:0.4}}/>
+    <div style={{position:'absolute',bottom:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'},transparent)`,opacity:0.6,zIndex:3}}/>
   </div>
 }
 
