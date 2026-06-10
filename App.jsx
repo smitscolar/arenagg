@@ -698,56 +698,102 @@ function AdBanner({compact=false}){
     </div>
   }
 
-  // ── FULL BANNER — REDESIGN PREMIUM ─────────────────────────────────────────────
+  // ── FULL BANNER — BILLBOARD PREMIUM ──────────────────────────────
   return <div
     onMouseEnter={()=>setPaused(true)}
     onMouseLeave={()=>setPaused(false)}
-    style={{
-      position:'relative',overflow:'hidden',
-      borderRadius:16,marginBottom:18,cursor:'pointer',
-      border:`2px solid ${ad.accent||'#ffd700'}55`,
-      boxShadow:`0 12px 48px rgba(0,0,0,0.7), 0 0 80px ${ad.accent||'#ffd700'}20`,
-      minHeight:160,
-    }}
     onClick={()=>ad.url&&window.open(ad.url,'_blank','noopener')}
+    style={{position:'relative',overflow:'hidden',borderRadius:18,marginBottom:18,cursor:'pointer',
+      border:`2px solid ${ad.accent||'#ffd700'}44`,
+      boxShadow:`0 16px 60px rgba(0,0,0,0.8), 0 0 100px ${ad.accent||'#ffd700'}15`,
+      minHeight:200,
+    }}
   >
+    {/* === BACKGROUND === */}
     <div style={{position:'absolute',inset:0,background:ad.bg||'linear-gradient(135deg,#0d1b4b,#1a3a7a)'}}/>
-    <div style={{position:'absolute',right:-20,top:'50%',transform:'translateY(-50%)',width:170,height:170,borderRadius:24,overflow:'hidden',opacity:0.15,filter:`blur(2px)`,pointerEvents:'none',zIndex:1}}>
+    {/* Radial glow di tengah */}
+    <div style={{position:'absolute',inset:0,background:`radial-gradient(ellipse at 30% 50%, ${ad.color||'#1a6fd4'}33 0%, transparent 60%)`}}/>
+    {/* Ghost logo besar di kanan */}
+    <div style={{position:'absolute',right:-30,top:'50%',transform:'translateY(-50%)',width:220,height:220,opacity:0.12,filter:'blur(1px)',pointerEvents:'none',zIndex:1,display:'flex',alignItems:'center',justifyContent:'center'}}>
       {ad.logo&&!logoErr[ad.id]
-        ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="" onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-        :<span style={{fontSize:120,display:'flex',alignItems:'center',justifyContent:'center',height:'100%'}}>{ad.emoji||'🎮'}</span>
+        ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'contain'}} alt="" onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+        :<span style={{fontSize:160,lineHeight:1}}>{ad.emoji||'🎮'}</span>
       }
     </div>
-    <div style={{position:'absolute',top:0,width:'40%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.06),transparent)',animation:'ad-shimmer 4s linear infinite',pointerEvents:'none',zIndex:2}}/>
-    <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent,${ad.accent||'#ffd700'},${ad.color||'#1a6fd4'},transparent)`,zIndex:3}}/>
+    {/* Shimmer sweep */}
+    <div style={{position:'absolute',top:0,width:'50%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 3s linear infinite',pointerEvents:'none',zIndex:2}}/>
+    {/* Top border glow */}
+    <div style={{position:'absolute',top:0,left:0,right:0,height:3,background:`linear-gradient(90deg,transparent 0%,${ad.accent||'#ffd700'} 40%,${ad.color||'#1a6fd4'} 70%,transparent 100%)`,zIndex:3}}/>
+    {/* Bottom border glow */}
+    <div style={{position:'absolute',bottom:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.color||'#1a6fd4'},transparent)`,opacity:0.5,zIndex:3}}/>
+    {/* Particles */}
     <div style={{position:'absolute',inset:0,zIndex:2,pointerEvents:'none'}}><AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/></div>
-    <div key={animKey} style={{position:'relative',zIndex:4,display:'flex',alignItems:'center',gap:18,padding:'20px 22px',animation:'ad-slide-in 0.45s cubic-bezier(0.22,1,0.36,1) both'}}>
-      <div style={{width:100,height:100,borderRadius:18,overflow:'hidden',flexShrink:0,background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}55,${ad.accent||'#ffd700'}22)`,border:`2px solid ${ad.accent||'#ffd700'}66`,display:'flex',alignItems:'center',justifyContent:'center',boxShadow:`0 0 30px ${ad.color||'#1a6fd4'}88, 0 0 60px ${ad.accent||'#ffd700'}33`,animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both'}}>
-        {ad.logo&&!logoErr[ad.id]
-          ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'cover'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-          :<span style={{fontSize:52}}>{ad.emoji||'🎮'}</span>
-        }
-      </div>
-      <div style={{flex:1,minWidth:0}}>
-        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:6}}>
-          <span style={{fontFamily:'var(--fh)',fontSize:9,color:'rgba(255,255,255,0.5)',letterSpacing:2}}>🎮 GAME AD</span>
-          {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}22`,padding:'1px 7px',borderRadius:3,border:`1px solid ${ad.accent||'#ffd700'}44`}}>SPONSOR</span>}
+
+    {/* === MAIN CONTENT === */}
+    <div key={animKey} style={{position:'relative',zIndex:4,display:'flex',gap:0,minHeight:200,animation:'ad-slide-in 0.4s cubic-bezier(0.22,1,0.36,1) both'}}>
+
+      {/* LEFT — Logo block */}
+      <div style={{width:140,minHeight:200,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px 10px 20px 20px'}}>
+        <div style={{
+          width:110,height:110,borderRadius:22,overflow:'hidden',
+          border:`3px solid ${ad.accent||'#ffd700'}88`,
+          background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,rgba(0,0,0,0.3))`,
+          display:'flex',alignItems:'center',justifyContent:'center',
+          boxShadow:`0 0 40px ${ad.color||'#1a6fd4'}99, 0 0 80px ${ad.accent||'#ffd700'}44, inset 0 0 20px rgba(0,0,0,0.3)`,
+          animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both',
+          position:'relative',
+        }}>
+          {ad.logo&&!logoErr[ad.id]
+            ?<img src={ad.logo} style={{width:'90%',height:'90%',objectFit:'contain'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+            :<span style={{fontSize:58}}>{ad.emoji||'🎮'}</span>
+          }
+          {/* Shine overlay */}
+          <div style={{position:'absolute',top:0,left:0,right:0,height:'45%',background:'linear-gradient(180deg,rgba(255,255,255,0.12),transparent)',borderRadius:'19px 19px 0 0',pointerEvents:'none'}}/>
         </div>
-        <div style={{fontFamily:'var(--fh)',fontSize:13,color:ad.accent||'#ffd700',letterSpacing:2,marginBottom:6,fontWeight:900,textShadow:`0 0 20px ${ad.accent||'#ffd700'}88`}}>{(ad.game||'').toUpperCase()}</div>
-        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:'#fff',marginBottom:8,lineHeight:1.2,textShadow:`0 2px 20px rgba(0,0,0,0.8), 0 0 40px ${ad.accent||'#ffd700'}33`}}>{ad.tagline}</div>
-        <div style={{fontSize:11,color:'rgba(255,255,255,0.6)',marginBottom:14,fontFamily:'var(--fm)'}}>{ad.sub||ad.description}</div>
-        <div style={{display:'flex',alignItems:'center',gap:14}}>
-          <div style={{padding:'10px 24px',background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#ff6b00'})`,color:'#000',borderRadius:10,fontFamily:'var(--fh)',fontSize:11,fontWeight:900,letterSpacing:1.5,boxShadow:`0 4px 20px ${ad.accent||'#ffd700'}66`,animation:'ad-cta-pulse 2s ease infinite',whiteSpace:'nowrap'}}>{ad.cta} →</div>
-          <div style={{display:'flex',gap:5}}>
+      </div>
+
+      {/* RIGHT — Text content */}
+      <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',padding:'20px 20px 16px 0',minWidth:0}}>
+        {/* Badge row */}
+        <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
+          <span style={{fontFamily:'var(--fh)',fontSize:8,color:'rgba(255,255,255,0.4)',letterSpacing:3,border:'1px solid rgba(255,255,255,0.15)',padding:'2px 7px',borderRadius:3}}>🎮 GAME AD</span>
+          {isCustom&&<span style={{fontFamily:'var(--fh)',fontSize:8,color:ad.accent||'#ffd700',background:`${ad.accent||'#ffd700'}22`,padding:'2px 8px',borderRadius:3,border:`1px solid ${ad.accent||'#ffd700'}44`,letterSpacing:1}}>✦ SPONSOR</span>}
+        </div>
+        {/* Game name */}
+        <div style={{fontFamily:'var(--fh)',fontSize:11,fontWeight:900,color:ad.accent||'#ffd700',letterSpacing:3,marginBottom:8,textShadow:`0 0 20px ${ad.accent||'#ffd700'}`,textTransform:'uppercase'}}>{ad.game}</div>
+        {/* Tagline — BESAR */}
+        <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'#fff',lineHeight:1.2,marginBottom:10,textShadow:`0 2px 16px rgba(0,0,0,0.9), 0 0 40px ${ad.accent||'#ffd700'}22`}}>{ad.tagline}</div>
+        {/* Sub */}
+        <div style={{fontSize:11,color:'rgba(255,255,255,0.55)',marginBottom:16,fontFamily:'var(--fb)',lineHeight:1.5}}>{ad.sub||ad.description}</div>
+        {/* CTA + dots */}
+        <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap'}}>
+          <a href={ad.url||'#'} target="_blank" rel="noreferrer"
+            onClick={e=>e.stopPropagation()}
+            style={{
+              display:'inline-flex',alignItems:'center',gap:6,
+              padding:'12px 28px',borderRadius:12,textDecoration:'none',
+              background:`linear-gradient(135deg,${ad.accent||'#ffd700'},${ad.color||'#ff6b00'})`,
+              color:'#000',fontFamily:'var(--fh)',fontSize:12,fontWeight:900,letterSpacing:1.5,
+              boxShadow:`0 6px 24px ${ad.accent||'#ffd700'}66`,
+              animation:'ad-cta-pulse 2.5s ease infinite',
+              whiteSpace:'nowrap',
+            }}
+          >{ad.cta} <span style={{fontSize:14}}>→</span></a>
+          {/* Progress dots */}
+          <div style={{display:'flex',gap:5,alignItems:'center'}}>
             {allAds.map((_,i)=>(
               <div key={i} onClick={e=>{e.stopPropagation();goTo(i)}}
-                style={{width:i===current?18:6,height:6,borderRadius:3,background:i===current?ad.accent||'#ffd700':'rgba(255,255,255,0.2)',cursor:'pointer',transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',boxShadow:i===current?`0 0 10px ${ad.accent||'#ffd700'}`:'none'}}/>
+                style={{
+                  width:i===current?20:7,height:7,borderRadius:4,
+                  background:i===current?ad.accent||'#ffd700':'rgba(255,255,255,0.2)',
+                  cursor:'pointer',transition:'all 0.4s cubic-bezier(0.4,0,0.2,1)',
+                  boxShadow:i===current?`0 0 12px ${ad.accent||'#ffd700'}`:'none',
+                }}/>
             ))}
           </div>
         </div>
       </div>
     </div>
-    <div style={{position:'absolute',bottom:0,left:0,right:0,height:2,background:`linear-gradient(90deg,transparent,${ad.color||'#1a6fd4'},${ad.accent||'#ffd700'},transparent)`,opacity:0.6,zIndex:3}}/>
   </div>
 }
 
