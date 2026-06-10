@@ -397,6 +397,11 @@ function LiveBanner({tournaments}){
 // ============================================================
 
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
+// ── Ad Storage helpers ──
+const AD_STORAGE_KEY = 'arenagg_custom_ads'
+const getCustomAds = () => { try { const d = localStorage.getItem(AD_STORAGE_KEY); return d ? JSON.parse(d) : [] } catch { return [] } }
+const saveCustomAds = (ads) => { try { localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(ads)); try { const bc = new BroadcastChannel('arenagg_ads'); bc.postMessage({type:'ads_updated',ads}); bc.close() } catch(e){} } catch(e){} }
+
 // ── Game Logos — Base64 embedded, nyata 100% ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 
