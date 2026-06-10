@@ -397,173 +397,53 @@ function LiveBanner({tournaments}){
 // ============================================================
 
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
-// ── Game Logos — SVG simple, pasti render ──
+// ── Game Logos — CSS div based, no SVG no CORS ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 
-const makeGameLogo = (text, bg1, bg2, border, textColor='#fff') => svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="${bg1}"/>
-      <stop offset="100%" stop-color="${bg2}"/>
-    </linearGradient>
-    <filter id="s"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="${border}" flood-opacity="0.8"/></filter>
-  </defs>
-  <rect width="120" height="120" rx="20" fill="url(#g)"/>
-  <rect x="4" y="4" width="112" height="112" rx="17" fill="none" stroke="${border}" stroke-width="3" opacity="0.8"/>
-  <text x="60" y="52" text-anchor="middle" fill="${textColor}" font-size="38" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#s)">${text.split('|')[0]}</text>
-  <text x="60" y="86" text-anchor="middle" fill="${border}" font-size="13" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="1">${text.split('|')[1]||''}</text>
-  <rect x="4" y="4" width="112" height="36" rx="17" fill="rgba(255,255,255,0.06)"/>
-</svg>`)
-
-const GAME_LOGOS = {
-  ml:   makeGameLogo('ML|MOBILE LEGENDS', '#001050', '#0030aa', '#ffd700'),
-  pubg: makeGameLogo('PUBG|MOBILE', '#1a0800', '#3d1800', '#f5a623', '#f5a623'),
-  ff:   makeGameLogo('FF|FREE FIRE', '#1a0000', '#3d0000', '#ff4400', '#ffcc00'),
-  val:  makeGameLogo('VAL|ORANT', '#0a0000', '#1f0005', '#ff4655', '#ff4655'),
-  cr:   makeGameLogo('CR|CLASH ROYALE', '#0d0020', '#1e0055', '#a855f7', '#fbbf24'),
+// Logo config: {emoji, color utama, warna teks, singkatan}
+const GAME_LOGO_CONFIG = {
+  ml:   {emoji:'⚔️', abbr:'ML',  name:'MOBILE
+LEGENDS', bg:'linear-gradient(135deg,#001a8a,#0044cc)', border:'#ffd700', text:'#ffd700'},
+  pubg: {emoji:'🎯', abbr:'PUBG', name:'PUBG
+MOBILE',   bg:'linear-gradient(135deg,#1a0800,#3d1800)', border:'#f5a623', text:'#f5a623'},
+  ff:   {emoji:'🔥', abbr:'FF',   name:'FREE
+FIRE',     bg:'linear-gradient(135deg,#1a0000,#4d0000)', border:'#ff4400', text:'#ffcc00'},
+  val:  {emoji:'⚡', abbr:'VAL',  name:'VALO
+RANT',     bg:'linear-gradient(135deg,#0a0000,#1f0008)', border:'#ff4655', text:'#ff4655'},
+  cr:   {emoji:'👑', abbr:'CR',   name:'CLASH
+ROYALE',  bg:'linear-gradient(135deg,#0d0020,#1e0055)', border:'#a855f7', text:'#fbbf24'},
 }
+
+// Komponen logo game sebagai React element (bukan img)
+const GameLogo = ({gameId, size=100}) => {
+  const cfg = GAME_LOGO_CONFIG[gameId] || {emoji:'🎮', abbr:'GAME', name:'GAME
+AD', bg:'linear-gradient(135deg,#111,#333)', border:'#00e5ff', text:'#00e5ff'}
+  return React.createElement('div', {
+    style:{
+      width:size, height:size, borderRadius:size*0.18,
+      background:cfg.bg,
+      border:`3px solid ${cfg.border}88`,
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+      boxShadow:`0 0 ${size*0.4}px ${cfg.border}66, inset 0 0 ${size*0.2}px rgba(0,0,0,0.5)`,
+      position:'relative', overflow:'hidden', flexShrink:0,
+    }
+  },
+    React.createElement('div', {style:{position:'absolute',top:0,left:0,right:0,height:'40%',background:'linear-gradient(180deg,rgba(255,255,255,0.1),transparent)',borderRadius:`${size*0.16}px ${size*0.16}px 0 0`}}),
+    React.createElement('div', {style:{fontSize:size*0.35,lineHeight:1,marginBottom:2}}, cfg.emoji),
+    React.createElement('div', {style:{fontFamily:'Arial Black,sans-serif',fontWeight:900,fontSize:size*0.14,color:cfg.text,letterSpacing:1,textAlign:'center',lineHeight:1.1,textShadow:`0 0 8px ${cfg.border}`}}, cfg.abbr),
+  )
+}
+
+const GAME_LOGOS = {}  // kept for compat, tidak dipakai lagi
+
 
 const DEFAULT_ADS = [
-  {
-    id:'ml',game:'Mobile Legends: Bang Bang',
-    logo: GAME_LOGOS.ml,
-    tagline:'Jadilah Legenda Sejati di Arena!',
-    sub:'5v5 MOBA · Terpopuler Asia · 1 Milyar+ Download',
-    cta:'Main Sekarang',
-    color:'#1a6fd4',accent:'#ffd700',
-    bg:'linear-gradient(135deg,#010818 0%,#061845 40%,#0a2060 70%,#030f2e 100%)',
-    particles:['#ffd700','#00aaff','#ffffff'],
-    url:'https://mobilelegends.com'
-  },
-  {
-    id:'pubg',game:'PUBG Mobile',
-    logo: GAME_LOGOS.pubg,
-    tagline:'100 Players. 1 Winner. Are You Ready?',
-    sub:'Battle Royale #1 di Dunia · Gratis',
-    cta:'Drop In Now',
-    color:'#f5a623',accent:'#ff6b00',
-    bg:'linear-gradient(135deg,#0a0500 0%,#1f0e00 40%,#2a1400 70%,#0d0700 100%)',
-    particles:['#ff6b00','#ffd700','#ff4400'],
-    url:'https://pubgmobile.com'
-  },
-  {
-    id:'ff',game:'Free Fire MAX',
-    logo: GAME_LOGOS.ff,
-    tagline:'Survive. Eliminate. Be The Last!',
-    sub:'48 Pemain · 10 Menit · 1 Juara · Gratis',
-    cta:'Main Gratis',
-    color:'#ff4400',accent:'#ffcc00',
-    bg:'linear-gradient(135deg,#0e0000 0%,#2a0000 40%,#3d0500 70%,#120000 100%)',
-    particles:['#ff4400','#ffcc00','#ff8800'],
-    url:'https://garena.com/freefire'
-  },
-  {
-    id:'val',game:'Valorant',
-    logo: GAME_LOGOS.val,
-    tagline:'Lock In. Execute. Dominate.',
-    sub:'5v5 Tactical Shooter · PC · Gratis',
-    cta:'Play Free',
-    color:'#ff4655',accent:'#00e5ff',
-    bg:'linear-gradient(135deg,#050000 0%,#160004 40%,#1a0005 70%,#080000 100%)',
-    particles:['#ff4655','#00e5ff','#ffffff'],
-    url:'https://playvalorant.com'
-  },
-  {
-    id:'cr',game:'Clash Royale',
-    logo: GAME_LOGOS.cr,
-    tagline:'Battle Players Around the World!',
-    sub:'Real-time PvP Card Strategy · Supercell',
-    cta:'Play Now',
-    color:'#a855f7',accent:'#fbbf24',
-    bg:'linear-gradient(135deg,#06000e 0%,#12003a 40%,#1a0050 70%,#080015 100%)',
-    particles:['#a855f7','#fbbf24','#e879f9'],
-    url:'https://clashroyale.com'
-  },
+  {id:'ml',  gameId:'ml',  game:'Mobile Legends: Bang Bang', tagline:'Jadilah Legenda Sejati di Arena!',      sub:'5v5 MOBA · Terpopuler Asia · 1 Milyar+ Download', cta:'Main Sekarang', color:'#1a6fd4', accent:'#ffd700', bg:'linear-gradient(135deg,#010818 0%,#061845 40%,#0a2060 70%,#030f2e 100%)', particles:['#ffd700','#00aaff','#ffffff'], url:'https://mobilelegends.com'},
+  {id:'pubg', gameId:'pubg',game:'PUBG Mobile',                tagline:'100 Players. 1 Winner. Are You Ready?', sub:'Battle Royale #1 di Dunia · Gratis',                cta:'Drop In Now',   color:'#f5a623', accent:'#ff6b00', bg:'linear-gradient(135deg,#0a0500 0%,#1f0e00 40%,#2a1400 70%,#0d0700 100%)', particles:['#ff6b00','#ffd700','#ff4400'], url:'https://pubgmobile.com'},
+  {id:'ff',   gameId:'ff',  game:'Free Fire MAX',              tagline:'Survive. Eliminate. Be The Last!',      sub:'48 Pemain · 10 Menit · 1 Juara · Gratis',          cta:'Main Gratis',   color:'#ff4400', accent:'#ffcc00', bg:'linear-gradient(135deg,#0e0000 0%,#2a0000 40%,#3d0500 70%,#120000 100%)', particles:['#ff4400','#ffcc00','#ff8800'], url:'https://garena.com/freefire'},
+  {id:'val',  gameId:'val', game:'Valorant',                   tagline:'Lock In. Execute. Dominate.',           sub:'5v5 Tactical Shooter · PC · Gratis',                cta:'Play Free',     color:'#ff4655', accent:'#00e5ff', bg:'linear-gradient(135deg,#050000 0%,#160004 40%,#1a0005 70%,#080000 100%)', particles:['#ff4655','#00e5ff','#ffffff'], url:'https://playvalorant.com'},
+  {id:'cr',   gameId:'cr',  game:'Clash Royale',               tagline:'Battle Players Around the World!',      sub:'Real-time PvP Card Strategy · Supercell',          cta:'Play Now',      color:'#a855f7', accent:'#fbbf24', bg:'linear-gradient(135deg,#06000e 0%,#12003a 40%,#1a0050 70%,#080015 100%)', particles:['#a855f7','#fbbf24','#e879f9'], url:'https://clashroyale.com'},
 ]
-
-const AD_STORAGE_KEY = 'arenagg_custom_ads'
-function getCustomAds(){try{return JSON.parse(localStorage.getItem(AD_STORAGE_KEY)||'[]')}catch(e){return[]}}
-function saveCustomAds(ads){
-  try{
-    localStorage.setItem(AD_STORAGE_KEY,JSON.stringify(ads))
-    // Broadcast ke tab lain (portal peserta) di browser yang sama
-    try{
-      const bc=new BroadcastChannel('arenagg_ads')
-      bc.postMessage({type:'ads_updated',ads})
-      bc.close()
-    }catch(e){}
-    // StorageEvent fallback untuk browser lama
-    window.dispatchEvent(new StorageEvent('storage',{key:AD_STORAGE_KEY,newValue:JSON.stringify(ads)}))
-  }catch(e){}
-  // Sync ke Supabase untuk lintas device (owner → peserta di device lain)
-  try{
-    const upsertData=ads.filter(a=>a.id).map(a=>({
-      id:String(a.id),
-      name:a.name||'Iklan Sponsor',
-      tagline:a.tagline||'',
-      description:a.description||'',
-      url:a.url||'',
-      cta:a.cta||'Kunjungi',
-      emoji:a.emoji||'🎮',
-      color:a.color||'#00e5ff',
-      accent:a.accent||'#ff6b00',
-      bg:a.bg||'linear-gradient(135deg,#050510,#0a0a20)',
-      active:!!a.active,
-      updated_at:new Date().toISOString()
-    }))
-    if(upsertData.length>0){
-      supabase.from('sponsor_ads').upsert(upsertData,{onConflict:'id'}).then(({error})=>{
-        if(error&&(error.code==='42P01'||error.message?.includes('does not exist'))){
-          // tabel belum ada - OK, tidak masalah
-        }
-      })
-    }
-    // Hapus ads yang sudah didelete dari Supabase
-    const allIds=ads.map(a=>String(a.id))
-    // Tidak bisa delete yang tidak tahu ID-nya tanpa query dulu - skip
-  }catch(e){}
-}
-
-// Floating particles for ad banner
-function AdParticles({colors=[]}) {
-  const pts = Array.from({length:8},(_,i)=>({
-    id:i,
-    color:colors[i%colors.length]||'#fff',
-    size: 2+Math.random()*3,
-    x: 5+Math.random()*90,
-    dur: 3+Math.random()*4,
-    delay: Math.random()*4,
-    drift: -20+Math.random()*40,
-  }))
-  return <div style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden'}}>
-    {pts.map(p=>(
-      <div key={p.id} style={{
-        position:'absolute',
-        left:p.x+'%',
-        bottom:'-10px',
-        width:p.size+'px',
-        height:p.size+'px',
-        borderRadius:'50%',
-        background:p.color,
-        opacity:0.7,
-        boxShadow:`0 0 ${p.size*2}px ${p.color}`,
-        animation:`ad-float-up ${p.dur}s ${p.delay}s ease-in infinite`,
-      }}/>
-    ))}
-  </div>
-}
-
-// Inject ad-specific keyframes once
-const AD_KEYFRAMES = `
-@keyframes ad-float-up{0%{transform:translateY(0) translateX(0);opacity:0.8}50%{opacity:0.5}100%{transform:translateY(-120px) translateX(var(--dx,20px));opacity:0}}
-@keyframes ad-slide-in{from{opacity:0;transform:translateX(32px) scale(0.97)}to{opacity:1;transform:translateX(0) scale(1)}}
-@keyframes ad-logo-pop{0%{transform:scale(0.8) rotate(-4deg);opacity:0}60%{transform:scale(1.08) rotate(1deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
-@keyframes ad-glow-pulse{0%,100%{box-shadow:0 0 20px var(--ad-glow,#ffd700),0 0 40px var(--ad-glow,#ffd700)33}50%{box-shadow:0 0 35px var(--ad-glow,#ffd700),0 0 70px var(--ad-glow,#ffd700)55,0 0 100px var(--ad-glow,#ffd700)22}}
-@keyframes ad-shimmer{0%{left:-100%}100%{left:200%}}
-@keyframes ad-ticker-in{from{transform:translateX(-16px);opacity:0}to{transform:translateX(0);opacity:1}}
-@keyframes ad-cta-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-`
-if(!document.getElementById('ad-keyframes')){const s=document.createElement('style');s.id='ad-keyframes';s.textContent=AD_KEYFRAMES;document.head.appendChild(s)}
 
 function AdBanner({compact=false}){
   const[customAds,setCustomAds]=useState(getCustomAds)
@@ -649,11 +529,8 @@ function AdBanner({compact=false}){
     {/* Radial glow di tengah */}
     <div style={{position:'absolute',inset:0,background:`radial-gradient(ellipse at 30% 50%, ${ad.color||'#1a6fd4'}33 0%, transparent 60%)`}}/>
     {/* Ghost logo besar di kanan */}
-    <div style={{position:'absolute',right:-30,top:'50%',transform:'translateY(-50%)',width:220,height:220,opacity:0.12,filter:'blur(1px)',pointerEvents:'none',zIndex:1,display:'flex',alignItems:'center',justifyContent:'center'}}>
-      {ad.logo&&!logoErr[ad.id]
-        ?<img src={ad.logo} style={{width:'100%',height:'100%',objectFit:'contain'}} alt="" onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-        :<span style={{fontSize:160,lineHeight:1}}>{ad.emoji||'🎮'}</span>
-      }
+    <div style={{position:'absolute',right:-20,top:'50%',transform:'translateY(-50%)',width:200,height:200,opacity:0.13,filter:'blur(3px)',pointerEvents:'none',zIndex:1}}>
+      <GameLogo gameId={ad.gameId||ad.id} size={200}/>
     </div>
     {/* Shimmer sweep */}
     <div style={{position:'absolute',top:0,width:'50%',height:'100%',background:'linear-gradient(90deg,transparent,rgba(255,255,255,0.05),transparent)',animation:'ad-shimmer 3s linear infinite',pointerEvents:'none',zIndex:2}}/>
@@ -669,20 +546,8 @@ function AdBanner({compact=false}){
 
       {/* LEFT — Logo block */}
       <div style={{width:130,minHeight:140,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px 8px 16px 16px'}}>
-        <div style={{
-          width:100,height:100,borderRadius:20,overflow:'hidden',
-          border:`3px solid ${ad.accent||'#ffd700'}88`,
-          background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,rgba(0,0,0,0.3))`,
-          display:'flex',alignItems:'center',justifyContent:'center',
-          boxShadow:`0 0 40px ${ad.color||'#1a6fd4'}99, 0 0 80px ${ad.accent||'#ffd700'}44`,
-          animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both',
-          position:'relative',flexShrink:0,
-        }}>
-          {ad.logo&&!logoErr[ad.id]
-            ?<img src={ad.logo} style={{width:'88%',height:'88%',objectFit:'contain'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-            :<span style={{fontSize:52}}>{ad.emoji||'🎮'}</span>
-          }
-          <div style={{position:'absolute',top:0,left:0,right:0,height:'40%',background:'linear-gradient(180deg,rgba(255,255,255,0.1),transparent)',borderRadius:'17px 17px 0 0',pointerEvents:'none'}}/>
+        <div style={{animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both'}}>
+          <GameLogo gameId={ad.gameId||ad.id} size={100}/>
         </div>
       </div>
 
