@@ -399,30 +399,37 @@ function LiveBanner({tournaments}){
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
 // ── Ad Storage helpers ──
 const AD_STORAGE_KEY = 'arenagg_custom_ads'
-const getCustomAds = () => { try { const d = localStorage.getItem(AD_STORAGE_KEY); const ads = d ? JSON.parse(d) : []; return ads.map(a => { const bg = localStorage.getItem('arenagg_ad_bg_'+a.id)||sessionStorage.getItem('arenagg_ad_bg_'+a.id)||''; return bg?{...a,bgImage:bg}:a }) } catch { return [] } }
+const getCustomAds = () => {
+  try {
+    const d = localStorage.getItem(AD_STORAGE_KEY)
+    const ads = d ? JSON.parse(d) : []
+    return ads.map(a => {
+      const bgImage = a.hasBg ? (localStorage.getItem('arenagg_ad_bg_'+a.id)||sessionStorage.getItem('arenagg_ad_bg_'+a.id)||'') : (a.bgImage||'')
+      const logo = a.hasLogo ? (localStorage.getItem('arenagg_ad_logo_'+a.id)||sessionStorage.getItem('arenagg_ad_logo_'+a.id)||'') : (a.logo||'')
+      return {...a, bgImage, logo}
+    })
+  } catch { return [] }
+}
 const saveCustomAds = (ads) => {
   try {
-    // Strip bgImage dari localStorage (terlalu besar), simpan terpisah
+    // Simpan bgImage & logo terpisah (bisa besar)
     const adsForStorage = ads.map(a => {
-      const {bgImage, ...rest} = a
-      if(bgImage) {
-        try { localStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e) {
-          try { sessionStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e2) {}
-        }
-      }
-      return rest
+      const {bgImage, logo, ...rest} = a
+      if(bgImage) try { localStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e) { try { sessionStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e2){} }
+      if(logo && logo.startsWith('data:')) try { localStorage.setItem('arenagg_ad_logo_'+a.id, logo) } catch(e) { try { sessionStorage.setItem('arenagg_ad_logo_'+a.id, logo) } catch(e2){} }
+      return {...rest, hasLogo: !!logo, hasBg: !!bgImage}
     })
     localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(adsForStorage))
-    try { const bc = new BroadcastChannel('arenagg_ads'); bc.postMessage({type:'ads_updated',ads}); bc.close() } catch(e){}
-  } catch(e) {
-    console.error('saveCustomAds error:', e)
-  }
+    // Broadcast full data (termasuk bgImage) ke semua tab
+    try {
+      const bc = new BroadcastChannel('arenagg_ads')
+      bc.postMessage({type:'ads_updated', ads})
+      bc.close()
+    } catch(e){}
+    // Trigger storage event untuk sync
+    try { window.dispatchEvent(new StorageEvent('storage',{key:AD_STORAGE_KEY,newValue:JSON.stringify(adsForStorage)})) } catch(e){}
+  } catch(e) { console.error('saveCustomAds error:', e) }
 }
-
-const getCustomAdsWithBg = (ads) => ads.map(a => {
-  const bgImage = localStorage.getItem('arenagg_ad_bg_'+a.id) || sessionStorage.getItem('arenagg_ad_bg_'+a.id) || ''
-  return bgImage ? {...a, bgImage} : a
-})
 
 // ── Game Logos — Base64 embedded, nyata 100% ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
@@ -673,7 +680,18 @@ function AdBanner({compact=false}){
     let bc
     try{
       bc=new BroadcastChannel('arenagg_ads')
-      bc.onmessage=(e)=>{if(e.data?.type==='ads_updated'&&Array.isArray(e.data.ads))setCustomAds(e.data.ads)}
+      bc.onmessage=(e)=>{
+        if(e.data?.type==='ads_updated'&&Array.isArray(e.data.ads)){
+          // Merge bgImage dari broadcast (realtime) dengan localStorage
+          const merged = e.data.ads.map(a => {
+            if(a.bgImage) return a
+            const bgImage = localStorage.getItem('arenagg_ad_bg_'+a.id)||sessionStorage.getItem('arenagg_ad_bg_'+a.id)||''
+            const logo = a.logo||(localStorage.getItem('arenagg_ad_logo_'+a.id)||sessionStorage.getItem('arenagg_ad_logo_'+a.id)||'')
+            return {...a, bgImage, logo}
+          })
+          setCustomAds(merged)
+        }
+      }
     }catch(e){}
     const onStorage=(e)=>{if(e.key===AD_STORAGE_KEY&&e.newValue){try{const d=JSON.parse(e.newValue);setCustomAds(Array.isArray(d)?d:[])}catch(e2){}}}
     window.addEventListener('storage',onStorage)
@@ -828,31 +846,51 @@ function AdManager({toast}){
   const handleLogoUpload=e=>{
     const file=e.target.files?.[0]
     if(!file)return
-    if(file.size>800*1024){toast('Maks 800KB untuk logo','error');return}
-    const reader=new FileReader()
-    reader.onload=ev=>setForm(f=>({...f,logo:ev.target.result,emoji:''}))
-    reader.readAsDataURL(file)
+    toast('⏳ Memproses logo...','info')
+    const img=new Image()
+    img.onload=()=>{
+      const canvas=document.createElement('canvas')
+      const size=200
+      canvas.width=size; canvas.height=size
+      const ctx=canvas.getContext('2d')
+      // Center crop ke square
+      const s=Math.min(img.width,img.height)
+      const sx=(img.width-s)/2, sy=(img.height-s)/2
+      ctx.drawImage(img,sx,sy,s,s,0,0,size,size)
+      const result=canvas.toDataURL('image/jpeg',0.85)
+      const kb=Math.round(result.length*0.75/1024)
+      setForm(f=>({...f,logo:result,emoji:''}))
+      toast(`✓ Logo dikompress: ${kb}KB`,'success')
+      URL.revokeObjectURL(img.src)
+    }
+    img.onerror=()=>toast('Gagal load gambar','error')
+    img.src=URL.createObjectURL(file)
   }
 
   const handleBgUpload=e=>{
     const file=e.target.files?.[0]
     if(!file)return
-    if(file.size>5*1024*1024){toast('Maks 5MB untuk background','error');return}
+    toast('⏳ Memproses gambar...','info')
     const img=new Image()
     img.onload=()=>{
-      const canvas=document.createElement('canvas')
-      // Target 600x300 max untuk banner landscape
-      const maxW=600, maxH=300
-      let w=img.width, h=img.height
-      if(w>maxW){h=Math.round(h*(maxW/w));w=maxW}
-      if(h>maxH){w=Math.round(w*(maxH/h));h=maxH}
-      canvas.width=w; canvas.height=h
-      const ctx=canvas.getContext('2d')
-      ctx.drawImage(img,0,0,w,h)
-      const compressed=canvas.toDataURL('image/jpeg',0.65)
-      setForm(f=>({...f,bgImage:compressed}))
-      const kb=Math.round(compressed.length*0.75/1024)
-      toast(`✓ Background siap (${kb}KB)!`,'success')
+      // Auto-compress: target max 600x300, quality turun sampai <80KB
+      const tryCompress=(quality)=>{
+        const canvas=document.createElement('canvas')
+        const maxW=600, maxH=300
+        let w=img.width, h=img.height
+        const ratio=Math.min(maxW/w, maxH/h, 1)
+        w=Math.round(w*ratio); h=Math.round(h*ratio)
+        canvas.width=w; canvas.height=h
+        canvas.getContext('2d').drawImage(img,0,0,w,h)
+        const result=canvas.toDataURL('image/jpeg',quality)
+        const kb=Math.round(result.length*0.75/1024)
+        // Jika masih >80KB dan quality bisa dikurangi, compress lagi
+        if(kb>80&&quality>0.3) return tryCompress(quality-0.1)
+        return {result,kb,quality:Math.round(quality*100)}
+      }
+      const {result,kb,quality}=tryCompress(0.75)
+      setForm(f=>({...f,bgImage:result}))
+      toast(`✓ Gambar dikompress otomatis: ${kb}KB (q${quality}%)`, 'success')
       URL.revokeObjectURL(img.src)
     }
     img.onerror=()=>toast('Gagal load gambar','error')
