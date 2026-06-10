@@ -449,6 +449,32 @@ const DEFAULT_ADS = [
   {id:'cr',   gameId:'cr',  game:'Clash Royale',               tagline:'Battle Players Around the World!',      sub:'Real-time PvP Card Strategy · Supercell',          cta:'Play Now',      color:'#a855f7', accent:'#fbbf24', bg:'linear-gradient(135deg,#06000e 0%,#12003a 40%,#1a0050 70%,#080015 100%)', particles:['#a855f7','#fbbf24','#e879f9'], url:'https://clashroyale.com'},
 ]
 
+function AdParticles({colors=['#ffd700']}){
+  const particles=React.useMemo(()=>Array.from({length:8},(_,i)=>({
+    id:i,
+    x:Math.random()*100,
+    y:Math.random()*100,
+    size:Math.random()*3+1,
+    color:colors[i%colors.length],
+    dur:2+Math.random()*3,
+    delay:Math.random()*2,
+  })),[])
+  return <div style={{position:'absolute',inset:0,pointerEvents:'none',overflow:'hidden'}}>
+    {particles.map(p=>(
+      <div key={p.id} style={{
+        position:'absolute',
+        left:`${p.x}%`,top:`${p.y}%`,
+        width:p.size,height:p.size,
+        borderRadius:'50%',
+        background:p.color,
+        opacity:0.6,
+        animation:`ad-float ${p.dur}s ${p.delay}s ease-in-out infinite alternate`,
+      }}/>
+    ))}
+    <style>{`@keyframes ad-float{0%{transform:translateY(0) scale(1);opacity:0.6}100%{transform:translateY(-20px) scale(1.5);opacity:0.1}}`}</style>
+  </div>
+}
+
 function AdBanner({compact=false}){
   const[customAds,setCustomAds]=useState(getCustomAds)
   const allAds = [...DEFAULT_ADS, ...((customAds||[]).filter(a=>a.active))]
