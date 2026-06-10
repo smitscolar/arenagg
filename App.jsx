@@ -2358,7 +2358,7 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
     setL(false)
   }
 
-  const bgStyle={minHeight:'100vh',background:'#050508',backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(0,229,255,0.05) 0%,transparent 60%),radial-gradient(ellipse at 70% 20%,rgba(255,107,0,0.04) 0%,transparent 60%)',display:'flex',alignItems:'center',justifyContent:'center',padding:20}
+  const bgStyle={minHeight:'100vh',background:'#050508',position:'relative',overflow:'hidden',display:'flex',alignItems:'center',justifyContent:'center',backgroundImage:'radial-gradient(ellipse at 30% 50%,rgba(255,107,0,0.06),transparent 60%),radial-gradient(ellipse at 70% 30%,rgba(0,229,255,0.07),transparent 60%)'}
   const inputStyle={fontSize:13,marginBottom:0}
 
   if(step==='verif') return(
@@ -2383,12 +2383,23 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
 
   return(
     <div style={bgStyle}>
-      <div style={{width:'100%',maxWidth:420}}>
+      {/* Grid lines */}
+      <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
+      {/* Big logo watermark bg */}
+      <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',pointerEvents:'none',zIndex:0}}>
+        <img src={ARENAGG_LOGO_LG} alt="" style={{width:500,height:500,objectFit:'contain',opacity:0.1,filter:'drop-shadow(0 0 100px rgba(0,229,255,0.55)) drop-shadow(0 0 200px rgba(255,107,0,0.35)) blur(0.5px)',userSelect:'none'}}/>
+        <div style={{fontFamily:'var(--fh)',fontSize:70,fontWeight:900,color:'#00e5ff',opacity:0.055,letterSpacing:14,marginTop:-52,userSelect:'none',filter:'blur(0.5px)'}}>ARENAGG</div>
+      </div>
+      {/* Glow kiri atas */}
+      <div style={{position:'absolute',top:-80,left:-80,width:320,height:320,borderRadius:'50%',background:'radial-gradient(circle,rgba(0,229,255,0.07),transparent 70%)',animation:'float 7s ease-in-out infinite',pointerEvents:'none'}}/>
+      {/* Glow kanan bawah */}
+      <div style={{position:'absolute',bottom:-80,right:-80,width:300,height:300,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,107,0,0.06),transparent 70%)',animation:'float 9s ease-in-out infinite reverse',pointerEvents:'none'}}/>
+      <div style={{width:'100%',maxWidth:420,position:'relative',zIndex:1}}>
         {/* LOGO */}
         <div style={{textAlign:'center',marginBottom:28}}>
           <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
-            <div style={{width:40,height:40,borderRadius:10,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:20,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}><img src={ARENAGG_LOGO_SM} alt='ArenaGG' style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:10}}/></div>
-            <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
+            <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{width:58,height:58,objectFit:'contain',filter:'drop-shadow(0 0 16px rgba(0,229,255,0.8)) drop-shadow(0 0 32px rgba(255,215,0,0.45))',animation:'float 3s ease-in-out infinite'}}/>
+            <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',letterSpacing:3,animation:'glow 2s ease-in-out infinite'}}>ARENAGG</div>
           </div>
           <div style={{fontSize:11,color:'var(--orange)',fontFamily:'var(--fh)',letterSpacing:2,fontWeight:700}}>{i.portal_peserta||'PORTAL PESERTA'}</div>
           <div style={{marginTop:10}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
