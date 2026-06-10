@@ -4272,7 +4272,7 @@ const SPIN_PRIZES=[
   {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
 
-// ArenaGG v5.6.4 — SpinWheel bright redesign + fix orphaned JSX
+// ArenaGG v5.6.4 — SpinWheel bright redesign
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
@@ -9198,6 +9198,17 @@ function AppCore(){
 
   const{tournaments,teams,loading,addT,updateT,deleteT,addTeam,updateTeam,deleteTeam}=useData(user?.id,toast)
 
+
+  // Onboarding — tampilkan sekali untuk user baru
+  const[showOnboarding,setShowOnboarding]=React.useState(()=>{
+    const seen=localStorage.getItem('arenagg_onboarded')
+    if(!seen){localStorage.setItem('arenagg_onboarded','1');return true}
+    return false
+  })
+
+  const{canInstall,install}=usePWAInstall()
+  const[showPWABanner,setShowPWABanner]=React.useState(true)
+
   React.useEffect(()=>{
     supabase.auth.getSession().then(({data:{session}})=>{
       setUser(session?.user??null)
@@ -9275,16 +9286,6 @@ function AppCore(){
 
   const hasLive=tournaments.some(t=>t.status==='live')
 
-  // Onboarding — tampilkan sekali untuk user baru
-  const[showOnboarding,setShowOnboarding]=React.useState(()=>{
-    const seen=localStorage.getItem('arenagg_onboarded')
-    if(!seen){localStorage.setItem('arenagg_onboarded','1');return true}
-    return false
-  })
-
-  // PWA Install
-  const{canInstall,install}=usePWAInstall()
-  const[showPWABanner,setShowPWABanner]=React.useState(true)
 
   const renderPage=()=>{
     if(editT&&page==='create')return <CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/>
