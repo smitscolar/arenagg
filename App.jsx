@@ -397,96 +397,31 @@ function LiveBanner({tournaments}){
 // ============================================================
 
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
-// ── Game Logos sebagai SVG realistis (inline, no CORS) ──
+// ── Game Logos — SVG simple, pasti render ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
 
+const makeGameLogo = (text, bg1, bg2, border, textColor='#fff') => svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${bg1}"/>
+      <stop offset="100%" stop-color="${bg2}"/>
+    </linearGradient>
+    <filter id="s"><feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="${border}" flood-opacity="0.8"/></filter>
+  </defs>
+  <rect width="120" height="120" rx="20" fill="url(#g)"/>
+  <rect x="4" y="4" width="112" height="112" rx="17" fill="none" stroke="${border}" stroke-width="3" opacity="0.8"/>
+  <text x="60" y="52" text-anchor="middle" fill="${textColor}" font-size="38" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#s)">${text.split('|')[0]}</text>
+  <text x="60" y="86" text-anchor="middle" fill="${border}" font-size="13" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="1">${text.split('|')[1]||''}</text>
+  <rect x="4" y="4" width="112" height="36" rx="17" fill="rgba(255,255,255,0.06)"/>
+</svg>`)
+
 const GAME_LOGOS = {
-  ml: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="mlbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#001a4d"/><stop offset="100%" stop-color="#003399"/></linearGradient>
-      <linearGradient id="mlgold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ffd700"/><stop offset="50%" stop-color="#fff176"/><stop offset="100%" stop-color="#ffaa00"/></linearGradient>
-      <radialGradient id="mlcenter" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#00e5ff" stop-opacity="0.3"/><stop offset="100%" stop-color="#001a4d" stop-opacity="0"/></radialGradient>
-      <filter id="mlglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="200" height="200" rx="28" fill="url(#mlbg)"/>
-    <circle cx="100" cy="100" r="96" fill="none" stroke="#ffd700" stroke-width="2" opacity="0.4"/>
-    <circle cx="100" cy="100" r="80" fill="url(#mlcenter)"/>
-    <polygon points="100,30 170,65 170,135 100,170 30,135 30,65" fill="none" stroke="url(#mlgold)" stroke-width="3"/>
-    <path d="M65,115 L82,75 L100,95 L118,75 L135,115 L122,115 L116,98 L100,118 L84,98 L78,115 Z" fill="url(#mlgold)" filter="url(#mlglow)"/>
-    <text x="100" y="158" text-anchor="middle" fill="#ffd700" font-size="16" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="2">MOBILE</text>
-    <text x="100" y="176" text-anchor="middle" fill="#00c8ff" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="1">LEGENDS</text>
-  </svg>`),
-
-  pubg: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="pbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0a00"/><stop offset="100%" stop-color="#3d1800"/></linearGradient>
-      <linearGradient id="porange" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5a623"/><stop offset="100%" stop-color="#e65c00"/></linearGradient>
-      <filter id="pglow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="200" height="200" rx="20" fill="url(#pbg)"/>
-    <rect x="8" y="8" width="184" height="184" rx="14" fill="none" stroke="#f5a623" stroke-width="2.5" opacity="0.6"/>
-    <circle cx="100" cy="78" r="36" fill="none" stroke="url(#porange)" stroke-width="5" filter="url(#pglow)"/>
-    <circle cx="100" cy="78" r="20" fill="#f5a62333"/>
-    <circle cx="100" cy="78" r="8" fill="url(#porange)"/>
-    <line x1="100" y1="42" x2="100" y2="54" stroke="#f5a623" stroke-width="3"/>
-    <line x1="100" y1="102" x2="100" y2="114" stroke="#f5a623" stroke-width="3"/>
-    <line x1="64" y1="78" x2="76" y2="78" stroke="#f5a623" stroke-width="3"/>
-    <line x1="124" y1="78" x2="136" y2="78" stroke="#f5a623" stroke-width="3"/>
-    <rect x="86" y="112" width="28" height="40" rx="8" fill="url(#porange)"/>
-    <rect x="66" y="122" width="68" height="10" rx="5" fill="url(#porange)"/>
-    <text x="100" y="172" text-anchor="middle" fill="#f5a623" font-size="28" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="4" filter="url(#pglow)">PUBG</text>
-    <text x="100" y="190" text-anchor="middle" fill="#aaa" font-size="14" font-family="Arial,sans-serif" letter-spacing="4">MOBILE</text>
-  </svg>`),
-
-  ff: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="ffbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1a0000"/><stop offset="100%" stop-color="#3d0a00"/></linearGradient>
-      <linearGradient id="fffire" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#ff2200"/><stop offset="50%" stop-color="#ff6600"/><stop offset="100%" stop-color="#ffcc00"/></linearGradient>
-      <filter id="ffglow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="200" height="200" fill="url(#ffbg)"/>
-    <polygon points="100,10 190,55 190,145 100,190 10,145 10,55" fill="none" stroke="url(#fffire)" stroke-width="3.5" filter="url(#ffglow)"/>
-    <polygon points="100,30 170,65 170,135 100,170 30,135 30,65" fill="#ff22000d"/>
-    <path d="M68,140 Q72,105 85,90 Q78,100 88,85 Q82,100 95,78 Q90,100 100,72 Q110,100 105,78 Q118,100 112,85 Q122,100 115,90 Q128,105 132,140 Q115,130 100,135 Q85,130 68,140 Z" fill="url(#fffire)" filter="url(#ffglow)"/>
-    <text x="100" y="108" text-anchor="middle" fill="white" font-size="38" font-family="Arial Black,sans-serif" font-weight="900" filter="url(#ffglow)">FF</text>
-    <text x="100" y="165" text-anchor="middle" fill="#ffcc00" font-size="15" font-family="Arial Black,sans-serif" letter-spacing="3">FREE FIRE</text>
-    <text x="100" y="183" text-anchor="middle" fill="#ff6600" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="5">MAX</text>
-  </svg>`),
-
-  val: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="vbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0a0000"/><stop offset="100%" stop-color="#200005"/></linearGradient>
-      <linearGradient id="vred" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#ff6470"/><stop offset="100%" stop-color="#ff0018"/></linearGradient>
-      <filter id="vglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="200" height="200" fill="url(#vbg)"/>
-    <path d="M100,20 L180,60 L180,110 L100,180 L20,110 L20,60 Z" fill="none" stroke="#ff4655" stroke-width="2" opacity="0.5"/>
-    <path d="M100,40 L100,160 L32,108 Z" fill="url(#vred)" filter="url(#vglow)"/>
-    <path d="M100,40 L168,108 L100,160 Z" fill="#ff465522"/>
-    <line x1="18" y1="128" x2="88" y2="128" stroke="#ff4655" stroke-width="3" stroke-linecap="round"/>
-    <line x1="112" y1="128" x2="182" y2="128" stroke="#00e5ff" stroke-width="3" stroke-linecap="round"/>
-    <text x="100" y="192" text-anchor="middle" fill="#ff4655" font-size="17" font-family="Arial Black,sans-serif" font-weight="900" letter-spacing="3" filter="url(#vglow)">VALORANT</text>
-  </svg>`),
-
-  cr: svgToUrl(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-    <defs>
-      <linearGradient id="crbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d0020"/><stop offset="100%" stop-color="#1e0050"/></linearGradient>
-      <linearGradient id="crpurple" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d946ef"/><stop offset="100%" stop-color="#7c3aed"/></linearGradient>
-      <linearGradient id="crgold" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#f59e0b"/></linearGradient>
-      <filter id="crglow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    </defs>
-    <rect width="200" height="200" rx="28" fill="url(#crbg)"/>
-    <circle cx="100" cy="100" r="90" fill="none" stroke="url(#crpurple)" stroke-width="3" opacity="0.5"/>
-    <path d="M100,25 L115,65 L158,65 L124,88 L137,128 L100,106 L63,128 L76,88 L42,65 L85,65 Z" fill="url(#crpurple)" opacity="0.25" filter="url(#crglow)"/>
-    <path d="M100,25 L115,65 L158,65 L124,88 L137,128 L100,106 L63,128 L76,88 L42,65 L85,65 Z" fill="none" stroke="url(#crgold)" stroke-width="2.5" filter="url(#crglow)"/>
-    <path d="M84,48 L100,40 L116,48 L118,42 L100,32 L82,42 Z" fill="url(#crgold)"/>
-    <rect x="90" y="36" width="20" height="6" rx="3" fill="url(#crgold)"/>
-    <text x="100" y="170" text-anchor="middle" fill="#d946ef" font-size="14" font-family="Arial Black,sans-serif" letter-spacing="2" filter="url(#crglow)">CLASH</text>
-    <text x="100" y="188" text-anchor="middle" fill="#fbbf24" font-size="13" font-family="Arial Black,sans-serif" letter-spacing="2">ROYALE</text>
-  </svg>`),
+  ml:   makeGameLogo('ML|MOBILE LEGENDS', '#001050', '#0030aa', '#ffd700'),
+  pubg: makeGameLogo('PUBG|MOBILE', '#1a0800', '#3d1800', '#f5a623', '#f5a623'),
+  ff:   makeGameLogo('FF|FREE FIRE', '#1a0000', '#3d0000', '#ff4400', '#ffcc00'),
+  val:  makeGameLogo('VAL|ORANT', '#0a0000', '#1f0005', '#ff4655', '#ff4655'),
+  cr:   makeGameLogo('CR|CLASH ROYALE', '#0d0020', '#1e0055', '#a855f7', '#fbbf24'),
 }
-
-
 
 const DEFAULT_ADS = [
   {
@@ -2853,23 +2788,39 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
             </div>
           </div>
 
-          {/* SELAMAT DATANG + ID CARD ringkas */}
-          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:14,padding:'14px 16px',marginBottom:14,display:'flex',alignItems:'center',gap:12}}>
-            <div style={{width:44,height:44,borderRadius:'50%',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
-              {member.avatar_url
-                ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
-                :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
-              }
+          {/* HEADER ARENAGG + SELAMAT DATANG */}
+          <div style={{background:'linear-gradient(135deg,rgba(0,229,255,0.08),rgba(255,107,0,0.05))',border:'1px solid rgba(0,229,255,0.2)',borderRadius:14,padding:'16px',marginBottom:14}}>
+            {/* Logo + Brand row */}
+            <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:12,paddingBottom:12,borderBottom:'1px solid rgba(0,229,255,0.1)'}}>
+              <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{
+                width:72,height:72,objectFit:'contain',flexShrink:0,
+                filter:'drop-shadow(0 0 12px rgba(0,229,255,0.6)) drop-shadow(0 0 24px rgba(255,215,0,0.3))',
+                animation:'float 3s ease-in-out infinite',
+              }}/>
+              <div>
+                <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--cyan)',letterSpacing:2,textShadow:'0 0 20px rgba(0,229,255,0.5)'}}>ARENAGG</div>
+                <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--orange)',letterSpacing:2}}>MEMBER PORTAL</div>
+                <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:2}}>Platform Turnamen Esport SEA</div>
+              </div>
             </div>
-            <div style={{flex:1}}>
-              <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:900,color:'var(--text)',textShadow:'0 0 10px rgba(0,229,255,0.3)'}}>Halo, {member.nama}! 👋</div>
-              <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:1,marginTop:2}}>{member.member_id} · {myTeams.length} tim terdaftar</div>
-            </div>
-            <div style={{textAlign:'right'}}>
-              {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0
-                ?<div style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--red)',animation:'pulse 1s infinite'}}>🔴 MATCH LIVE!</div>
-                :<div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>Tidak ada live</div>
-              }
+            {/* User greeting row */}
+            <div style={{display:'flex',alignItems:'center',gap:12}}>
+              <div style={{width:42,height:42,borderRadius:'50%',overflow:'hidden',border:'2px solid var(--cyan)',flexShrink:0}}>
+                {member.avatar_url
+                  ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="avatar"/>
+                  :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+                }
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:13,fontWeight:900,color:'var(--text)',textShadow:'0 0 10px rgba(0,229,255,0.3)'}}>Halo, {member.nama}! 👋</div>
+                <div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--cyan)',letterSpacing:1,marginTop:2}}>{member.member_id} · {myTeams.length} tim terdaftar</div>
+              </div>
+              <div style={{textAlign:'right'}}>
+                {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0
+                  ?<div style={{fontFamily:'var(--fh)',fontSize:9,color:'var(--red)',animation:'pulse 1s infinite'}}>🔴 MATCH LIVE!</div>
+                  :<div style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)'}}>Tidak ada live</div>
+                }
+              </div>
             </div>
           </div>
 
