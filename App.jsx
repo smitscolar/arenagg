@@ -399,8 +399,30 @@ function LiveBanner({tournaments}){
 // Animated inline SVG logos — 100% reliable, no CORS, rich art
 // ── Ad Storage helpers ──
 const AD_STORAGE_KEY = 'arenagg_custom_ads'
-const getCustomAds = () => { try { const d = localStorage.getItem(AD_STORAGE_KEY); return d ? JSON.parse(d) : [] } catch { return [] } }
-const saveCustomAds = (ads) => { try { localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(ads)); try { const bc = new BroadcastChannel('arenagg_ads'); bc.postMessage({type:'ads_updated',ads}); bc.close() } catch(e){} } catch(e){} }
+const getCustomAds = () => { try { const d = localStorage.getItem(AD_STORAGE_KEY); const ads = d ? JSON.parse(d) : []; return ads.map(a => { const bg = localStorage.getItem('arenagg_ad_bg_'+a.id)||sessionStorage.getItem('arenagg_ad_bg_'+a.id)||''; return bg?{...a,bgImage:bg}:a }) } catch { return [] } }
+const saveCustomAds = (ads) => {
+  try {
+    // Strip bgImage dari localStorage (terlalu besar), simpan terpisah
+    const adsForStorage = ads.map(a => {
+      const {bgImage, ...rest} = a
+      if(bgImage) {
+        try { localStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e) {
+          try { sessionStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e2) {}
+        }
+      }
+      return rest
+    })
+    localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(adsForStorage))
+    try { const bc = new BroadcastChannel('arenagg_ads'); bc.postMessage({type:'ads_updated',ads}); bc.close() } catch(e){}
+  } catch(e) {
+    console.error('saveCustomAds error:', e)
+  }
+}
+
+const getCustomAdsWithBg = (ads) => ads.map(a => {
+  const bgImage = localStorage.getItem('arenagg_ad_bg_'+a.id) || sessionStorage.getItem('arenagg_ad_bg_'+a.id) || ''
+  return bgImage ? {...a, bgImage} : a
+})
 
 // ── Game Logos — Base64 embedded, nyata 100% ──
 const svgToUrl = svg => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
@@ -815,20 +837,25 @@ function AdManager({toast}){
   const handleBgUpload=e=>{
     const file=e.target.files?.[0]
     if(!file)return
-    if(file.size>2*1024*1024){toast('Maks 2MB untuk background','error');return}
-    // Compress background
+    if(file.size>5*1024*1024){toast('Maks 5MB untuk background','error');return}
     const img=new Image()
     img.onload=()=>{
       const canvas=document.createElement('canvas')
-      const maxW=800
-      const scale=Math.min(1,maxW/img.width)
-      canvas.width=img.width*scale
-      canvas.height=img.height*scale
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height)
-      const compressed=canvas.toDataURL('image/jpeg',0.7)
+      // Target 600x300 max untuk banner landscape
+      const maxW=600, maxH=300
+      let w=img.width, h=img.height
+      if(w>maxW){h=Math.round(h*(maxW/w));w=maxW}
+      if(h>maxH){w=Math.round(w*(maxH/h));h=maxH}
+      canvas.width=w; canvas.height=h
+      const ctx=canvas.getContext('2d')
+      ctx.drawImage(img,0,0,w,h)
+      const compressed=canvas.toDataURL('image/jpeg',0.65)
       setForm(f=>({...f,bgImage:compressed}))
-      toast('✓ Background berhasil diupload!','success')
+      const kb=Math.round(compressed.length*0.75/1024)
+      toast(`✓ Background siap (${kb}KB)!`,'success')
+      URL.revokeObjectURL(img.src)
     }
+    img.onerror=()=>toast('Gagal load gambar','error')
     img.src=URL.createObjectURL(file)
   }
 
