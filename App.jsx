@@ -404,23 +404,27 @@ const getCustomAds = () => {
     const d = localStorage.getItem(AD_STORAGE_KEY)
     const ads = d ? JSON.parse(d) : []
     return ads.map(a => {
-      const bgImage = a.hasBg ? (localStorage.getItem('arenagg_ad_bg_'+a.id)||sessionStorage.getItem('arenagg_ad_bg_'+a.id)||'') : (a.bgImage||'')
-      const logo = a.hasLogo ? (localStorage.getItem('arenagg_ad_logo_'+a.id)||sessionStorage.getItem('arenagg_ad_logo_'+a.id)||'') : (a.logo||'')
+      // Coba ambil dari key terpisah dulu, fallback ke inline
+      const bgImage = localStorage.getItem('arenagg_ad_bg_'+a.id) || a.bgImage || ''
+      const logo = localStorage.getItem('arenagg_ad_logo_'+a.id) || a.logo || ''
       return {...a, bgImage, logo}
     })
   } catch { return [] }
 }
 const saveCustomAds = (ads) => {
   try {
-    // Simpan bgImage & logo terpisah (bisa besar)
+    // Simpan bgImage dan logo ke key terpisah DAN inline
     const adsForStorage = ads.map(a => {
-      const {bgImage, logo, ...rest} = a
-      if(bgImage) try { localStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e) { try { sessionStorage.setItem('arenagg_ad_bg_'+a.id, bgImage) } catch(e2){} }
-      if(logo && logo.startsWith('data:')) try { localStorage.setItem('arenagg_ad_logo_'+a.id, logo) } catch(e) { try { sessionStorage.setItem('arenagg_ad_logo_'+a.id, logo) } catch(e2){} }
-      return {...rest, hasLogo: !!logo, hasBg: !!bgImage}
+      if(a.bgImage) try { localStorage.setItem('arenagg_ad_bg_'+a.id, a.bgImage) } catch(e){}
+      if(a.logo && a.logo.startsWith('data:')) try { localStorage.setItem('arenagg_ad_logo_'+a.id, a.logo) } catch(e){}
+      return {...a} // simpan inline juga
     })
-    localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(adsForStorage))
-    // Broadcast full data (termasuk bgImage) ke semua tab
+    try { localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(adsForStorage)) } catch(e) {
+      // Jika storage penuh, simpan tanpa bgImage di main key
+      const slim = adsForStorage.map(({bgImage,...rest})=>({...rest}))
+      localStorage.setItem(AD_STORAGE_KEY, JSON.stringify(slim))
+    }
+    // Broadcast full data ke semua tab
     try {
       const bc = new BroadcastChannel('arenagg_ads')
       bc.postMessage({type:'ads_updated', ads})
