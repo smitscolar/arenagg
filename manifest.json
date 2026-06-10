@@ -1,0 +1,46 @@
+{
+  "name": "ArenaGG \u2014 Esport Tournament Platform",
+  "short_name": "ArenaGG",
+  "description": "Platform turnamen esport terbaik di Asia Tenggara",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#00e5ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://arenagg-dyuv.vercel.app/favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "https://arenagg-dyuv.vercel.app/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://arenagg-dyuv.vercel.app/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": [
+    "games",
+    "sports",
+    "entertainment"
+  ],
+  "lang": "id",
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "url": "/",
+      "description": "Buka Dashboard"
+    },
+    {
+      "name": "Turnamen",
+      "url": "/#tournaments",
+      "description": "Lihat Turnamen"
+    }
+  ]
+}
