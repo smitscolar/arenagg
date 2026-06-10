@@ -6031,16 +6031,26 @@ function AuthPage({onLogin,lang,setLangFn}){
     }catch(e){setErr(e.message==='Invalid login credentials'?'Email atau password salah.':e.message||'Terjadi error, coba lagi.')}
     setL(false)
   }
-  return <div className="auth-bg" style={{position:'relative',overflow:'hidden',background:'#050508',minHeight:'100vh'}}>
-    {/* Animated background grid */}
-    <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
-    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 50%,rgba(0,229,255,0.06) 0%,transparent 70%)',pointerEvents:'none'}}/>
+  return <div className="auth-bg" style={{position:'relative',overflow:'hidden',background:'#050508',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
+    {/* Grid lines */}
+    <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
+    {/* Radial glow */}
+    <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 50% 40%,rgba(0,229,255,0.09) 0%,rgba(255,107,0,0.04) 40%,transparent 70%)'}}/>
+    {/* Big logo watermark di belakang */}
+    <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',pointerEvents:'none',zIndex:0}}>
+      <img src={ARENAGG_LOGO_LG} alt="" style={{width:520,height:520,objectFit:'contain',opacity:0.055,filter:'drop-shadow(0 0 80px rgba(0,229,255,0.5)) drop-shadow(0 0 160px rgba(255,107,0,0.3)) blur(1px)',userSelect:'none'}}/>
+      <div style={{fontFamily:'var(--fh)',fontSize:76,fontWeight:900,color:'#00e5ff',opacity:0.03,letterSpacing:14,marginTop:-55,userSelect:'none',filter:'blur(0.5px)'}}>ARENAGG</div>
+    </div>
+    {/* Corner glow kiri atas */}
+    <div style={{position:'absolute',top:-100,left:-100,width:360,height:360,borderRadius:'50%',background:'radial-gradient(circle,rgba(0,229,255,0.07),transparent 70%)',animation:'float 7s ease-in-out infinite',pointerEvents:'none'}}/>
+    {/* Corner glow kanan bawah */}
+    <div style={{position:'absolute',bottom:-100,right:-100,width:320,height:320,borderRadius:'50%',background:'radial-gradient(circle,rgba(255,107,0,0.06),transparent 70%)',animation:'float 9s ease-in-out infinite reverse',pointerEvents:'none'}}/>
     <div style={{width:'100%',maxWidth:440,position:'relative',zIndex:1}}>
-      {/* Logo */}
+      {/* Logo header */}
       <div style={{textAlign:'center',marginBottom:32}}>
-        <div style={{display:'inline-flex',alignItems:'center',gap:10,marginBottom:8}}>
-          <div style={{width:44,height:44,borderRadius:12,background:'linear-gradient(135deg,var(--cyan),#0055aa)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:22,boxShadow:'0 8px 24px rgba(0,229,255,0.3)',animation:'float 3s ease-in-out infinite'}}>⚔</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:26,fontWeight:900,color:'var(--cyan)',letterSpacing:4,animation:'glow-pulse 3s infinite'}}>ARENAGG</div>
+        <div style={{display:'inline-flex',alignItems:'center',gap:12,marginBottom:10}}>
+          <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{width:64,height:64,objectFit:'contain',filter:'drop-shadow(0 0 18px rgba(0,229,255,0.8)) drop-shadow(0 0 36px rgba(255,215,0,0.5))',animation:'float 3s ease-in-out infinite'}}/>
+          <div style={{fontFamily:'var(--fh)',fontSize:28,fontWeight:900,color:'var(--cyan)',letterSpacing:4,animation:'glow 2s ease-in-out infinite'}}>ARENAGG</div>
         </div>
         <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)',letterSpacing:3}}>ESPORT TOURNAMENT PLATFORM · MULTILINGUAL</div>
         <div style={{marginTop:14,display:'flex',justifyContent:'center'}}><LangSelector lang={lang} setLangFn={setLangFn}/></div>
