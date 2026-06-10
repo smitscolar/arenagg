@@ -457,6 +457,160 @@ const DEFAULT_ADS = [
   {id:'cr',   gameId:'cr',  game:'Clash Royale',               tagline:'Battle Players Around the World!',      sub:'Real-time PvP Card Strategy · Supercell',          cta:'Play Now',      color:'#a855f7', accent:'#fbbf24', bg:'linear-gradient(135deg,#06000e 0%,#12003a 40%,#1a0050 70%,#080015 100%)', particles:['#a855f7','#fbbf24','#e879f9'], url:'https://clashroyale.com'},
 ]
 
+// ══════════════════════════════════════════════════
+// PWA INSTALL PROMPT
+// ══════════════════════════════════════════════════
+function usePWAInstall(){
+  const[prompt,setPrompt]=React.useState(null)
+  const[installed,setInstalled]=React.useState(()=>window.matchMedia('(display-mode: standalone)').matches)
+  React.useEffect(()=>{
+    const handler=e=>{e.preventDefault();setPrompt(e)}
+    window.addEventListener('beforeinstallprompt',handler)
+    window.addEventListener('appinstalled',()=>setInstalled(true))
+    return()=>window.removeEventListener('beforeinstallprompt',handler)
+  },[])
+  const install=async()=>{
+    if(!prompt)return false
+    prompt.prompt()
+    const{outcome}=await prompt.userChoice
+    if(outcome==='accepted')setInstalled(true)
+    setPrompt(null)
+    return outcome==='accepted'
+  }
+  return{canInstall:!!prompt&&!installed,install,installed}
+}
+
+// ══════════════════════════════════════════════════
+// PUSH NOTIFICATION HELPER
+// ══════════════════════════════════════════════════
+async function requestPushPermission(){
+  if(!('Notification' in window))return false
+  if(Notification.permission==='granted')return true
+  const p=await Notification.requestPermission()
+  return p==='granted'
+}
+function sendLocalNotif(title,body,tag='arenagg'){
+  if(Notification.permission!=='granted')return
+  try{new Notification(title,{body,icon:'/favicon.ico',tag})}catch(e){}
+}
+
+// ══════════════════════════════════════════════════
+// ONBOARDING COMPONENT
+// ══════════════════════════════════════════════════
+function OnboardingModal({onClose,lang}){
+  const[step,setStep]=React.useState(0)
+  const steps=[
+    {icon:'🏆',title:'Selamat Datang di ArenaGG!',desc:'Platform turnamen esport #1 di Asia Tenggara. Buat, kelola & saksikan turnamen secara realtime.',color:'var(--cyan)'},
+    {icon:'➕',title:'Buat Turnamen',desc:'Buat turnamen dalam 2 menit. Isi nama, game, format, tanggal & prize pool. Bagikan link ke peserta.',color:'var(--orange)'},
+    {icon:'👥',title:'Kelola Peserta',desc:'Peserta daftar online, kamu approve, atur bracket otomatis & pantau skor live.',color:'var(--green)'},
+    {icon:'💎',title:'ARPAY Digital Coin',desc:'Kumpulkan ARPAY dari turnamen & mini game. Gunakan untuk belanja, staking & lebih banyak lagi!',color:'var(--yellow)'},
+    {icon:'📱',title:'Install Aplikasi',desc:'Install ArenaGG ke HP kamu untuk akses lebih cepat, notifikasi jadwal match & pengalaman lebih baik.',color:'#a855f7'},
+  ]
+  const s=steps[step]
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.85)',zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:20,backdropFilter:'blur(8px)'}}>
+      <div style={{background:'var(--bg2)',border:`1px solid ${s.color}44`,borderRadius:20,padding:28,maxWidth:340,width:'100%',textAlign:'center',boxShadow:`0 0 60px ${s.color}22`}}>
+        <div style={{fontSize:64,marginBottom:16}}>{s.icon}</div>
+        <div style={{fontFamily:'var(--fh)',fontSize:18,fontWeight:900,color:s.color,marginBottom:10,letterSpacing:1}}>{s.title}</div>
+        <div style={{fontSize:13,color:'var(--muted)',lineHeight:1.7,marginBottom:20}}>{s.desc}</div>
+        {/* Progress dots */}
+        <div style={{display:'flex',justifyContent:'center',gap:6,marginBottom:20}}>
+          {steps.map((_,i)=>(
+            <div key={i} onClick={()=>setStep(i)} style={{width:i===step?20:7,height:7,borderRadius:4,background:i===step?s.color:'var(--border)',cursor:'pointer',transition:'all 0.3s'}}/>
+          ))}
+        </div>
+        <div style={{display:'flex',gap:8}}>
+          {step>0&&<button onClick={()=>setStep(s=>s-1)} style={{flex:1,padding:'11px',background:'var(--border)',border:'none',borderRadius:10,color:'var(--text)',fontFamily:'var(--fh)',fontSize:11,cursor:'pointer'}}>← Kembali</button>}
+          {step<steps.length-1
+            ?<button onClick={()=>setStep(s=>s+1)} style={{flex:2,padding:'11px',background:`linear-gradient(135deg,${s.color},${s.color}88)`,border:'none',borderRadius:10,color:'#000',fontFamily:'var(--fh)',fontSize:11,fontWeight:900,cursor:'pointer',letterSpacing:1}}>Lanjut →</button>
+            :<button onClick={onClose} style={{flex:2,padding:'11px',background:'linear-gradient(135deg,var(--cyan),var(--orange))',border:'none',borderRadius:10,color:'#000',fontFamily:'var(--fh)',fontSize:11,fontWeight:900,cursor:'pointer',letterSpacing:1}}>🚀 Mulai Sekarang!</button>
+          }
+        </div>
+        <button onClick={onClose} style={{marginTop:10,background:'none',border:'none',color:'var(--muted)',fontSize:11,cursor:'pointer'}}>Lewati tutorial</button>
+      </div>
+    </div>
+  )
+}
+
+// ══════════════════════════════════════════════════
+// PLAYER PROFILE CARD (shareable)
+// ══════════════════════════════════════════════════
+function PlayerProfileCard({member,myTeams=[],onClose}){
+  const wins=myTeams.filter(t=>t.tournaments?.status==='closed').length
+  const total=myTeams.length
+  const winrate=total>0?Math.round((wins/total)*100):0
+  const cardRef=React.useRef(null)
+
+  const shareCard=()=>{
+    if(navigator.share){
+      navigator.share({
+        title:'ArenaGG Player Card',
+        text:`${member.nama} — ID: ${member.member_id} | ${total} turnamen | WR ${winrate}%`,
+        url:window.location.href,
+      }).catch(()=>{})
+    } else {
+      navigator.clipboard?.writeText(`${member.nama} — ArenaGG ID: ${member.member_id}
+${total} Turnamen | Win Rate ${winrate}%
+arenagg-dyuv.vercel.app`)
+        .then(()=>alert('Link disalin!'))
+    }
+  }
+
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.85)',zIndex:9000,display:'flex',alignItems:'center',justifyContent:'center',padding:20,backdropFilter:'blur(8px)'}}>
+      <div style={{maxWidth:320,width:'100%'}}>
+        {/* Card */}
+        <div ref={cardRef} style={{
+          background:'linear-gradient(135deg,#050818,#0a1628,#050818)',
+          border:'2px solid rgba(0,229,255,0.4)',
+          borderRadius:20,padding:24,textAlign:'center',
+          boxShadow:'0 0 60px rgba(0,229,255,0.2)',
+          position:'relative',overflow:'hidden',
+        }}>
+          {/* BG decoration */}
+          <div style={{position:'absolute',top:-30,right:-30,width:120,height:120,borderRadius:'50%',background:'rgba(0,229,255,0.05)',pointerEvents:'none'}}/>
+          <div style={{position:'absolute',bottom:-20,left:-20,width:80,height:80,borderRadius:'50%',background:'rgba(255,107,0,0.05)',pointerEvents:'none'}}/>
+          {/* Logo */}
+          <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',letterSpacing:3,marginBottom:14,opacity:0.7}}>⚡ ARENAGG PLAYER CARD</div>
+          {/* Avatar */}
+          <div style={{width:72,height:72,borderRadius:'50%',overflow:'hidden',border:'3px solid var(--cyan)',margin:'0 auto 12px',boxShadow:'0 0 20px rgba(0,229,255,0.4)'}}>
+            {member.avatar_url
+              ?<img src={member.avatar_url} style={{width:'100%',height:'100%',objectFit:'cover'}} alt="av"/>
+              :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
+            }
+          </div>
+          {/* Name */}
+          <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'#fff',marginBottom:4}}>{member.nama}</div>
+          <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--cyan)',letterSpacing:2,marginBottom:16}}>{member.member_id}</div>
+          {/* Stats */}
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8,marginBottom:16}}>
+            {[
+              {label:'Turnamen',value:total,color:'var(--cyan)'},
+              {label:'Win Rate',value:`${winrate}%`,color:'var(--green)'},
+              {label:'ARPAY',value:formatARPAY(getARPAY(member?.member_id||'')),color:'var(--yellow)'},
+            ].map((s,i)=>(
+              <div key={i} style={{background:'rgba(255,255,255,0.04)',borderRadius:10,padding:'10px 6px',border:'1px solid rgba(255,255,255,0.08)'}}>
+                <div style={{fontFamily:'var(--fh)',fontSize:16,fontWeight:900,color:s.color}}>{s.value}</div>
+                <div style={{fontSize:8,color:'var(--muted)',marginTop:2,fontFamily:'var(--fm)',letterSpacing:0.5}}>{s.label}</div>
+              </div>
+            ))}
+          </div>
+          {/* Member since */}
+          <div style={{fontSize:9,color:'var(--muted)',fontFamily:'var(--fm)'}}>Member sejak {new Date(member.created_at||Date.now()).toLocaleDateString('id-ID',{month:'long',year:'numeric'})}</div>
+          {/* ArenaGG branding */}
+          <div style={{marginTop:12,paddingTop:10,borderTop:'1px solid rgba(255,255,255,0.06)',fontSize:9,color:'rgba(0,229,255,0.4)',fontFamily:'var(--fm)',letterSpacing:2}}>arenagg-dyuv.vercel.app</div>
+        </div>
+        {/* Action buttons */}
+        <div style={{display:'flex',gap:8,marginTop:12}}>
+          <button onClick={shareCard} style={{flex:2,padding:'12px',background:'linear-gradient(135deg,var(--cyan),var(--orange))',border:'none',borderRadius:12,color:'#000',fontFamily:'var(--fh)',fontSize:11,fontWeight:900,cursor:'pointer',letterSpacing:1}}>📤 SHARE CARD</button>
+          <button onClick={onClose} style={{flex:1,padding:'12px',background:'var(--border)',border:'none',borderRadius:12,color:'var(--text)',fontFamily:'var(--fh)',fontSize:11,cursor:'pointer'}}>Tutup</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+
 function AdParticles({colors=['#ffd700']}){
   const particles=React.useMemo(()=>Array.from({length:8},(_,i)=>({
     id:i,
@@ -2482,6 +2636,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const[editGameId,setEditGameId]=useState(member.game_id||'')
   const[savingProfile,setSavingP]=useState(false)
   const[memberMoreOpen,setMemberMoreOpen]=useState(false)
+  const[showProfileCard,setShowProfileCard]=useState(false)
+  const[notifEnabled,setNotifEnabled]=useState(()=>Notification?.permission==='granted')
   const lang=langProp||getLang()
   const setLangFn=setLangFnProp||(l=>{setLang(l)})
   const i=T[lang]||T.id
@@ -2664,6 +2820,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         }
       `}</style>
       <div className="mb-orb1"/><div className="mb-orb2"/><div className="mb-orb3"/>
+      {/* Player Profile Card Modal */}
+      {showProfileCard&&<PlayerProfileCard member={member} myTeams={myTeams} onClose={()=>setShowProfileCard(false)}/>}
       <div className="mb-grid"/>
       {[...Array(12)].map((_,n)=>(
         <div key={'s'+n} className="mb-star" style={{width:n%3===0?3:2,height:n%3===0?3:2,left:`${8+n*8}%`,top:`${5+n*7}%`,background:n%3===0?'rgba(0,229,255,0.6)':n%3===1?'rgba(255,107,0,0.5)':'rgba(255,255,255,0.4)',animationDelay:`${n*0.5}s`,animationDuration:`${2+n*0.3}s`}}/>
@@ -2852,6 +3010,14 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
           </div>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
             <span style={{fontFamily:'var(--fm)',fontSize:8,color:'var(--muted)'}}>ID {member.member_id}</span>
+            {/* Push Notif button */}
+            <div onClick={async()=>{const ok=await requestPushPermission();setNotifEnabled(ok);if(ok)toast('✓ Notifikasi aktif!','success')}} style={{width:30,height:30,borderRadius:'50%',background:notifEnabled?'rgba(0,255,136,0.1)':'rgba(255,255,255,0.05)',border:`1px solid ${notifEnabled?'var(--green)':'rgba(255,255,255,0.15)'}`,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:14}} title="Aktifkan Notifikasi">
+              {notifEnabled?'🔔':'🔕'}
+            </div>
+            {/* Profile Card button */}
+            <div onClick={()=>setShowProfileCard(true)} style={{width:30,height:30,borderRadius:'50%',background:'rgba(255,215,0,0.08)',border:'1px solid rgba(255,215,0,0.2)',display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:13}} title="Player Card">
+              🃏
+            </div>
             <div onClick={()=>setActiveTab('chat')} style={{width:30,height:30,borderRadius:'50%',background:activeTab==='chat'?'rgba(0,229,255,0.15)':'rgba(0,229,255,0.06)',border:`1px solid ${activeTab==='chat'?'var(--cyan)':'rgba(0,229,255,0.2)'}`,display:'flex',alignItems:'center',justifyContent:'center',cursor:'pointer',fontSize:13,position:'relative'}} title="Obrolan">
               💬
               {myTeams.filter(tm=>tm.tournaments?.status==='live').length>0&&(
@@ -9173,6 +9339,17 @@ function AppCore(){
 
   const hasLive=tournaments.some(t=>t.status==='live')
 
+  // Onboarding — tampilkan sekali untuk user baru
+  const[showOnboarding,setShowOnboarding]=React.useState(()=>{
+    const seen=localStorage.getItem('arenagg_onboarded')
+    if(!seen){localStorage.setItem('arenagg_onboarded','1');return true}
+    return false
+  })
+
+  // PWA Install
+  const{canInstall,install}=usePWAInstall()
+  const[showPWABanner,setShowPWABanner]=React.useState(true)
+
   const renderPage=()=>{
     if(editT&&page==='create')return <CreateTournament addT={addT} updateT={updateT} editData={editT} setEditT={setEditT} toast={toast} lang={lang}/>
     switch(page){
@@ -9192,6 +9369,18 @@ function AppCore(){
   }
 
   return <div className="app-wrap">
+    {/* Onboarding Modal */}
+    {showOnboarding&&<OnboardingModal onClose={()=>setShowOnboarding(false)} lang={lang}/>}
+    {/* PWA Install Banner */}
+    {canInstall&&showPWABanner&&<div style={{position:'fixed',bottom:68,left:8,right:8,zIndex:997,background:'linear-gradient(135deg,rgba(0,229,255,0.15),rgba(255,107,0,0.1))',border:'1px solid rgba(0,229,255,0.3)',borderRadius:12,padding:'10px 14px',display:'flex',alignItems:'center',gap:10,backdropFilter:'blur(10px)'}}>
+      <span style={{fontSize:20}}>📱</span>
+      <div style={{flex:1}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:10,color:'var(--cyan)',fontWeight:700}}>Install ArenaGG</div>
+        <div style={{fontSize:9,color:'var(--muted)'}}>Akses lebih cepat seperti app native</div>
+      </div>
+      <button onClick={()=>{install();setShowPWABanner(false)}} style={{padding:'6px 12px',background:'var(--cyan)',border:'none',borderRadius:7,color:'#000',fontFamily:'var(--fh)',fontSize:9,fontWeight:900,cursor:'pointer'}}>INSTALL</button>
+      <button onClick={()=>setShowPWABanner(false)} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:14,padding:'0 4px'}}>✕</button>
+    </div>}
     <Sidebar page={page} setPage={p=>{setPage(p);setEditT(null)}} user={user} onLogout={onLogout} hasLive={hasLive} lang={lang} setLangFn={setLangFn} isLight={isLight} toggleTheme={toggleTheme} tournaments={tournaments}/>
     <main className="main-content">
       {renderPage()}
