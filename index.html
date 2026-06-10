@@ -5,15 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>ArenaGG — Esport Tournament Platform</title>
     <meta name="description" content="Platform turnamen esport lokal terbaik untuk Mobile Legends, PUBG, Free Fire." />
-    <meta name="theme-color" content="#050508" />
+    <meta name="theme-color" content="#00e5ff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ArenaGG" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="ArenaGG" />
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <!-- OG Tags -->
+    <meta property="og:title" content="ArenaGG — Esport Tournament Platform" />
+    <meta property="og:description" content="Platform turnamen esport SEA terbaik" />
+    <meta property="og:type" content="website" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-    <meta name="build-version" content="2.2.0" />
+    <meta name="build-version" content="5.6.4" />
     <style>
-      /* Fallback styles before JS loads */
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       html, body {
         background: #050508;
@@ -23,24 +31,21 @@
         -webkit-text-size-adjust: 100%;
         -webkit-tap-highlight-color: transparent;
       }
-      #root {
-        min-height: 100vh;
-        background: #050508;
-      }
-      /* Loading state */
-      #root:empty::after {
-        content: '';
-        position: fixed;
-        inset: 0;
-        background: #050508;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
+      #root { min-height: 100vh; background: #050508; }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/main.jsx"></script>
+    <script>
+      // Register Service Worker for PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered:', reg.scope))
+            .catch(err => console.log('SW failed:', err))
+        })
+      }
+    </script>
   </body>
 </html>
