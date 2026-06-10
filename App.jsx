@@ -729,31 +729,30 @@ function AdBanner({compact=false}){
     {/* Particles */}
     <div style={{position:'absolute',inset:0,zIndex:2,pointerEvents:'none'}}><AdParticles colors={ad.particles||[ad.accent||'#ffd700']}/></div>
 
-    {/* === MAIN CONTENT === */}
-    <div key={animKey} style={{position:'relative',zIndex:4,display:'flex',gap:0,minHeight:200,animation:'ad-slide-in 0.4s cubic-bezier(0.22,1,0.36,1) both'}}>
+    {/* === MAIN CONTENT — responsive flex === */}
+    <div key={animKey} style={{position:'relative',zIndex:4,display:'flex',flexWrap:'wrap',gap:0,minHeight:180,animation:'ad-slide-in 0.4s cubic-bezier(0.22,1,0.36,1) both'}}>
 
       {/* LEFT — Logo block */}
-      <div style={{width:140,minHeight:200,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px 10px 20px 20px'}}>
+      <div style={{width:130,minHeight:140,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',padding:'16px 8px 16px 16px'}}>
         <div style={{
-          width:110,height:110,borderRadius:22,overflow:'hidden',
+          width:100,height:100,borderRadius:20,overflow:'hidden',
           border:`3px solid ${ad.accent||'#ffd700'}88`,
           background:`linear-gradient(135deg,${ad.color||'#1a6fd4'}44,rgba(0,0,0,0.3))`,
           display:'flex',alignItems:'center',justifyContent:'center',
-          boxShadow:`0 0 40px ${ad.color||'#1a6fd4'}99, 0 0 80px ${ad.accent||'#ffd700'}44, inset 0 0 20px rgba(0,0,0,0.3)`,
+          boxShadow:`0 0 40px ${ad.color||'#1a6fd4'}99, 0 0 80px ${ad.accent||'#ffd700'}44`,
           animation:'ad-logo-pop 0.5s cubic-bezier(0.22,1,0.36,1) both',
-          position:'relative',
+          position:'relative',flexShrink:0,
         }}>
           {ad.logo&&!logoErr[ad.id]
-            ?<img src={ad.logo} style={{width:'90%',height:'90%',objectFit:'contain'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
-            :<span style={{fontSize:58}}>{ad.emoji||'🎮'}</span>
+            ?<img src={ad.logo} style={{width:'88%',height:'88%',objectFit:'contain'}} alt={ad.game} onError={()=>setLogoErr(e=>({...e,[ad.id]:true}))}/>
+            :<span style={{fontSize:52}}>{ad.emoji||'🎮'}</span>
           }
-          {/* Shine overlay */}
-          <div style={{position:'absolute',top:0,left:0,right:0,height:'45%',background:'linear-gradient(180deg,rgba(255,255,255,0.12),transparent)',borderRadius:'19px 19px 0 0',pointerEvents:'none'}}/>
+          <div style={{position:'absolute',top:0,left:0,right:0,height:'40%',background:'linear-gradient(180deg,rgba(255,255,255,0.1),transparent)',borderRadius:'17px 17px 0 0',pointerEvents:'none'}}/>
         </div>
       </div>
 
       {/* RIGHT — Text content */}
-      <div style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center',padding:'20px 20px 16px 0',minWidth:0}}>
+      <div style={{flex:1,minWidth:160,display:'flex',flexDirection:'column',justifyContent:'center',padding:'16px 16px 14px 0'}}>
         {/* Badge row */}
         <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:8}}>
           <span style={{fontFamily:'var(--fh)',fontSize:8,color:'rgba(255,255,255,0.4)',letterSpacing:3,border:'1px solid rgba(255,255,255,0.15)',padding:'2px 7px',borderRadius:3}}>🎮 GAME AD</span>
@@ -7486,11 +7485,15 @@ function Dashboard({tournaments,teams,setPage,loading,lang,toast}){
   return <div className="animate-in" style={{padding:'24px 28px',maxWidth:1000}}>
     {/* GREETING SECTION */}
     <div style={{marginBottom:22,padding:'18px 22px',background:'linear-gradient(135deg,rgba(0,229,255,0.06),rgba(255,107,0,0.04))',borderRadius:12,border:'1px solid rgba(0,229,255,0.12)'}}>
-      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:6}}>
-        <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{width:48,height:48,objectFit:'contain',filter:'drop-shadow(0 0 8px rgba(0,229,255,0.4))',flexShrink:0}}/>
+      <div style={{display:'flex',alignItems:'center',gap:14,marginBottom:6}}>
+        <img src={ARENAGG_LOGO_SM} alt="ArenaGG" style={{
+          width:72,height:72,objectFit:'contain',flexShrink:0,
+          filter:'drop-shadow(0 0 12px rgba(0,229,255,0.6)) drop-shadow(0 0 24px rgba(255,215,0,0.3))',
+          animation:'float 3s ease-in-out infinite',
+        }}/>
         <div style={{flex:1}}>
           <div style={{fontFamily:'var(--fm)',fontSize:10,color:'var(--muted)',letterSpacing:2,marginBottom:2}}>{greeting.toUpperCase()}</div>
-          <div style={{fontFamily:'var(--fh)',fontSize:20,fontWeight:900,color:'var(--cyan)',marginBottom:2}}>{name.toUpperCase()}</div>
+          <div style={{fontFamily:'var(--fh)',fontSize:22,fontWeight:900,color:'var(--cyan)',marginBottom:2,letterSpacing:1,textShadow:'0 0 20px rgba(0,229,255,0.5)'}}>{name.toUpperCase()}</div>
           <div style={{color:'var(--muted)',fontSize:11,fontFamily:'var(--fm)',letterSpacing:1}}>{i.dash_sub}</div>
         </div>
       </div>
