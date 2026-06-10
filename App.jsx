@@ -2391,6 +2391,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   const[editHp,setEditHp]=useState(member.hp||'')
   const[editGameId,setEditGameId]=useState(member.game_id||'')
   const[savingProfile,setSavingP]=useState(false)
+  const[memberMoreOpen,setMemberMoreOpen]=useState(false)
   const lang=langProp||getLang()
   const setLangFn=setLangFnProp||(l=>{setLang(l)})
   const i=T[lang]||T.id
@@ -2563,6 +2564,14 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         .mb-particle{position:fixed;width:2px;height:2px;border-radius:50%;animation:mbFloat 5s ease-out infinite;pointer-events:none;z-index:0}
         .mb-label{display:inline}
         @media(max-width:600px){.mb-label{display:none}}
+        .member-sidebar{display:flex!important;}
+        .member-bottom-nav{display:none!important;}
+        .member-main{margin-left:200px!important;padding-bottom:0!important;}
+        @media(max-width:768px){
+          .member-sidebar{display:none!important;}
+          .member-bottom-nav{display:block!important;}
+          .member-main{margin-left:0!important;padding-bottom:68px!important;}
+        }
       `}</style>
       <div className="mb-orb1"/><div className="mb-orb2"/><div className="mb-orb3"/>
       <div className="mb-grid"/>
@@ -2573,8 +2582,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         <div key={'p'+n} className="mb-particle" style={{left:`${15+n*15}%`,bottom:'5%',animationDelay:`${n*0.8}s`,animationDuration:`${4+n*0.5}s`,background:n%2===0?'rgba(0,229,255,0.7)':'rgba(255,107,0,0.6)'}}/>
       ))}
 
-      {/* ═══════ SIDEBAR KIRI ═══════ */}
-      <div style={{position:'fixed',top:0,left:0,bottom:0,width:200,background:'rgba(4,4,15,0.97)',backdropFilter:'blur(16px)',borderRight:'1px solid rgba(0,229,255,0.1)',display:'flex',flexDirection:'column',zIndex:100}}>
+      {/* ═══════ SIDEBAR KIRI — hidden di mobile ═══════ */}
+      <div style={{position:'fixed',top:0,left:0,bottom:0,width:200,background:'rgba(4,4,15,0.97)',backdropFilter:'blur(16px)',borderRight:'1px solid rgba(0,229,255,0.1)',display:'flex',flexDirection:'column',zIndex:100}} className="member-sidebar">
         {/* Logo */}
         <div style={{padding:'12px 14px 10px',borderBottom:'1px solid rgba(255,215,0,0.15)'}}>
           <div style={{display:'flex',alignItems:'center',gap:10}}>
@@ -2633,8 +2642,48 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
         </div>
       </div>
 
+      {/* ═══════ MEMBER BOTTOM NAV — mobile only ═══════ */}
+      <div className="member-bottom-nav" style={{display:'none',position:'fixed',bottom:0,left:0,right:0,background:'rgba(4,4,15,0.97)',backdropFilter:'blur(16px)',borderTop:'1px solid rgba(0,229,255,0.12)',zIndex:200,padding:'0'}}>
+        <div style={{display:'flex',alignItems:'stretch'}}>
+          {tabs.slice(0,5).map(t=>{
+            const isActive=activeTab===t.id
+            const isLive=t.id==='livescore'&&allTournaments.filter(tv=>tv.status==='live').length>0
+            return(
+              <button key={t.id} onClick={()=>setActiveTab(t.id)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,padding:'8px 2px',border:'none',background:isActive?'rgba(0,229,255,0.08)':'transparent',borderTop:isActive?'2px solid var(--cyan)':'2px solid transparent',cursor:'pointer',minHeight:56}}>
+                {t.coinIcon
+                  ?<img src={ARPAY_COIN_XS} alt="ARPAY" style={{width:18,height:18,borderRadius:'50%',opacity:isActive?1:0.5}}/>
+                  :<span style={{fontSize:18,lineHeight:1}}>{t.icon}{isLive&&<span style={{width:5,height:5,borderRadius:'50%',background:'var(--red)',display:'inline-block',marginLeft:1,verticalAlign:'top',animation:'pulse 1s infinite'}}/>}</span>
+                }
+                <span style={{fontFamily:'var(--fm)',fontSize:7,color:isActive?'var(--cyan)':'var(--muted)',letterSpacing:0.5,textTransform:'uppercase'}}>{t.label.slice(0,6)}</span>
+              </button>
+            )
+          })}
+          {/* Lainnya */}
+          <button onClick={()=>setMemberMoreOpen(o=>!o)} style={{flex:1,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:2,padding:'8px 2px',border:'none',background:tabs.slice(5).map(t=>t.id).includes(activeTab)?'rgba(0,229,255,0.08)':'transparent',borderTop:tabs.slice(5).map(t=>t.id).includes(activeTab)?'2px solid var(--cyan)':'2px solid transparent',cursor:'pointer',minHeight:56}}>
+            <span style={{fontSize:18,lineHeight:1}}>⋯</span>
+            <span style={{fontFamily:'var(--fm)',fontSize:7,color:'var(--muted)',letterSpacing:0.5,textTransform:'uppercase'}}>Lainnya</span>
+          </button>
+        </div>
+      </div>
+      {/* More drawer */}
+      {memberMoreOpen&&<>
+        <div style={{position:'fixed',inset:0,zIndex:198}} onClick={()=>setMemberMoreOpen(false)}/>
+        <div style={{position:'fixed',bottom:60,left:8,right:8,zIndex:199,background:'var(--bg2)',border:'1px solid var(--border)',borderRadius:14,padding:'10px 6px 8px',boxShadow:'0 -8px 32px rgba(0,0,0,0.6)',display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:6}}>
+          <div style={{gridColumn:'1/-1',fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',letterSpacing:2,textAlign:'center',paddingBottom:6,borderBottom:'1px solid var(--border)',marginBottom:2}}>MENU LAINNYA</div>
+          {tabs.slice(5).map(t=>(
+            <button key={t.id} onClick={()=>{setActiveTab(t.id);setMemberMoreOpen(false)}} style={{borderRadius:10,padding:'10px 4px',background:activeTab===t.id?'rgba(0,229,255,0.08)':'transparent',border:activeTab===t.id?'1px solid rgba(0,229,255,0.2)':'1px solid transparent',display:'flex',flexDirection:'column',alignItems:'center',gap:4,cursor:'pointer',minHeight:56}}>
+              {t.coinIcon
+                ?<img src={ARPAY_COIN_XS} alt="ARPAY" style={{width:22,height:22,borderRadius:'50%'}}/>
+                :<span style={{fontSize:22}}>{t.icon}</span>
+              }
+              <span style={{fontFamily:'var(--fm)',fontSize:8,color:activeTab===t.id?'var(--cyan)':'var(--muted)',textTransform:'uppercase',letterSpacing:0.5}}>{t.label.slice(0,7)}</span>
+            </button>
+          ))}
+        </div>
+      </>}
+
       {/* ═══════ MAIN AREA ═══════ */}
-      <div style={{marginLeft:200,flex:1,display:'flex',flexDirection:'column',minHeight:'100vh',position:'relative',zIndex:1}}>
+      <div className="member-main" style={{marginLeft:200,flex:1,display:'flex',flexDirection:'column',minHeight:'100vh',position:'relative',zIndex:1}}>
         {/* Top bar */}
         <div style={{background:'rgba(4,4,15,0.92)',backdropFilter:'blur(10px)',borderBottom:'1px solid rgba(0,229,255,0.1)',padding:'10px 20px',display:'flex',alignItems:'center',justifyContent:'space-between',position:'sticky',top:0,zIndex:50}}>
           <div style={{display:'flex',alignItems:'center',gap:8}}>
