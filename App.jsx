@@ -4158,50 +4158,97 @@ function TebakSkorGame({onClose,toast,memberId,tournaments=[]}){
 
 // ── 3. SPIN WHEEL ──────────────────────────────────────────
 const SPIN_PRIZES=[
-  {label:'Badge Rookie',icon:'🏅',color:'#00e5ff',rare:false},
-  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
-  {label:'XP +50',icon:'⭐',color:'#ffd700',rare:false},
-  {label:'Badge Pro',icon:'🏆',color:'#ff6b00',rare:true},
-  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
-  {label:'Diskon 10%',icon:'💰',color:'#00ff88',rare:true},
-  {label:'XP +10',icon:'✨',color:'#aa88ff',rare:false},
-  {label:'Coba lagi',icon:'🔄',color:'#888',rare:false},
+  {label:'0.5 ARPAY',  icon:'💰', color:'#ff6b35', bg:'#FF6B35', rare:false, arpay:0.5},
+  {label:'1 ARPAY',    icon:'🪙', color:'#ffd700', bg:'#FFD700', rare:false, arpay:1},
+  {label:'Coba lagi',  icon:'🔄', color:'#a0c4ff', bg:'#74B9FF', rare:false, arpay:0},
+  {label:'2 ARPAY',    icon:'💎', color:'#ff4757', bg:'#FF4757', rare:true,  arpay:2},
+  {label:'0.2 ARPAY',  icon:'⭐', color:'#2ed573', bg:'#2ED573', rare:false, arpay:0.2},
+  {label:'5 ARPAY',    icon:'🎁', color:'#ff6b81', bg:'#FF6B81', rare:true,  arpay:5},
+  {label:'Coba lagi',  icon:'🔄', color:'#a29bfe', bg:'#A29BFE', rare:false, arpay:0},
+  {label:'0.1 ARPAY',  icon:'🌟', color:'#00cec9', bg:'#00CEC9', rare:false, arpay:0.1},
+  {label:'3 ARPAY',    icon:'🏆', color:'#fdcb6e', bg:'#FDCB6E', rare:true,  arpay:3},
+  {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
+
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
   const[angle,setAngle]=React.useState(0)
   const[result,setResult]=React.useState(null)
+  const[showResult,setShowResult]=React.useState(false)
   const[spunToday,setSpunToday]=React.useState(()=>!!getGameData('spin_'+today+'_'+memberId))
   const canvasRef=React.useRef(null)
   const n=SPIN_PRIZES.length
   const sliceAngle=360/n
 
+  // Draw wheel — bright colorful like reference
   React.useEffect(()=>{
     const canvas=canvasRef.current
     if(!canvas)return
     const ctx=canvas.getContext('2d')
-    const W=200,cx=W/2,cy=W/2,r=W/2-4
+    const W=280,cx=W/2,cy=W/2,r=W/2-8
     ctx.clearRect(0,0,W,W)
+
+    // Outer ring shadow
+    ctx.save()
+    ctx.shadowColor='rgba(100,150,255,0.5)'
+    ctx.shadowBlur=20
+
     SPIN_PRIZES.forEach((p,i)=>{
       const start=(i*sliceAngle-90)*Math.PI/180
       const end=((i+1)*sliceAngle-90)*Math.PI/180
+
+      // Slice background — bright solid colors
       ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath()
-      ctx.fillStyle=i%2===0?'rgba(10,10,30,0.9)':'rgba(15,15,40,0.9)';ctx.fill()
-      ctx.strokeStyle=p.color+'66';ctx.lineWidth=1.5;ctx.stroke()
-      ctx.save();ctx.translate(cx,cy);ctx.rotate((i*sliceAngle+sliceAngle/2-90)*Math.PI/180)
-      ctx.font='bold 16px serif';ctx.fillStyle='#fff';ctx.textAlign='center'
-      ctx.fillText(p.icon,r*0.65,5)
-      ctx.font='8px monospace';ctx.fillStyle=p.color;ctx.fillText(p.label.length>8?p.label.slice(0,7)+'…':p.label,r*0.65,17)
+      ctx.fillStyle=p.bg;ctx.fill()
+
+      // Slice border — white
+      ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=2;ctx.stroke()
+    })
+    ctx.restore()
+
+    // Outer decorative ring
+    ctx.beginPath();ctx.arc(cx,cy,r+2,0,Math.PI*2)
+    ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=4;ctx.stroke()
+
+    // Blue outer ring
+    ctx.beginPath();ctx.arc(cx,cy,r+6,0,Math.PI*2)
+    ctx.strokeStyle='#3498db';ctx.lineWidth=6;ctx.stroke()
+
+    // Icons + labels
+    SPIN_PRIZES.forEach((p,i)=>{
+      ctx.save()
+      ctx.translate(cx,cy)
+      ctx.rotate((i*sliceAngle+sliceAngle/2-90)*Math.PI/180)
+      // Icon
+      ctx.font='bold 20px serif'
+      ctx.textAlign='center'
+      ctx.fillStyle='#fff'
+      ctx.shadowColor='rgba(0,0,0,0.5)'
+      ctx.shadowBlur=4
+      ctx.fillText(p.icon,r*0.62,0)
+      // Label
+      ctx.font='bold 9px Arial'
+      ctx.fillStyle='#fff'
+      ctx.shadowColor='rgba(0,0,0,0.8)'
+      ctx.shadowBlur=3
+      ctx.fillText(p.label,r*0.62,13)
       ctx.restore()
     })
-    ctx.beginPath();ctx.arc(cx,cy,16,0,Math.PI*2);ctx.fillStyle='#050510';ctx.fill()
-    ctx.strokeStyle='var(--cyan)';ctx.lineWidth=2;ctx.stroke()
-    ctx.font='bold 10px monospace';ctx.fillStyle='var(--cyan)';ctx.textAlign='center';ctx.fillText('⚔',cx,cy+4)
+
+    // Center circle — white glossy
+    const grad=ctx.createRadialGradient(cx-6,cy-6,2,cx,cy,22)
+    grad.addColorStop(0,'#ffffff')
+    grad.addColorStop(0.5,'#e0e8ff')
+    grad.addColorStop(1,'#3498db')
+    ctx.beginPath();ctx.arc(cx,cy,22,0,Math.PI*2)
+    ctx.fillStyle=grad;ctx.fill()
+    ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=2;ctx.stroke()
   },[])
 
   const spin=()=>{
     if(spinning||spunToday)return
+    setShowResult(false)
     setSpinning(true)
     const extra=Math.floor(Math.random()*360)
     const spins=1440+extra
@@ -4212,39 +4259,98 @@ function SpinWheelGame({onClose,toast,memberId}){
       const prizeIdx=Math.floor(((360-finalAngle+90)%360)/sliceAngle)%n
       const prize=SPIN_PRIZES[prizeIdx]
       setResult(prize)
+      setShowResult(true)
       setSpinning(false)
       saveGameData('spin_'+today+'_'+memberId,{prize:prize.label,date:today})
       setSpunToday(true)
-      if(prize.rare)toast('🎉 JACKPOT! Kamu dapat: '+prize.label,'success')
-      else toast('Kamu dapat: '+prize.label,'success')
-    },3000)
+      if(prize.rare)toast('🎉 JACKPOT! Dapat: '+prize.label,'success')
+      else if(prize.arpay>0)toast('✨ Kamu dapat: '+prize.label,'success')
+      else toast('Sayang sekali, coba lagi besok!','info')
+    },3500)
   }
 
   return(
-    <div style={{padding:'16px',background:'rgba(5,5,20,0.95)',borderRadius:14,border:'1px solid rgba(170,136,255,0.3)',minHeight:280}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}}>
-        <div style={{fontFamily:'var(--fh)',fontSize:11,color:'#aa88ff',letterSpacing:2,textShadow:'0 0 10px rgba(170,136,255,0.5)'}}>🎡 SPIN WHEEL</div>
-        <button onClick={onClose} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>✕</button>
+    <div style={{
+      borderRadius:20,overflow:'hidden',
+      background:'linear-gradient(180deg,#87CEEB 0%,#98D8F0 30%,#B0E2FF 60%,#C8F0FF 100%)',
+      minHeight:400,position:'relative',
+      boxShadow:'0 8px 40px rgba(52,152,219,0.4)',
+    }}>
+      {/* Sky clouds bg */}
+      <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse at 20% 10%,rgba(255,255,255,0.6) 0%,transparent 40%), radial-gradient(ellipse at 80% 20%,rgba(255,255,255,0.5) 0%,transparent 35%)',pointerEvents:'none'}}/>
+
+      {/* Header */}
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'12px 16px',position:'relative',zIndex:2}}>
+        <div style={{fontFamily:'var(--fh)',fontSize:14,color:'#1a5276',letterSpacing:2,fontWeight:900,textShadow:'0 1px 0 rgba(255,255,255,0.8)'}}>🎡 LUCKY SPIN</div>
+        <button onClick={onClose} style={{background:'rgba(255,255,255,0.5)',border:'2px solid rgba(52,152,219,0.5)',borderRadius:'50%',width:28,height:28,color:'#1a5276',cursor:'pointer',fontWeight:900,display:'flex',alignItems:'center',justifyContent:'center',fontSize:12}}>✕</button>
       </div>
-      {!spunToday&&(
-        <div style={{background:'rgba(170,136,255,0.06)',border:'1px solid rgba(170,136,255,0.15)',borderRadius:8,padding:'8px 12px',marginBottom:8,fontSize:10,color:'var(--muted)',lineHeight:1.7}}>
-          <b style={{color:'#aa88ff'}}>📖 Cara Main:</b> Klik tombol <b style={{color:'#aa88ff'}}>PUTAR</b> untuk memutar roda.<br/>
-          Kamu dapat <b style={{color:'#aa88ff'}}>1x putaran gratis setiap hari</b>. Hadiah langka = Badge & Diskon!
+
+      {/* Info */}
+      {!spunToday&&!spinning&&(
+        <div style={{margin:'0 14px 8px',padding:'6px 12px',background:'rgba(255,255,255,0.6)',borderRadius:10,fontSize:10,color:'#1a5276',textAlign:'center',backdropFilter:'blur(4px)'}}>
+          🎁 <b>1x spin gratis setiap hari!</b> Dapatkan ARPAY & hadiah menarik
         </div>
       )}
-      <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10}}>
-        <div style={{position:'relative'}}>
-          <div style={{position:'absolute',top:-8,left:'50%',transform:'translateX(-50%)',fontSize:16,zIndex:2}}>▼</div>
-          <canvas ref={canvasRef} width={200} height={200} style={{borderRadius:'50%',border:'2px solid rgba(170,136,255,0.4)',transform:`rotate(${angle}deg)`,transition:spinning?'transform 3s cubic-bezier(0.17,0.67,0.12,0.99)':'none'}}/>
+
+      {/* Wheel container */}
+      <div style={{display:'flex',flexDirection:'column',alignItems:'center',padding:'8px 0 0',position:'relative',zIndex:2}}>
+
+        {/* Pointer */}
+        <div style={{fontSize:28,marginBottom:-10,zIndex:3,filter:'drop-shadow(0 2px 4px rgba(0,0,0,0.3))'}}>▼</div>
+
+        {/* Wheel with glow */}
+        <div style={{
+          borderRadius:'50%',
+          transform:`rotate(${angle}deg)`,
+          transition:spinning?'transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99)':'none',
+          filter:'drop-shadow(0 4px 20px rgba(52,152,219,0.6))',
+        }}>
+          <canvas ref={canvasRef} width={280} height={280} style={{borderRadius:'50%',display:'block'}}/>
         </div>
-        {result&&<div style={{fontFamily:'var(--fh)',fontSize:12,color:result.color,textAlign:'center'}}>{result.icon} {result.label}!</div>}
-        {spunToday&&!spinning
-          ?<div style={{fontSize:11,color:'var(--muted)',textAlign:'center'}}>🔄 Kembali besok untuk spin lagi!</div>
-          :<button onClick={spin} disabled={spinning} style={{padding:'9px 24px',background:'rgba(170,136,255,0.15)',border:'1px solid rgba(170,136,255,0.4)',borderRadius:8,color:'#aa88ff',fontFamily:'var(--fh)',fontSize:9,letterSpacing:1.5,cursor:spinning?'not-allowed':'pointer'}}>
-              {spinning?'SPINNING...':'🎡 PUTAR SEKARANG'}
+
+        {/* Result */}
+        {showResult&&result&&(
+          <div style={{
+            marginTop:12,padding:'10px 24px',
+            background:result.rare?'linear-gradient(135deg,#f39c12,#e74c3c)':'linear-gradient(135deg,#27ae60,#2980b9)',
+            borderRadius:20,
+            fontFamily:'var(--fh)',fontSize:14,fontWeight:900,color:'#fff',
+            textAlign:'center',
+            boxShadow:result.rare?'0 4px 20px rgba(231,76,60,0.5)':'0 4px 20px rgba(39,174,96,0.4)',
+            animation:'pop-in 0.3s ease',
+          }}>
+            {result.icon} {result.arpay>0?`+${result.label}`:`${result.label}`}
+            {result.rare&&<div style={{fontSize:10,opacity:0.9,marginTop:2}}>🎊 JACKPOT!</div>}
+          </div>
+        )}
+
+        {/* SPIN Button */}
+        <div style={{margin:'14px 0 10px',position:'relative'}}>
+          {spunToday&&!spinning
+            ?<div style={{padding:'10px 28px',background:'rgba(255,255,255,0.4)',border:'2px solid rgba(52,152,219,0.3)',borderRadius:14,fontFamily:'var(--fh)',fontSize:10,color:'#1a5276',textAlign:'center'}}>
+              🔄 Kembali besok untuk spin lagi!
+            </div>
+            :<button onClick={spin} disabled={spinning} style={{
+                padding:'14px 40px',
+                background:spinning?'linear-gradient(135deg,#95a5a6,#7f8c8d)':'linear-gradient(135deg,#f39c12,#e67e22)',
+                border:'3px solid rgba(255,255,255,0.7)',
+                borderRadius:16,
+                fontFamily:'var(--fh)',fontSize:16,fontWeight:900,
+                color:'#fff',cursor:spinning?'not-allowed':'pointer',
+                letterSpacing:2,
+                boxShadow:spinning?'none':'0 6px 20px rgba(230,126,34,0.6), 0 2px 0 rgba(0,0,0,0.2)',
+                transform:spinning?'none':'translateY(-2px)',
+                transition:'all 0.2s',
+                textShadow:'0 2px 4px rgba(0,0,0,0.3)',
+              }}>
+              {spinning?'⏳ SPINNING...':'SPIN'}
             </button>
-        }
+          }
+        </div>
       </div>
+
+      {/* Bottom decoration */}
+      <div style={{position:'absolute',bottom:0,left:0,right:0,height:60,background:'linear-gradient(180deg,transparent,rgba(52,152,219,0.2))',pointerEvents:'none'}}/>
     </div>
   )
 }
