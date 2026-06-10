@@ -4170,6 +4170,7 @@ const SPIN_PRIZES=[
   {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
 
+// ArenaGG v5.6.4 — SpinWheel bright redesign
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
