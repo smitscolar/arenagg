@@ -2389,7 +2389,7 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
     <div style={bgStyle}>
       {/* Grid lines */}
       {/* Member Auth Background Image */}
-      <div style={{position:'absolute',inset:0,backgroundImage:`url(${typeof ARENAGG_BG_DARK!=='undefined'?ARENAGG_BG_DARK:''})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.6,zIndex:0,pointerEvents:'none'}}/>
+      <div style={{position:'absolute',inset:0,backgroundImage:`url(${(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})()?ARENAGG_BG_LIGHT:ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.6,zIndex:0,pointerEvents:'none'}}/>
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
       {/* Big logo watermark bg */}
       <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',pointerEvents:'none',zIndex:0}}>
@@ -2578,6 +2578,7 @@ function ParticipantPortal({toast,tournaments=[]}){
 // ============================================================
 function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,setLangFn:setLangFnProp}){
   const[activeTab,setActiveTab]=useState('home')
+  const[showBgMember,toggleBgMember]=useBgShow()
   const[allTournaments,setAllTourn]=useState([])
   const[loadingTourn,setLoadT]=useState(true)
   const[tournError,setTournError]=useState(null)
@@ -2748,15 +2749,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   return(
     <div style={{minHeight:'100vh',background:'#03030d',position:'relative',display:'flex'}}>
       {/* ── Background Image Layer ── */}
-      {(function MbBgLayer(){
-        const[show,setShow]=React.useState(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})
-        React.useEffect(()=>{
-          const h=(e)=>setShow(e.detail.show)
-          window.addEventListener('arenagg_bg_toggle',h)
-          return()=>window.removeEventListener('arenagg_bg_toggle',h)
-        },[])
-        return show?<div style={{position:'fixed',inset:0,zIndex:0,backgroundImage:`url(${ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.55,pointerEvents:'none'}}/>:null
-      })()}
+      {showBgMember&&<div style={{position:'fixed',inset:0,zIndex:0,backgroundImage:`url(${(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})()?ARENAGG_BG_LIGHT:ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.55,pointerEvents:'none'}}/>}
       {/* ── Animated BG ── */}
       <style>{`
         @keyframes mbOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
@@ -2994,7 +2987,7 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
               }
             </div>
             {/* Background Toggle Button */}
-            <BgMemberToggle/>
+            <BgMemberToggle showBg={showBgMember} onToggle={toggleBgMember} isLight={(()=>{try{return localStorage.getItem('arenagg_theme')==='light'}catch(e){return false}})()}/>
           </div>
         </div>
 
@@ -4301,7 +4294,7 @@ const SPIN_PRIZES=[
   {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
 
-// ArenaGG v5.6.6 — BgToggle fix: header member + owner tidak tabrakan FloatingChat
+// ArenaGG v5.6.7 — BgToggle fully working: props-based, dark/light switch semua halaman
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
@@ -6064,7 +6057,7 @@ function AuthPage({onLogin,lang,setLangFn}){
   const _authBg = _authTheme==='light' ? ARENAGG_BG_LIGHT : ARENAGG_BG_DARK
   return <div className="auth-bg" style={{position:'relative',overflow:'hidden',background:'#050508',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
     {/* Auth Background Image */}
-    <div style={{position:'absolute',inset:0,backgroundImage:`url(${_authBg})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.55,zIndex:0,pointerEvents:'none'}}/>
+    <div style={{position:'absolute',inset:0,backgroundImage:`url(${_authBg})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.6,zIndex:0,pointerEvents:'none'}}/>
 
     {/* Grid lines */}
     <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
@@ -9245,62 +9238,65 @@ function useBgShow(){
 }
 
 // BgToggleBtn — untuk owner dashboard (posisi fixed pojok kanan atas, geser agar tidak tabrak chat)
-function BgToggleBtn({isLight}){
-  const[showBg,toggleBg]=useBgShow()
+function BgToggleBtn({isLight,showBg,onToggle}){
   return(
     <button
-      onClick={toggleBg}
+      onClick={onToggle}
       title={showBg?'Sembunyikan Background':'Tampilkan Background'}
       style={{
         position:'fixed',
-        top:8,
-        right:56,
+        top:10,
+        right:10,
         zIndex:9999,
-        background:showBg?'rgba(0,229,255,0.15)':'rgba(255,255,255,0.08)',
-        border:`1px solid ${showBg?'rgba(0,229,255,0.4)':'rgba(255,255,255,0.15)'}`,
+        background:showBg?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.35)',
+        border:`1px solid ${showBg?'rgba(0,229,255,0.5)':'rgba(255,255,255,0.2)'}`,
         borderRadius:'50%',
-        width:36,
-        height:36,
+        width:38,
+        height:38,
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
         cursor:'pointer',
-        fontSize:18,
+        fontSize:20,
         backdropFilter:'blur(10px)',
         transition:'all 0.25s',
-        boxShadow:showBg?'0 0 12px rgba(0,229,255,0.3)':'0 2px 6px rgba(0,0,0,0.4)',
+        boxShadow:showBg?'0 0 14px rgba(0,229,255,0.4)':'0 2px 8px rgba(0,0,0,0.5)',
       }}
     >
-      {showBg?(isLight?'☀️':'🌑'):'🌫️'}
+      {showBg?(isLight?'🌅':'🌌'):'🖼️'}
     </button>
   )
 }
 
 // BgMemberToggle — untuk member dashboard (inline di header, bukan fixed)
-function BgMemberToggle(){
-  const[showBg,toggleBg]=useBgShow()
+function BgMemberToggle({showBg,onToggle,isLight}){
   return(
-    <div
-      onClick={toggleBg}
+    <button
+      onClick={onToggle}
       title={showBg?'Sembunyikan Background':'Tampilkan Background'}
       style={{
-        width:30,
-        height:30,
+        position:'fixed',
+        top:10,
+        right:10,
+        zIndex:9999,
+        width:38,
+        height:38,
         borderRadius:'50%',
-        background:showBg?'rgba(0,229,255,0.12)':'rgba(255,255,255,0.06)',
-        border:`1px solid ${showBg?'rgba(0,229,255,0.35)':'rgba(255,255,255,0.12)'}`,
+        background:showBg?'rgba(0,0,0,0.5)':'rgba(0,0,0,0.35)',
+        border:`1px solid ${showBg?'rgba(0,229,255,0.5)':'rgba(255,255,255,0.2)'}`,
         display:'flex',
         alignItems:'center',
         justifyContent:'center',
         cursor:'pointer',
-        fontSize:15,
+        fontSize:20,
         transition:'all 0.25s',
+        backdropFilter:'blur(10px)',
+        boxShadow:showBg?'0 0 14px rgba(0,229,255,0.4)':'0 2px 8px rgba(0,0,0,0.5)',
         flexShrink:0,
-        boxShadow:showBg?'0 0 8px rgba(0,229,255,0.25)':'none',
       }}
     >
-      {showBg?'🌑':'🌫️'}
-    </div>
+      {showBg?(isLight?'🌅':'🌌'):'🖼️'}
+    </button>
   )
 }
 
@@ -9446,7 +9442,7 @@ function AppCore(){
       pointerEvents:'none',
     }}/>}
     {/* Background Toggle Button — pojok kanan atas */}
-    <BgToggleBtn isLight={isLight}/>
+    <BgToggleBtn isLight={isLight} showBg={showBg} onToggle={toggleBgAppCore}/>
     {/* Onboarding Modal */}
     {showOnboarding&&<OnboardingModal onClose={()=>setShowOnboarding(false)} lang={lang}/>}
     {/* PWA Install Banner */}
