@@ -2389,7 +2389,7 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
     <div style={bgStyle}>
       {/* Grid lines */}
       {/* Member Auth Background Image */}
-      <div style={{position:'absolute',inset:0,backgroundImage:`url(${typeof ARENAGG_BG_DARK!=='undefined'?ARENAGG_BG_DARK:''})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.3,zIndex:0,pointerEvents:'none'}}/>
+      <div style={{position:'absolute',inset:0,backgroundImage:`url(${typeof ARENAGG_BG_DARK!=='undefined'?ARENAGG_BG_DARK:''})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.5,zIndex:0,pointerEvents:'none'}}/>
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
       {/* Big logo watermark bg */}
       <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',pointerEvents:'none',zIndex:0}}>
@@ -2747,6 +2747,12 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
 
   return(
     <div style={{minHeight:'100vh',background:'#03030d',position:'relative',display:'flex'}}>
+      {/* ── Background Image Layer ── */}
+      {(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})()&&
+        <div style={{position:'fixed',inset:0,zIndex:0,backgroundImage:`url(${ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.45,pointerEvents:'none'}}/>
+      }
+      {/* Background Toggle Button — pojok kanan atas */}
+      <BgToggleBtn isLight={false}/>
       {/* ── Animated BG ── */}
       <style>{`
         @keyframes mbOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
@@ -4289,7 +4295,7 @@ const SPIN_PRIZES=[
   {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
 
-// ArenaGG v5.6.4 — SpinWheel bright redesign
+// ArenaGG v5.6.5 — Background image dark/light + BgToggleBtn
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
@@ -6052,7 +6058,7 @@ function AuthPage({onLogin,lang,setLangFn}){
   const _authBg = _authTheme==='light' ? ARENAGG_BG_LIGHT : ARENAGG_BG_DARK
   return <div className="auth-bg" style={{position:'relative',overflow:'hidden',background:'#050508',minHeight:'100vh',display:'flex',alignItems:'center',justifyContent:'center'}}>
     {/* Auth Background Image */}
-    <div style={{position:'absolute',inset:0,backgroundImage:`url(${_authBg})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.35,zIndex:0,pointerEvents:'none'}}/>
+    <div style={{position:'absolute',inset:0,backgroundImage:`url(${_authBg})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.55,zIndex:0,pointerEvents:'none'}}/>
 
     {/* Grid lines */}
     <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
@@ -9211,6 +9217,49 @@ function FloatingChat({user,tournaments=[],lang='id'}){
 }
 
 
+
+// ── Background Toggle Button ──
+function BgToggleBtn({isLight, toggle, extraStyle={}}){
+  const[showBg,setShowBg]=React.useState(()=>{
+    try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}
+  })
+  const toggleBg=()=>{
+    const next=!showBg
+    setShowBg(next)
+    try{localStorage.setItem('arenagg_show_bg',next?'true':'false')}catch(e){}
+    // Dispatch event untuk komponen lain
+    window.dispatchEvent(new CustomEvent('arenagg_bg_toggle',{detail:{show:next}}))
+  }
+  return(
+    <button
+      onClick={toggleBg}
+      title={showBg?'Sembunyikan Background':'Tampilkan Background'}
+      style={{
+        position:'fixed',
+        top:10,
+        right:10,
+        zIndex:9999,
+        background:'rgba(0,0,0,0.45)',
+        border:'1px solid rgba(255,255,255,0.15)',
+        borderRadius:'50%',
+        width:36,
+        height:36,
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center',
+        cursor:'pointer',
+        fontSize:18,
+        backdropFilter:'blur(8px)',
+        transition:'all 0.2s',
+        boxShadow:'0 2px 8px rgba(0,0,0,0.4)',
+        ...extraStyle
+      }}
+    >
+      {showBg ? (isLight ? '🌅' : '🌌') : '🖼️'}
+    </button>
+  )
+}
+
 function AppCore(){
   const[user,setUser]=React.useState(null)
   const[authLoading,setAuthLoading]=React.useState(true)
@@ -9218,6 +9267,12 @@ function AppCore(){
   const[editT,setEditT]=React.useState(null)
   const[lang,setLangState]=React.useState(getLang)
   const[isLight,setIsLight]=React.useState(()=>getTheme()==='light')
+  const[showBg,setShowBg]=React.useState(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})
+  React.useEffect(()=>{
+    const handler=(e)=>setShowBg(e.detail.show)
+    window.addEventListener('arenagg_bg_toggle',handler)
+    return()=>window.removeEventListener('arenagg_bg_toggle',handler)
+  },[])
   const[toasts,setToasts]=React.useState([])
   const[publicTid,setPublicTid]=React.useState(null)
   const[liveTid,setLiveTid]=React.useState(null)
@@ -9339,7 +9394,7 @@ function AppCore(){
 
   return <div className="app-wrap" style={{position:'relative'}}>
     {/* === GLOBAL BACKGROUND === */}
-    <div className="arenagg-bg-layer" style={{
+    {showBg&&<div className="arenagg-bg-layer" style={{
       position:'fixed',
       inset:0,
       zIndex:-1,
@@ -9348,9 +9403,11 @@ function AppCore(){
       backgroundPosition:'center',
       backgroundRepeat:'no-repeat',
       backgroundAttachment:'fixed',
-      opacity:0.22,
+      opacity:0.45,
       pointerEvents:'none',
-    }}/>
+    }}/>}
+    {/* Background Toggle Button — pojok kanan atas */}
+    <BgToggleBtn isLight={isLight}/>
     {/* Onboarding Modal */}
     {showOnboarding&&<OnboardingModal onClose={()=>setShowOnboarding(false)} lang={lang}/>}
     {/* PWA Install Banner */}
