@@ -2389,7 +2389,7 @@ function MemberAuth({onLogin,toast,lang:langPropPA,setLangFn:setLangFnPA,tournam
     <div style={bgStyle}>
       {/* Grid lines */}
       {/* Member Auth Background Image */}
-      <div style={{position:'absolute',inset:0,backgroundImage:`url(${typeof ARENAGG_BG_DARK!=='undefined'?ARENAGG_BG_DARK:''})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.5,zIndex:0,pointerEvents:'none'}}/>
+      <div style={{position:'absolute',inset:0,backgroundImage:`url(${typeof ARENAGG_BG_DARK!=='undefined'?ARENAGG_BG_DARK:''})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.6,zIndex:0,pointerEvents:'none'}}/>
       <div style={{position:'absolute',inset:0,backgroundImage:'linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px)',backgroundSize:'40px 40px',pointerEvents:'none'}}/>
       {/* Big logo watermark bg */}
       <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',pointerEvents:'none',zIndex:0}}>
@@ -2748,11 +2748,15 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
   return(
     <div style={{minHeight:'100vh',background:'#03030d',position:'relative',display:'flex'}}>
       {/* ── Background Image Layer ── */}
-      {(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})()&&
-        <div style={{position:'fixed',inset:0,zIndex:0,backgroundImage:`url(${ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.45,pointerEvents:'none'}}/>
-      }
-      {/* Background Toggle Button — pojok kanan atas */}
-      <BgToggleBtn isLight={false}/>
+      {(function MbBgLayer(){
+        const[show,setShow]=React.useState(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})
+        React.useEffect(()=>{
+          const h=(e)=>setShow(e.detail.show)
+          window.addEventListener('arenagg_bg_toggle',h)
+          return()=>window.removeEventListener('arenagg_bg_toggle',h)
+        },[])
+        return show?<div style={{position:'fixed',inset:0,zIndex:0,backgroundImage:`url(${ARENAGG_BG_DARK})`,backgroundSize:'cover',backgroundPosition:'center',backgroundRepeat:'no-repeat',opacity:0.55,pointerEvents:'none'}}/>:null
+      })()}
       {/* ── Animated BG ── */}
       <style>{`
         @keyframes mbOrb1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-30px)}}
@@ -2989,6 +2993,8 @@ function MemberDashboard({member,onLogout,toast,tournaments=[],lang:langProp,set
                 :<div style={{width:'100%',height:'100%',background:'linear-gradient(135deg,var(--cyan),var(--orange))',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:900,color:'#000'}}>{(member.nama||'?')[0].toUpperCase()}</div>
               }
             </div>
+            {/* Background Toggle Button */}
+            <BgMemberToggle/>
           </div>
         </div>
 
@@ -4295,7 +4301,7 @@ const SPIN_PRIZES=[
   {label:'Coba lagi',  icon:'🔄', color:'#55efc4', bg:'#55EFC4', rare:false, arpay:0},
 ]
 
-// ArenaGG v5.6.5 — Background image dark/light + BgToggleBtn
+// ArenaGG v5.6.6 — BgToggle fix: header member + owner tidak tabrakan FloatingChat
 function SpinWheelGame({onClose,toast,memberId}){
   const today=new Date().toDateString()
   const[spinning,setSpinning]=React.useState(false)
@@ -9219,28 +9225,39 @@ function FloatingChat({user,tournaments=[],lang='id'}){
 
 
 // ── Background Toggle Button ──
-function BgToggleBtn({isLight, toggle, extraStyle={}}){
+// ── Background Toggle — shared state via localStorage + custom event ──
+function useBgShow(){
   const[showBg,setShowBg]=React.useState(()=>{
     try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}
   })
+  React.useEffect(()=>{
+    const h=(e)=>setShowBg(e.detail.show)
+    window.addEventListener('arenagg_bg_toggle',h)
+    return()=>window.removeEventListener('arenagg_bg_toggle',h)
+  },[])
   const toggleBg=()=>{
     const next=!showBg
     setShowBg(next)
     try{localStorage.setItem('arenagg_show_bg',next?'true':'false')}catch(e){}
-    // Dispatch event untuk komponen lain
     window.dispatchEvent(new CustomEvent('arenagg_bg_toggle',{detail:{show:next}}))
   }
+  return[showBg,toggleBg]
+}
+
+// BgToggleBtn — untuk owner dashboard (posisi fixed pojok kanan atas, geser agar tidak tabrak chat)
+function BgToggleBtn({isLight}){
+  const[showBg,toggleBg]=useBgShow()
   return(
     <button
       onClick={toggleBg}
       title={showBg?'Sembunyikan Background':'Tampilkan Background'}
       style={{
         position:'fixed',
-        top:10,
-        right:10,
+        top:8,
+        right:56,
         zIndex:9999,
-        background:'rgba(0,0,0,0.45)',
-        border:'1px solid rgba(255,255,255,0.15)',
+        background:showBg?'rgba(0,229,255,0.15)':'rgba(255,255,255,0.08)',
+        border:`1px solid ${showBg?'rgba(0,229,255,0.4)':'rgba(255,255,255,0.15)'}`,
         borderRadius:'50%',
         width:36,
         height:36,
@@ -9249,14 +9266,41 @@ function BgToggleBtn({isLight, toggle, extraStyle={}}){
         justifyContent:'center',
         cursor:'pointer',
         fontSize:18,
-        backdropFilter:'blur(8px)',
-        transition:'all 0.2s',
-        boxShadow:'0 2px 8px rgba(0,0,0,0.4)',
-        ...extraStyle
+        backdropFilter:'blur(10px)',
+        transition:'all 0.25s',
+        boxShadow:showBg?'0 0 12px rgba(0,229,255,0.3)':'0 2px 6px rgba(0,0,0,0.4)',
       }}
     >
-      {showBg ? (isLight ? '🌅' : '🌌') : '🖼️'}
+      {showBg?(isLight?'☀️':'🌑'):'🌫️'}
     </button>
+  )
+}
+
+// BgMemberToggle — untuk member dashboard (inline di header, bukan fixed)
+function BgMemberToggle(){
+  const[showBg,toggleBg]=useBgShow()
+  return(
+    <div
+      onClick={toggleBg}
+      title={showBg?'Sembunyikan Background':'Tampilkan Background'}
+      style={{
+        width:30,
+        height:30,
+        borderRadius:'50%',
+        background:showBg?'rgba(0,229,255,0.12)':'rgba(255,255,255,0.06)',
+        border:`1px solid ${showBg?'rgba(0,229,255,0.35)':'rgba(255,255,255,0.12)'}`,
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'center',
+        cursor:'pointer',
+        fontSize:15,
+        transition:'all 0.25s',
+        flexShrink:0,
+        boxShadow:showBg?'0 0 8px rgba(0,229,255,0.25)':'none',
+      }}
+    >
+      {showBg?'🌑':'🌫️'}
+    </div>
   )
 }
 
@@ -9267,12 +9311,7 @@ function AppCore(){
   const[editT,setEditT]=React.useState(null)
   const[lang,setLangState]=React.useState(getLang)
   const[isLight,setIsLight]=React.useState(()=>getTheme()==='light')
-  const[showBg,setShowBg]=React.useState(()=>{try{return localStorage.getItem('arenagg_show_bg')!=='false'}catch(e){return true}})
-  React.useEffect(()=>{
-    const handler=(e)=>setShowBg(e.detail.show)
-    window.addEventListener('arenagg_bg_toggle',handler)
-    return()=>window.removeEventListener('arenagg_bg_toggle',handler)
-  },[])
+  const[showBg,toggleBgAppCore]=useBgShow()
   const[toasts,setToasts]=React.useState([])
   const[publicTid,setPublicTid]=React.useState(null)
   const[liveTid,setLiveTid]=React.useState(null)
@@ -9403,7 +9442,7 @@ function AppCore(){
       backgroundPosition:'center',
       backgroundRepeat:'no-repeat',
       backgroundAttachment:'fixed',
-      opacity:0.45,
+      opacity:0.55,
       pointerEvents:'none',
     }}/>}
     {/* Background Toggle Button — pojok kanan atas */}
