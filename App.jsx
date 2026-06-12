@@ -8466,7 +8466,22 @@ function BracketView({tournaments,teams,lang}){
   }
   var resetBracket=function(){
     if(!window.confirm('Reset seluruh bracket?'))return
-    try{localStorage.removeItem('arenagg_bracket_'+selT);setTick(function(n){return n+1})}catch(e){}
+    try{localStorage.removeItem('arenagg_bracket_'+selT);localStorage.removeItem('arenagg_bracket_order_'+selT);setTick(function(n){return n+1})}catch(e){}
+  }
+  var autoBracket=function(){
+    if(!selT||tTeams.length<2){window.alert('Minimal 2 tim diperlukan untuk generate bracket.');return}
+    if(!window.confirm('Generate bracket otomatis dari '+tTeams.length+' tim terdaftar?\n\nTim akan di-shuffle acak lalu dipasangkan. Data bracket sebelumnya akan direset.'))return
+    // Shuffle tim secara acak (Fisher-Yates)
+    var shuffled=tTeams.slice()
+    for(var si=shuffled.length-1;si>0;si--){var sj=Math.floor(Math.random()*(si+1));var tmp=shuffled[si];shuffled[si]=shuffled[sj];shuffled[sj]=tmp}
+    // Simpan urutan baru ke localStorage sebagai bracket order
+    try{
+      localStorage.removeItem('arenagg_bracket_'+selT)
+      // Simpan shuffled order agar r1 menggunakan urutan baru
+      localStorage.setItem('arenagg_bracket_order_'+selT,JSON.stringify(shuffled.map(function(x){return x.id})))
+      setTick(function(n){return n+1})
+      addNotif('🎲 Bracket di-generate otomatis! '+Math.ceil(shuffled.length/2)+' match babak 1 siap.','success','bracket')
+    }catch(e){}
   }
   var bracket=getBracket()
 
@@ -8507,7 +8522,10 @@ function BracketView({tournaments,teams,lang}){
   }
 
   // Build single elim rounds
-  var r1=[]; for(var idx=0;idx<Math.min(tTeams.length,16);idx+=2) r1.push({id:idx/2,a:tTeams[idx],b:tTeams[idx+1],w:bracket['m'+idx/2]})
+  // Gunakan bracket order jika tersedia (dari auto generate)
+  var bracketOrder=selT?JSON.parse(localStorage.getItem('arenagg_bracket_order_'+selT)||'null'):null
+  var orderedTeams=bracketOrder?bracketOrder.map(function(id){return tTeams.find(function(x){return x.id===id})}).filter(Boolean):tTeams
+  var r1=[]; for(var idx=0;idx<Math.min(orderedTeams.length,16);idx+=2) r1.push({id:idx/2,a:orderedTeams[idx],b:orderedTeams[idx+1],w:bracket['m'+idx/2]})
   var r2=[]; for(var idx2=0;idx2<Math.floor(r1.length/2);idx2++) r2.push({id:idx2,w:bracket['sf'+idx2]})
   var champion=bracket['final']?tTeams.find(function(x){return x.id===bracket['final']}):null
 
@@ -8517,7 +8535,10 @@ function BracketView({tournaments,teams,lang}){
         <h1 style={{fontFamily:'var(--fh)',fontSize:17,fontWeight:700}}>{i.nav[5]}</h1>
         <p style={{fontFamily:'var(--fm)',fontSize:9,color:'var(--muted)',marginTop:2,letterSpacing:1}}>KLIK NAMA TIM UNTUK SET PEMENANG</p>
       </div>
-      {selT&&<button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset Bracket</button>}
+      {selT&&<div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
+        {tTeams.length>=2&&<button onClick={autoBracket} className="btn btn-cyan btn-sm" style={{fontSize:9,background:'linear-gradient(135deg,rgba(0,229,255,0.15),rgba(255,107,0,0.08))',border:'1px solid rgba(0,229,255,0.4)'}}>🎲 Auto Generate Bracket</button>}
+        <button onClick={resetBracket} className="btn btn-ghost btn-sm" style={{fontSize:9}}>↺ Reset Bracket</button>
+      </div>}
     </div>
 
     <div style={{display:'flex',gap:5,marginBottom:14,flexWrap:'wrap'}}>
